@@ -1,0 +1,32 @@
+{
+    "language": "de",
+    "environment" : "dev",
+    "prepare" : {
+        "data_type" : "json"
+    },
+    "tasks": {
+        "1": {
+            "label": "subcat",
+            "type": "classification",
+            "model_type": "distilbert",
+            "prepare": true
+        },
+        "3": {
+            "type": "ner",
+            "prepare": false
+        },
+        "4": {
+            "type": "qa",
+            "model_type": "historical",
+            "prepare": true
+        }
+    },
+    "assets" : [
+        "fn_cat",
+        "fn_rank",
+        "fn_ner_list",
+        "fn_ner_flair",
+        "fn_names",
+        "fn_stopwords"
+    ]
+}

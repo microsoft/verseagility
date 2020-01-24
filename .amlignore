@@ -1,0 +1,10 @@
+data
+temp
+.vscode
+saved_models
+mlruns
+cache
+demo
+notebook
+scraper
+.git

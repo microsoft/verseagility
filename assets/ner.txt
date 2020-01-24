@@ -1,0 +1,34 @@
+value	key
+windows 7	Product
+win 7	Product
+windows 8	Product
+win 8	Product
+windows 10	Product
+windows mail	Product
+Win XP	Product
+Visual Studio 2017	Product
+Windows Defender	Product
+windows vista	Product
+win vista	Product
+win 10	Product
+office 2007	Product
+office 365	Product
+office 2013	Product
+office 2010	Product
+office 2019	Product
+word	Product
+powerpoint	Product
+excel	Product
+vs code	Product
+edge	Product
+internet explorer	Product
+xbox	Product
+ie	Product
+surface book	Product
+surface laptop	Product
+surface pro	Product
+typecover	Product
+surface headphones	Product
+bill gates	Boss
+satya nadella	Boss
+steve ballmer	Boss

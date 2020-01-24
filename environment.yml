@@ -1,0 +1,40 @@
+name: nlp
+dependencies:
+- python=3.7
+- pytorch=1.3.1
+- torchvision
+- cudatoolkit=10.1 #For GPU training only
+- gensim=3.8.1
+- pip:
+  # - azureml-defaults for aml deployment
+  - azureml-sdk
+  - azureml-dataprep[pandas,fuse]
+  # - imblearn
+  - spacy==2.2.1
+  - transformers==2.3.0
+#   - farm==0.3.2
+  - 'git+https://github.com/deepset-ai/FARM.git'
+#   - flair
+  - git+https://github.com/zalandoresearch/flair.git
+  - azure-storage-blob
+  - streamlit
+  - selenium==3.141.0
+  - bs4
+  - pillow
+#   - langdetect
+#   - lightgbm
+#   - pandas_ml
+- numpy
+- pandas
+# - scikit-learn
+# - nltk
+# - nb_conda
+# - matplotlib
+# - seaborn
+
+# temporary fix for falir
+# pip install --upgrade git+https://github.com/zalandoresearch/flair.git
+
+#python -m ipykernel install --user --name nlp --display-name "Python (nlp)"
+
+# conda install pytorch torchvision cpuonly -c pytorch
