@@ -48,11 +48,9 @@ class Clean():
     """
 
     def __init__(self, task,
-                        min_length=20, #TODO: always load, move to transform
                         inference=False):
         self.task = task
         self.language = cu.params.get('language')
-        self.min_length = min_length
         
         # Load data class
         self.dt = dt.Data(task=self.task, inference=inference)
@@ -68,7 +66,7 @@ class Clean():
                 names = f.readlines()
             stopwords_active = stopwords_active + names
         except Exception as e:
-            logger.info('[WARNING] No names list loaded.')
+            logger.info(f'[WARNING] No names list loaded: {e}')
         
         ## Load stopwords
         try:
@@ -76,7 +74,7 @@ class Clean():
                 stopwords = f.readlines()
             stopwords_active = stopwords_active + stopwords
         except Exception as e:
-            logger.info('[WARNING] No stopwords list loaded.')
+            logger.info(f'[WARNING] No stopwords list loaded: {e}')
         logger.info(f'[INFO] Active stopwords list lenght: {len(stopwords_active)}')
         ## Add to Spacy stopword list
         for w in stopwords_active:
@@ -162,7 +160,7 @@ class Clean():
             line = ' '.join([t.lemma_ for t in self.nlp(line) if not t.is_stop])
         elif lemmatize:
             line = ' '.join([t.lemma_ for t in self.nlp(line)])
-        elif rm_stowords:
+        elif rm_stopwords:
             line = ' '.join([t.text for t in self.nlp(line) if not t.is_stop])
 
         return line
@@ -259,7 +257,8 @@ class Clean():
             logger.info('[WARNING] No transform by task found.')
             return text[0]
 
-def prepare_classification(task, do_format, train_split, min_cat_occurance, download_source):
+def prepare_classification(task, do_format, train_split, min_cat_occurance, 
+                            min_char_length, download_source):
     # Get clean object
     cl = Clean(task=task)
 
@@ -286,7 +285,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance, down
                     rp_generic          = True)
     
     # Filter by length
-    data = he.remove_short(data, 'text', min_length=cl.min_length)
+    data = he.remove_short(data, 'text', min_char_length=min_char_length)
     logger.info(f'Data Length : {len(data)}')
 
     # Remove duplicates
@@ -318,7 +317,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance, down
 def prepare_ner(task, do_format=True):
     pass
 
-def prepare_qa(task, do_format, download_source):
+def prepare_qa(task, do_format, min_char_length, download_source):
     # Get clean object
     cl = Clean(task=task)
 
@@ -370,7 +369,7 @@ def prepare_qa(task, do_format, download_source):
             )
 
     # Filter by length
-    data = he.remove_short(data, 'question_clean', min_length=cl.min_length)
+    data = he.remove_short(data, 'question_clean', min_char_length=min_char_length)
     logger.info(f'Data Length : {len(data)}')
 
     # Remove duplicates
@@ -382,16 +381,16 @@ def prepare_qa(task, do_format, download_source):
     # Save data
     cl.dt.save(data, fn = 'fn_clean')
 
-def run_prepare(task=1, do_format=False, split=0.9, min_cat_occurance=300,  download_source=False):
+def run_prepare(task=1, do_format=False, split=0.9, min_cat_occurance=300, min_char_length=20,  download_source=False):
     logger.info(f'Running <PREPARE> for task {task}')
 
     task_type = cu.tasks.get(str(task)).get('type')
     if 'classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, download_source)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, download_source)
     elif 'ner' == task_type:
         prepare_ner(task, do_format)
     elif 'qa' == task_type:
-        prepare_qa(task, do_format, download_source)
+        prepare_qa(task, do_format, min_char_length, download_source)
     else:
         logger.info('[ERROR] TASK TYPE UNKNOWN. Nothing was processed.')
 

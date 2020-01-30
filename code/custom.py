@@ -16,15 +16,7 @@ logger = he.get_logger(location=__name__)
 ############################################
 
 # Load parameters from config
-##TODO: consider switching to .ini
-try: 
-    with open('./project/msforum_de.config.json', encoding='utf-8') as fp:
-        params = json.load(fp)
-except FileNotFoundError:
-    ## Inference Config
-    with open('./code/config.json', encoding='utf-8') as fp:
-        params = json.load(fp)
-
+params = he.get_project_config('msforum_en.config.json')
 tasks = params.get('tasks')
 logger.info(f'[INFO] *** Project Target Language -> {params.get("language")} ***')
 logger.info(f'[INFO] *** Project Target Environment -> {params.get("environment")} ***')

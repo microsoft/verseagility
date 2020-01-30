@@ -60,6 +60,7 @@ class Data():
             'fn_train'  : f'train_l{self.language}_t{self.task}.txt',
             'fn_test'   : f'test_l{self.language}_t{self.task}.txt',
             'fn_label'  : f'label_l{self.language}_t{self.task}.txt',
+            'fn_eval'   : f'TODO:',
             ## ASSETS #TODO: auto generate fetching param list
             'fn_asset'      : f'{self.data_dir}/assets_{self.language}.zip',     
             'fn_cat'        : self.model_dir.replace('model_type', cu.params.get('tasks').get('1').get('model_type')),

@@ -15,6 +15,7 @@ NLP Toolkit
 ### Project
 - [x] Move to single project config file (for deployment and scoring)
 - [ ] Detailed documentation
+- [ ] Data storage strategy
 ### Prepare
 - [x] source from AML datastore
 - [ ] output to AML datastore
@@ -26,16 +27,18 @@ NLP Toolkit
 - [ ] upload best model to AML Model
 ### NER
 - [ ] Improve duplicate handling
-- [ ] OCR extracted document handling
+- [x] custom NER
 ### Rank
 - [ ] **(IP)** Improve answer quality
 ### Deployment
 - [x] Collect, Package and upload assets
 - [ ] **(IP)** Param script for deploy (incl language param!)
 ### Notebooks
-- [ ] review prepared data (auto generate after each prepare step)
-- [ ] review model results (auto generate after each training step)
+- [x] review prepared data
+- [ ] **(IP)** review model results (auto generate after each training step)
 - [ ] review model bias (auto generate after each training step)
+### Pipeline
+- [ ] **(IP)** document cracking to standardized format
 ### DevOps
 - [ ] Yaml based infrastructure deployment
 - [ ] Integrate with Azure/GitHub DevOps
@@ -48,6 +51,13 @@ NLP Toolkit
 - Summarization
 - Deployable feedback loop
 
+# Acknowledgements
+- Verseagility is built in parts using the following:
+- - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
+- - [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
+- - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
+- - [flair](https://github.com/flairNLP/flair/) by Zalando Research
+- - [gensim](https://radimrehurek.com/gensim/)
 
 # Contributing
 

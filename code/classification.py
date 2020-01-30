@@ -39,26 +39,6 @@ import custom as cu
 logger = he.get_logger(location=__name__)
 aml_run = he.get_context()
 
-# (available) Model lookup
-## complete list here: https://huggingface.co/transformers/pretrained_models.html
-model_lookup = {
-    'bert': {
-        'xx':'bert-base-multilingual-cased',
-        'en':'bert-base-cased',
-        'de':'bert-base-german-cased',
-        'cn':'bert-base-chinese'
-        },
-    'roberta' : {
-        'en' : 'roberta-base'
-    },
-    'albert' : {
-        'en' : 'albert-base-v2'
-    },
-    'distilbert' : {
-        'de' : 'distilbert-base-german-cased'
-    }
-}
-
 def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, evaluate_every, 
                         use_cuda, max_seq_len, learning_rate, do_lower_case, register_model):
     language = cu.params.get('language')
@@ -73,8 +53,8 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     set_all_seeds(seed=42)
     use_amp = None
     device, n_gpu = initialize_device_settings(use_cuda=use_cuda, use_amp=use_amp)
-    lang_model = model_lookup.get(model_type).get(language)
-    save_dir = dt_task.model_dir.replace('model_type', model_type) ##TODO: norm for inference
+    lang_model = he.farm_model_lookup.get(model_type).get(language)
+    save_dir = dt_task.model_dir.replace('model_type', model_type)
     label_list = dt_task.load('fn_label', header=None)[0].to_list()
     
     # AML log
@@ -183,7 +163,7 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     )
 
     # 7. Let it grow
-    model = trainer.train()
+    trainer.train()
 
     # 8. Store it:
     # NOTE: if early stopping is used, the best model has been stored already in the directory

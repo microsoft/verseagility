@@ -1,12 +1,13 @@
 import configparser
 import logging
-# from azure.keyvault import KeyVaultClient
-# from azure.common.credentials import ServicePrincipalCredentials
-
 import pandas as pd
 import re
+import json
 import spacy
 from flair.models import SequenceTagger
+
+# from azure.keyvault import KeyVaultClient
+# from azure.common.credentials import ServicePrincipalCredentials
 
 ############################################
 #####   Logging
@@ -69,6 +70,20 @@ def get_config():
 
 run_config = get_config()
 
+def get_project_config(fn):
+    try: 
+        with open(f'./project/{fn}', encoding='utf-8') as fp:
+            params = json.load(fp)
+    except FileNotFoundError:
+        try:
+            with open(f'../project/{fn}', encoding='utf-8') as fp:
+                params = json.load(fp)
+        except FileNotFoundError:
+            ## Inference Config
+            with open('./code/config.json', encoding='utf-8') as fp:
+                params = json.load(fp)
+    return params
+
 ############################################
 #####   Azure
 ############################################
@@ -92,6 +107,30 @@ def get_secret():
 ############################################
 #####   ML Frameworks
 ############################################
+
+# (available) Model lookup
+## complete list here: https://huggingface.co/transformers/pretrained_models.html
+farm_model_lookup = {
+    'bert': {
+        'xx':'bert-base-multilingual-cased',
+        'en':'bert-base-cased',
+        'de':'bert-base-german-cased',
+        'cn':'bert-base-chinese'
+        },
+    'roberta' : {
+        'en' : 'roberta-base'
+    },
+    'xlm-roberta' : {
+        'xx' : 'xlm-roberta-multi', #TODO: check if it exists?
+        'en' : 'xlm-roberta-large'
+    },
+    'albert' : {
+        'en' : 'albert-base-v2'
+    },
+    'distilbert' : {
+        'de' : 'distilbert-base-german-cased'
+    }
+}
 
 spacy_model_lookup = {
     'en':'en_core_web_sm',
@@ -144,7 +183,7 @@ def validate_concat(col1, col2, max_len=1000):
     if isinstance(col1, str):
         col1, col2 = [col1], [col2]
 
-    for n, (sub, des) in enumerate(zip(col1, col2)):
+    for __, (sub, des) in enumerate(zip(col1, col2)):
         try:
             if sub in des[:len(sub)]:
                 text_concat.append(des[:max_len])
@@ -159,11 +198,11 @@ def validate_concat(col1, col2, max_len=1000):
                 text_concat.append(des[:max_len])
     return text_concat
 
-def remove_short(data, column='text_clean', min_length = 5):
+def remove_short(data, column='text_clean', min_char_length = 5):
     """
     Function to remove texts that fall below quality threshold based on character lenght.
     """
-    return data[data[column].str.len() > min_length].reset_index(drop=True).copy()
+    return data[data[column].str.len() > min_char_length].reset_index(drop=True).copy()
 
 ############################################
 #####   Other
