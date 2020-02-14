@@ -7,20 +7,23 @@ dependencies:
 - gensim=3.8.1
 - pip:
   # - azureml-defaults for aml deployment
-  - azureml-sdk
-  - azureml-dataprep[pandas,fuse]
+  - azureml-sdk==1.0.85
+  - azureml-dataprep[pandas,fuse]==1.1.38
+  - mlflow==1.0.0
+  - azureml-mlflow==1.0.85
   # - imblearn
   - spacy==2.2.1
-  - transformers==2.3.0
-#   - farm==0.3.2
-  - 'git+https://github.com/deepset-ai/FARM.git'
-#   - flair
-  - git+https://github.com/zalandoresearch/flair.git
+  - transformers==2.4.1
+  - farm==0.4.1
+#   - 'git+https://github.com/deepset-ai/FARM.git'
+  - flair==0.4.5
+#   - git+https://github.com/zalandoresearch/flair.git
   - azure-storage-blob
-  - streamlit
   - selenium==3.141.0
   - bs4
+  ##DEMO ENV
   - pillow
+  - streamlit==0.48.1
 #   - langdetect
 #   - lightgbm
 #   - pandas_ml
@@ -32,9 +35,4 @@ dependencies:
 # - matplotlib
 # - seaborn
 
-# temporary fix for falir
-# pip install --upgrade git+https://github.com/zalandoresearch/flair.git
-
 #python -m ipykernel install --user --name nlp --display-name "Python (nlp)"
-
-# conda install pytorch torchvision cpuonly -c pytorch

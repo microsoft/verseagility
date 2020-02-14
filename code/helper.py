@@ -15,12 +15,8 @@ from flair.models import SequenceTagger
 
 def get_logger(level='info', location = None, excl_az_storage=True):
     '''Get runtime logger'''
-    # Location
-    if location is None:
-        logger = logging.getLogger(__name__)
-    else:
-        logger = logging.getLogger(location)
-    
+    global logger
+
     # Exceptions
     if excl_az_storage:
         logging.getLogger("azure.storage.common.storageclient").setLevel(logging.WARN)
@@ -31,16 +27,20 @@ def get_logger(level='info', location = None, excl_az_storage=True):
     elif level == 'debug':
         _level = logging.DEBUG
     elif level == 'warning':
-        _level = logging.WARN
+        _level = logging.WARNING
 
     # Format
     logging.basicConfig(format = '%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt = '%m/%d/%Y %H:%M:%S',
                     level = _level)
 
-    return logger
+    # Location
+    if location is None:
+        logger = logging.getLogger(__name__)
+    else:
+        logger = logging.getLogger(location)
 
-logger = get_logger(location=__name__)
+    return logger
 
 def get_context():
     '''Get AML Run Context for Logging to AML Services'''
@@ -48,27 +48,13 @@ def get_context():
         from azureml.core import Run
         run = Run.get_context()
     except Exception as e:
-        logger.info(f'[WARNING] Azure ML not loaded. Nothing will be logged. {e}')
+        logger.warning(f'[WARNING] Azure ML not loaded. Nothing will be logged. {e}')
         run = ''
     return run
 
 ############################################
 #####   Config
 ############################################
-
-def get_config():
-    # Get config
-    run_config = configparser.ConfigParser()
-    run_config.read('./code/config.ini')
-    if 'path' not in run_config:
-        run_config.read('./config.ini')
-    if 'path' not in run_config:
-        run_config.read('../config.ini')
-    if 'path' not in run_config:
-        logger.info('[ERROR] Could not find correct config.ini.')
-    return run_config
-
-run_config = get_config()
 
 def get_project_config(fn):
     try: 
@@ -79,30 +65,48 @@ def get_project_config(fn):
             with open(f'../project/{fn}', encoding='utf-8') as fp:
                 params = json.load(fp)
         except FileNotFoundError:
-            ## Inference Config
-            with open('./code/config.json', encoding='utf-8') as fp:
-                params = json.load(fp)
+            try:
+                ## Training Config
+                with open('config.json', encoding='utf-8') as fp:
+                    params = json.load(fp)
+            except FileNotFoundError:
+                ## Inference Config
+                with open('./code/config.json', encoding='utf-8') as fp:
+                    params = json.load(fp)
     return params
+
+def get_config():
+    #TODO: remove this, new use: keys to env, settings to params
+    # Get config
+    run_config = configparser.ConfigParser()
+    run_config.read('./code/config.ini')
+    if 'path' not in run_config:
+        run_config.read('./config.ini')
+    if 'path' not in run_config:
+        run_config.read('../config.ini')
+    if 'path' not in run_config:
+        logger.warning('[ERROR] Could not find correct config.ini.')
+    return run_config
 
 ############################################
 #####   Azure
 ############################################
 
-def get_credentials():
-    '''Retrieve Service Principal Credentials'''
-    credentials = ServicePrincipalCredentials(
-        client_id = run_config['sp']['client_id'],
-        secret = run_config['sp']['secret'],
-        tenant = run_config['sp']['tenant']
-    )
-    return credentials
+# def get_credentials():
+#     '''Retrieve Service Principal Credentials'''
+#     credentials = ServicePrincipalCredentials(
+#         client_id = run_config['sp']['client_id'],
+#         secret = run_config['sp']['secret'],
+#         tenant = run_config['sp']['tenant']
+#     )
+#     return credentials
 
-def get_secret():
-    '''Retrieve Secret from KeyVault'''
-    client = KeyVaultClient(get_credentials())
-    vault_url = run_config['keyvault']['url']
-    vault_name = run_config['keyvault']['name_data']
-    return client.get_secret(vault_url, vault_name, "").value
+# def get_secret():
+#     '''Retrieve Secret from KeyVault'''
+#     client = KeyVaultClient(get_credentials())
+#     vault_url = run_config['keyvault']['url']
+#     vault_name = run_config['keyvault']['name_data']
+#     return client.get_secret(vault_url, vault_name, "").value
 
 ############################################
 #####   ML Frameworks
@@ -115,14 +119,14 @@ farm_model_lookup = {
         'xx':'bert-base-multilingual-cased',
         'en':'bert-base-cased',
         'de':'bert-base-german-cased',
+        'fr':'camembert-base',
         'cn':'bert-base-chinese'
         },
     'roberta' : {
         'en' : 'roberta-base'
     },
     'xlm-roberta' : {
-        'xx' : 'xlm-roberta-multi', #TODO: check if it exists?
-        'en' : 'xlm-roberta-large'
+        'xx' : 'xlm-roberta-base'
     },
     'albert' : {
         'en' : 'albert-base-v2'
@@ -132,40 +136,66 @@ farm_model_lookup = {
     }
 }
 
+def get_farm_model(model_type, language):
+    mt = farm_model_lookup.get(model_type)
+    if mt is not None:
+        ml = mt.get(language)
+    if ml is None:
+        ml = mt.get('xx')
+    if ml is None:
+        raise Exception('No Transformer/FARM model found')
+    return ml
+
 spacy_model_lookup = {
     'en':'en_core_web_sm',
     'de':'de_core_news_sm',
+    'fr':'fr_core_news_sm',
+    'es':'es_core_news_sm',
     'it':'it_core_news_sm',
     'xx':'xx_ent_wiki_sm'
-}
-
-flair_model_lookup = {
-    'en' : 'ner-ontonotes-fast', 
-    'de' : 'ner-multi-fast',
-    'xx' : 'ner-multi-fast'
 }
 
 def load_spacy_model(language='xx', disable=[]):
     try:
         nlp = spacy.load(spacy_model_lookup[language], disable=disable)
     except OSError:
-        logging.info(f'[INFO] Download spacy language model for {language}')
+        logging.warning(f'[INFO] Download spacy language model for {language}')
         from spacy.cli import download
         download(spacy_model_lookup[language])
         nlp = spacy.load(spacy_model_lookup[language], disable=disable)
     return nlp
 
+flair_model_lookup = {
+    'en' : 'ner-ontonotes-fast', 
+    'de' : 'ner-multi-fast',
+    'xx' : 'ner-multi-fast'
+}
+flair_model_file_lookup = {
+    'en' : 'en-ner-ontonotes-fast-v0.4.pt', 
+    'de' : 'ner-multi-fast.pt',
+    'xx' : 'ner-multi-fast.pt'
+}
+
+def get_flair_model(language, object_type):
+    if object_type == 'model':
+        lookup = flair_model_lookup
+    elif object_type == 'fn':
+        lookup = flair_model_file_lookup
+    m = lookup.get(language)
+    if m is None:
+        m = lookup.get('xx')
+    return m
+
 def load_flair_model(path=None, language='xx', task='ner'):
     if task == 'ner':
         if path is None:
-            model = SequenceTagger.load(flair_model_lookup.get(language))
+            model = SequenceTagger.load(get_flair_model(language, 'model'))
         else:
             model = SequenceTagger.load(path)
     else:
-        logging.info(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
+        logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
         model = None
     return model
-    
 
 ############################################
 #####   Dataframe
@@ -191,7 +221,7 @@ def validate_concat(col1, col2, max_len=1000):
                 new_line = sub + '. ' + des
                 text_concat.append(new_line[:max_len])
         except Exception as e:
-            logger.info(f'[WARNING] Validate Concat - {e}')
+            logger.warning(f'[WARNING] Validate Concat - {e}')
             if 'float' in str(e):
                 text_concat.append(str(des))
             else:
@@ -215,34 +245,34 @@ def append_ner(v, s, e, l, t=''):
 #####   Cryptography
 ############################################
 
-def decrypt(token, dataframe=False):
-    ''' Decrypt symetric object using Fernet '''
-    secret = get_secret()
-    f = Fernet(bytes(secret, encoding='utf-8'))
-    token = f.decrypt(token)
-    if dataframe:
-        _data = StringIO(str(token, 'utf-8'))
-        return pd.read_csv(_data, sep='\t', error_bad_lines=False, warn_bad_lines=False,  encoding='utf-8')
-    else:
-        return token
+# def decrypt(token, dataframe=False):
+#     ''' Decrypt symetric object using Fernet '''
+#     secret = get_secret()
+#     f = Fernet(bytes(secret, encoding='utf-8'))
+#     token = f.decrypt(token)
+#     if dataframe:
+#         _data = StringIO(str(token, 'utf-8'))
+#         return pd.read_csv(_data, sep='\t', error_bad_lines=False, warn_bad_lines=False,  encoding='utf-8')
+#     else:
+#         return token
 
-def decrypt_and_save(fn):
-    with open(fn, "rb") as text_file:
-        token = text_file.read()
-    content = StringIO(str(decrypt(token), 'utf-8'))
-    df = pd.read_csv(content, sep='\t', error_bad_lines=False, warn_bad_lines=False,  encoding='utf-8')
-    df.to_csv(fn.replace('.enc', '.txt'), sep='\t', encoding='utf-8', index=False) #TODO: match encrypt fn out
+# def decrypt_and_save(fn):
+#     with open(fn, "rb") as text_file:
+#         token = text_file.read()
+#     content = StringIO(str(decrypt(token), 'utf-8'))
+#     df = pd.read_csv(content, sep='\t', error_bad_lines=False, warn_bad_lines=False,  encoding='utf-8')
+#     df.to_csv(fn.replace('.enc', '.txt'), sep='\t', encoding='utf-8', index=False) #TODO: match encrypt fn out
 
-def encrypt(token, dataframe=False):
-    ''' Encrypt symetric object using Fernet '''
-    secret = get_secret()
-    f = Fernet(bytes(secret, encoding='utf-8'))
-    if dataframe:
-        token = bytes(to_csv_string(token), encoding='utf-8')
-    return f.encrypt(token)
+# def encrypt(token, dataframe=False):
+#     ''' Encrypt symetric object using Fernet '''
+#     secret = get_secret()
+#     f = Fernet(bytes(secret, encoding='utf-8'))
+#     if dataframe:
+#         token = bytes(to_csv_string(token), encoding='utf-8')
+#     return f.encrypt(token)
 
-def encrypt_and_save(fn, data, file_type='.txt'):
-    data = encrypt(bytes(data, encoding='utf-8'))
-    fn_new = fn.replace(file_type, '.enc')
-    with open(fn_new, "wb") as text_file:
-        text_file.write(data)
+# def encrypt_and_save(fn, data, file_type='.txt'):
+#     data = encrypt(bytes(data, encoding='utf-8'))
+#     fn_new = fn.replace(file_type, '.enc')
+#     with open(fn_new, "wb") as text_file:
+#         text_file.write(data)

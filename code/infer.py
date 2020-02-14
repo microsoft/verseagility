@@ -32,16 +32,16 @@ def score(task):
     elif task_type == 'qa':
         return rank.Rank(task=task, inference=True)
     else:
-        logger.info('TASK TYPE NOT SUPPORTED')
+        logger.warning('TASK TYPE NOT SUPPORTED')
         return None
     
 def init():
     global task_models, prepare_classes
 
     # Unpack model dependencies
-    dt_init = dt.Data(inference=True)
-    shutil.unpack_archive(dt_init.fn_lookup['fn_asset'], dt_init.data_dir, 'zip')
-    logger.info(f'[INFO] Unpacked model assets from {dt_init.fn_lookup["fn_asset"]}')
+    # dt_init = dt.Data(inference=True)
+    # shutil.unpack_archive(dt_init.fn_lookup['fn_asset'], dt_init.data_dir, 'zip')
+    # logger.warning(f'[INFO] Unpacked model assets from {dt_init.fn_lookup["fn_asset"]}')
 
     # Load models & prepare steps
     task_models = []
@@ -54,21 +54,18 @@ def init():
             'params' : cu.tasks.get(str(task))
         })
         prepare_classes[task] = pr.Clean(task=task, inference=True)
-        logger.info(f'[INFO] Loaded model and prepare steps for task {task}.')
-
-def run_model():
-    pass
+        logger.warning(f'[INFO] Loaded model and prepare steps for task {task}.')
 
 def run(req):
     # Load request
-    req_data = json.loads(req)
+    req_data = json.loads(req)[0]
     # Prepare text
-    if 'subject' in req_data[0]:
-        s = req_data[0]['subject']
+    if 'subject' in req_data:
+        s = req_data['subject']
     else:
         s = ''
-    if 'body' in req_data[0]:
-        b = req_data[0]['body']
+    if 'body' in req_data:
+        b = req_data['body']
     else:
         b = ''
     text = he.validate_concat(s, b)
@@ -82,6 +79,7 @@ def run(req):
         result = tm['infer'].inference_from_dicts(dicts=[{"text": clean, "cat": _cat}])
         try:
             # Special treatment for classification (FARM)
+            ##TODO: standardize for all
             _temp = []
             for r in result[0]['predictions']:
                 _temp.append(dict(
@@ -98,7 +96,7 @@ def run(req):
             "params" : tm['params'],
             "result" : result
         })
-        logger.info(f'[INFO] Completed {tm["task"]}.')
+        logger.warning(f'[INFO] Completed task {tm["task"]}.')
     return res
 
 if __name__ == '__main__':

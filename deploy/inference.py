@@ -17,8 +17,7 @@ import shutil
 import json
 
 from azureml.core.authentication import InteractiveLoginAuthentication, MsiAuthentication
-from azureml.core import Workspace
-from azureml.core import Model
+from azureml.core import Workspace, Model
 from azureml.core.resource_configuration import ResourceConfiguration
 from azureml.core.webservice import Webservice, AciWebservice, AksWebservice
 from azureml.core import Environment
@@ -66,6 +65,7 @@ dt_assets = dt.Data()
 ##############################
 ## ZIP DEPENDENCIES
 ##############################
+model_name = f'nlp_{language}_{env}'
 if do_zip:
     logger.warning(f'[INFO] Zipping model assets -> {model_name}')
     # Zip Assets
@@ -88,7 +88,6 @@ if do_zip:
 ##############################
 ## UPLOAD DEPENDENCIES
 ##############################
-model_name = f'nlp_{language}_{env}'
 if upload:   
     logger.warning(f'[INFO] Uploading model assets -> {model_name}') 
     # Upload Assets
@@ -121,6 +120,8 @@ else:
 environment = Environment('farmenv')
 environment.python.conda_dependencies = CondaDependencies.create(pip_packages=[
                                                                                 'azureml-defaults',
+                                                                                'mlflow', 
+                                                                                'azureml-mlflow',
                                                                                 'spacy',
                                                                                 'transformers==2.3.0',
                                                                                 'scipy',

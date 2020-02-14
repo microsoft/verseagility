@@ -1,6 +1,8 @@
 {
+    "name":"msforum_de",
     "language": "de",
     "environment" : "dev",
+    "data_dir" : "./",
     "prepare" : {
         "data_type" : "json"
     },

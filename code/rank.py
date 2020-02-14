@@ -48,7 +48,7 @@ class Rank():
         if cats is not None and cats != '':
             #TODO: does not work for lists
             _data = _data[_data.appliesTo.str.contains(cats)].reset_index(drop=True)
-            logger.info(f'[INFO] Reduced answer selection to {len(_data)} from {len(self.data)}.')
+            logger.warning(f'[INFO] Reduced answer selection to {len(_data)} from {len(self.data)}.')
         
         # BM25 Score threshold
         _data = _data[_data.score > ans_thresh].reset_index(drop=True)
@@ -90,7 +90,7 @@ def create_bm25():
     with open(cl.dt.fn_lookup['fn_rank'], 'wb') as fp:
         pickle.dump(bm, fp)
         pickle.dump(data, fp)
-    logger.info('Create and stored BM25 object.')
+    logger.warning('Create and stored BM25 object.')
 
 if __name__ == "__main__":
     create_bm25()

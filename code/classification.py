@@ -9,6 +9,7 @@ Example (in the command line):
 > python code/classification.py --task 1 --model_type bert --use_cuda
 
 """
+import os
 from pathlib import Path
 import json
 import argparse
@@ -40,7 +41,8 @@ logger = he.get_logger(location=__name__)
 aml_run = he.get_context()
 
 def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, evaluate_every, 
-                        use_cuda, max_seq_len, learning_rate, do_lower_case, register_model):
+                        use_cuda, max_seq_len, learning_rate, do_lower_case, 
+                        register_model, save_model=True, early_stopping=True):
     language = cu.params.get('language')
     # Check task
     if cu.tasks.get(str(task)).get('type') != 'classification':
@@ -48,12 +50,15 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     
     # Data
     dt_task = dt.Data(task=task)
+    ## Download training files
+    if not os.path.isfile(dt_task.fn_lookup['fn_train']):
+        dt_task.download(task=task, step='train')
 
     # Settings
     set_all_seeds(seed=42)
     use_amp = None
     device, n_gpu = initialize_device_settings(use_cuda=use_cuda, use_amp=use_amp)
-    lang_model = he.farm_model_lookup.get(model_type).get(language)
+    lang_model = he.get_farm_model(model_type, language)
     save_dir = dt_task.model_dir.replace('model_type', model_type)
     label_list = dt_task.load('fn_label', header=None)[0].to_list()
     
@@ -63,6 +68,9 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
         aml_run.log('language', language)
         aml_run.log('n_epochs', n_epochs)
         aml_run.log('batch_size', batch_size)
+        aml_run.log('learning_rate', learning_rate)
+        aml_run.log('embeds_dropout', embeds_dropout)
+        aml_run.log('max_seq_len', max_seq_len)
         aml_run.log('lang_model', lang_model)
         aml_run.log_list('label_list', label_list)
     except:
@@ -85,7 +93,6 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
         # AML log
         try:
             aml_run.log('acc', acc.get('acc'))
-            aml_run.log('acc_backup', acc)
             aml_run.log('f1macro', f1macro)
             aml_run.log('f1micro', f1micro)
         except:
@@ -143,12 +150,15 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
 
     # An early stopping instance can be used to save the model that performs best on the dev set
     # according to some metric and stop training when no improvement is happening for some iterations.
-    earlystopping = EarlyStopping(
-        metric="f1_macro", mode="max",  # use f1_macro from the dev evaluator of the trainer
-        # metric="loss", mode="min",   # use loss from the dev evaluator of the trainer
-        save_dir=save_dir,  # where to save the best model
-        patience=1    # number of evaluations to wait for improvement before terminating the training
-    )
+    if early_stopping:
+        earlystopping = EarlyStopping(
+            metric="f1_macro", mode="max",  # use f1_macro from the dev evaluator of the trainer
+            # metric="loss", mode="min",   # use loss from the dev evaluator of the trainer
+            save_dir=save_dir,  # where to save the best model
+            patience=2    # number of evaluations to wait for improvement before terminating the training
+        )
+    else:
+        earlystopping = None
 
     trainer = Trainer(
         model=model,
@@ -170,8 +180,12 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     # defined with the EarlyStopping instance
     # The model we have at this moment is the model from the last training epoch that was carried
     # out before early stopping terminated the training
-    model.save(save_dir)
-    processor.save(save_dir)
+    if save_model:
+        model.save(save_dir)
+        processor.save(save_dir)
+
+        if register_model:
+            dt_task.upload(save_dir, task, destination='model')
 
 def run():
     # Run arguments
@@ -196,7 +210,7 @@ def run():
                         action='store_true',
                         help="Use CUDA for training")
     parser.add_argument('--n_epochs',
-                    default=5,
+                    default=3,
                     type=int,
                     help='')  
     parser.add_argument('--batch_size',
@@ -216,7 +230,7 @@ def run():
                     type=int,
                     help='')  
     parser.add_argument('--learning_rate',
-                    default=0.5e-5,
+                    default=3e-5,
                     type=float,
                     help='')  
     parser.add_argument('--do_lower_case',

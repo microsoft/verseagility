@@ -29,7 +29,7 @@ import helper as he
 # Custom FLAIR element for spacy pipeline
 class FlairMatcher(object):
     name = "flair"
-
+    ##TODO: run on stored headless models
     def __init__(self, path):
         self.tagger = he.load_flair_model(path=path)
 
@@ -57,7 +57,7 @@ class CustomNER():
 
         set_all_seeds(seed=42)
         device, n_gpu = initialize_device_settings(use_cuda=True)
-        lang_model = he.farm_model_lookup.get(model_type).get(language)
+        lang_model = he.get_farm_model(model_type, language)
         save_dir = dt_task.model_dir.replace('model_type', model_type)
         # ner_labels = dt_task.load('fn_label', header=None)[0].to_list() TODO:
         ner_labels = ["[PAD]", "X", "O", "B-MISC", "I-MISC", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-OTH", "I-OTH"]

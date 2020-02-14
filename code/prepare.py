@@ -48,12 +48,18 @@ class Clean():
     """
 
     def __init__(self, task,
+                        download=True,
                         inference=False):
         self.task = task
         self.language = cu.params.get('language')
         
         # Load data class
         self.dt = dt.Data(task=self.task, inference=inference)
+
+        # Download data, if needed
+        if download:
+            self.dt.download(dataset_name = self.dt.fn_lookup.get('fn_source').split('.')[0], source='datastore')
+            self.dt.download(dataset_name = self.dt.fn_lookup.get('fp_train'), source='datastore')
 
         # Load spacy model
         self.nlp = he.load_spacy_model(language=self.language, disable=['ner','parser','tagger'])
@@ -62,21 +68,20 @@ class Clean():
         stopwords_active = []
         ## Load names
         try:
-            with open(self.dt.fn_lookup['fn_names'], encoding='utf-8') as f:
-                names = f.readlines()
+            names = self.dt.load('fn_names', file_type='list')
             stopwords_active = stopwords_active + names
         except Exception as e:
-            logger.info(f'[WARNING] No names list loaded: {e}')
+            logger.warning(f'[WARNING] No names list loaded: {e}')
         
         ## Load stopwords
         try:
-            with open(self.dt.fn_lookup['fn_stopwords'], encoding='utf-8') as f:
-                stopwords = f.readlines()
+            stopwords = self.dt.load('fn_stopwords', file_type='list')
             stopwords_active = stopwords_active + stopwords
         except Exception as e:
-            logger.info(f'[WARNING] No stopwords list loaded: {e}')
-        logger.info(f'[INFO] Active stopwords list lenght: {len(stopwords_active)}')
+            logger.warning(f'[WARNING] No stopwords list loaded: {e}')
+
         ## Add to Spacy stopword list
+        logger.warning(f'[INFO] Active stopwords list lenght: {len(stopwords_active)}')
         for w in stopwords_active:
             self.nlp.vocab[w.replace('\n','')].is_stop = True
    
@@ -254,23 +259,21 @@ class Clean():
                     return_token        = True
                 )[0]
         else:
-            logger.info('[WARNING] No transform by task found.')
+            logger.warning('[WARNING] No transform by task found.')
             return text[0]
 
 def prepare_classification(task, do_format, train_split, min_cat_occurance, 
                             min_char_length, download_source):
-    # Get clean object
-    cl = Clean(task=task)
 
-    if download_source:
-        cl.dt.download(source='datastore')
+    # Get clean object
+    cl = Clean(task=task, download=download_source)
 
     # Load data
     if do_format:
         data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
     else:
         data = cl.dt.load('fn_prep')
-    logger.info(f'Data Length : {len(data)}')
+    logger.warning(f'Data Length : {len(data)}')
 
     # Load text & label field
     text_raw = cu.load_text(data)
@@ -286,21 +289,21 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     
     # Filter by length
     data = he.remove_short(data, 'text', min_char_length=min_char_length)
-    logger.info(f'Data Length : {len(data)}')
+    logger.warning(f'Data Length : {len(data)}')
 
     # Remove duplicates
     data_red = data.drop_duplicates(subset=['text'])
-    logger.info(f'Data Length : {len(data_red)}')
+    logger.warning(f'Data Length : {len(data_red)}')
     
     # Min class occurance
     data_red = data_red[data_red.groupby('label').label.transform('size') > min_cat_occurance]
-    logger.info(f'Data Length : {len(data_red)}')
+    logger.warning(f'Data Length : {len(data_red)}')
 
     data_red = data_red.reset_index(drop=True).copy()
 
     # Label list
     label_list = data_red.label.drop_duplicates()
-    logger.info(f'Excluded labels: {list(set(label_list_raw)-set(label_list))}')
+    logger.warning(f'Excluded labels: {list(set(label_list_raw)-set(label_list))}')
 
     # Split data
     strf_split = StratifiedShuffleSplit(n_splits = 1, test_size=(1-train_split), random_state=200)
@@ -314,26 +317,28 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     cl.dt.save(df_cat_test[['text','label']], fn = 'fn_test')
     cl.dt.save(label_list, fn = 'fn_label', header=False)
 
+    # Upload data
+    # cl.dt.upload('fn_prep', task=task, step='prep', destination='dataset')
+    cl.dt.upload('fp_data', task=task, step='train', destination='dataset')
+
 def prepare_ner(task, do_format=True):
     pass
 
 def prepare_qa(task, do_format, min_char_length, download_source):
-    # Get clean object
-    cl = Clean(task=task)
 
-    if download_source:
-        cl.dt.download(source='datastore')
+    # Get clean object
+    cl = Clean(task=task, download=download_source)
     
     # Load data
     if do_format:
         data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
     else:
         data = cl.dt.load('fn_prep')
-    logger.info(f'Data Length : {len(data)}')
+    logger.warning(f'Data Length : {len(data)}')
 
     # Filter relevant question answer pairs
     data = cu.filter_qa(data)
-    logger.info(f'Data Length : {len(data)}')
+    logger.warning(f'Data Length : {len(data)}')
 
     # Load question & answer fields
     question, answer = cu.load_qa(data)
@@ -370,19 +375,24 @@ def prepare_qa(task, do_format, min_char_length, download_source):
 
     # Filter by length
     data = he.remove_short(data, 'question_clean', min_char_length=min_char_length)
-    logger.info(f'Data Length : {len(data)}')
+    logger.warning(f'Data Length : {len(data)}')
 
     # Remove duplicates
     data = data.drop_duplicates(subset=['question_clean'])
-    logger.info(f'Data Length : {len(data)}')
+    logger.warning(f'Data Length : {len(data)}')
 
     data = data.reset_index(drop=True).copy()
 
     # Save data
     cl.dt.save(data, fn = 'fn_clean')
 
-def run_prepare(task=1, do_format=False, split=0.9, min_cat_occurance=300, min_char_length=20,  download_source=False):
-    logger.info(f'Running <PREPARE> for task {task}')
+def main(task=1, 
+                do_format=False, 
+                split=0.9, 
+                min_cat_occurance=300, 
+                min_char_length=20, 
+                download_source=False):
+    logger.warning(f'Running <PREPARE> for task {task}')
 
     task_type = cu.tasks.get(str(task)).get('type')
     if 'classification' == task_type:
@@ -392,34 +402,40 @@ def run_prepare(task=1, do_format=False, split=0.9, min_cat_occurance=300, min_c
     elif 'qa' == task_type:
         prepare_qa(task, do_format, min_char_length, download_source)
     else:
-        logger.info('[ERROR] TASK TYPE UNKNOWN. Nothing was processed.')
+        logger.warning('[ERROR] TASK TYPE UNKNOWN. Nothing was processed.')
 
-def run():
-    """Run from the command line"""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--task", 
-                    default=1,
-                    type=int,
-                    help="Task where: \
-                            -task 1 : classification subcat \
-                            -task 2 : classification cat \
-                            -task 3 : ner \
-                            -task 4 : qa") 
-    parser.add_argument('--do_format',
-                    action='store_true',
-                    help="Avoid reloading and normalizing data")
-    parser.add_argument("--split", 
-                    default=0.9,
-                    type=float,
-                    help="Train test split. Dev split is taken from train set.")    
-    parser.add_argument("--min_cat_occurance", 
-                    default=300,
-                    type=int,
-                    help="Min occurance required by category.") 
-    parser.add_argument("--download_source", 
-                    action='store_true')          
-    args = parser.parse_args()
-    run_prepare(args.task, args.do_format, args.split, args.min_cat_occurance, args.download_source)
+# def run():  'TODO: run train.py for single run
+#     """Run from the command line"""
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("--task", 
+#                     default=1,
+#                     type=int,
+#                     help="Task where: \
+#                             -task 1 : classification subcat \
+#                             -task 2 : classification cat \
+#                             -task 3 : ner \
+#                             -task 4 : qa") 
+#     parser.add_argument('--do_format',
+#                     action='store_true',
+#                     help="Avoid reloading and normalizing data")
+#     parser.add_argument("--split", 
+#                     default=0.9,
+#                     type=float,
+#                     help="Train test split. Dev split is taken from train set.")    
+#     parser.add_argument("--min_char_length", 
+#                     default=20,
+#                     type=int,
+#                     help="") 
+#     parser.add_argument("--min_cat_occurance", 
+#                     default=300,
+#                     type=int,
+#                     help="Min occurance required by category.") 
+#     parser.add_argument("--download_source", 
+#                     action='store_true')          
+#     args = parser.parse_args()
+#     run_prepare(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
+#                     min_char_length=args.min_char_length, download_source=args.download_source)
+#                     #TODO: cleanup
         
 if __name__ == '__main__':
-    run()
+    main()

@@ -111,3 +111,6 @@ config.ini
 saved_models
 mlruns
 cache
+scraper/*.txt
+scraper/*.json
+scraper/old

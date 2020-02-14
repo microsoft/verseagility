@@ -1,12 +1,11 @@
 """ 
+#TODO: replace with python step functions
 Finetuning the model for sub category classification.
 
 Task 1 - forum entry classification
 Task 2 - ner (MS products)
 Task 3 - qa ranking
 Task 4 - urgency / priority
-
-
 
 INPUT:
 - language
@@ -25,6 +24,8 @@ OUTPUT:
 - status
 """
 import argparse
+import mlflow
+from farm.utils import MLFlowLogger
 
 # Custom functions
 import sys
@@ -34,8 +35,7 @@ import classification
 # import ner
 # import rank
 
-import logging
-logging.basicConfig(level=logging.DEBUG)
+# from azureml.core import Run
 
 def main():
     parser = argparse.ArgumentParser()
@@ -50,7 +50,6 @@ def main():
                             -task 3 : ner \
                             -task 4 : qa") 
 
-
     ### PREPARE
     parser.add_argument('--do_format',
                     action='store_true',
@@ -63,6 +62,10 @@ def main():
                     default=300,
                     type=int,
                     help="Min occurance required by category.") 
+    parser.add_argument("--min_char_length", 
+                    default=20,
+                    type=int,
+                    help="") 
     parser.add_argument("--download_source", 
                     action='store_true') 
 
@@ -79,7 +82,7 @@ def main():
                         action='store_true',
                         help="Use CUDA for training")
     parser.add_argument('--n_epochs',
-                    default=5,
+                    default=3,
                     type=int,
                     help='')  
     parser.add_argument('--batch_size',
@@ -99,7 +102,7 @@ def main():
                     type=int,
                     help='')  
     parser.add_argument('--learning_rate',
-                    default=0.5e-5,
+                    default=3e-5,
                     type=float,
                     help='')  
     parser.add_argument('--do_lower_case',
@@ -108,18 +111,16 @@ def main():
     parser.add_argument('--register_model',
                         action='store_true',
                         help="Register model in AML")
-
-
     args = parser.parse_args()
 
-
     # Run prepare
-    prepare.run_prepare(args.task, args.do_format, args.split, args.min_cat_occurance, args.download_source)
-
+    prepare.main(args.task, args.do_format, args.split, args.min_cat_occurance, args.min_char_length, args.download_source)
+    
     # Run train
-    classification.doc_classification(args.task, args.model_type, args.n_epochs, args.batch_size, args.embeds_dropout, args.evaluate_every, 
-                        args.use_cuda, args.max_seq_len, args.learning_rate, args.do_lower_case, args.register_model)
-
+    classification.doc_classification(task=args.task, model_type=args.model_type, n_epochs=args.n_epochs, 
+                                    batch_size=args.batch_size, embeds_dropout=args.embeds_dropout, evaluate_every=args.evaluate_every, 
+                        use_cuda=args.use_cuda, max_seq_len=args.max_seq_len, learning_rate=args.learning_rate, do_lower_case=args.do_lower_case, 
+                        register_model=args.register_model)
 
 if __name__ == "__main__":
     main()

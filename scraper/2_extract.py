@@ -17,26 +17,26 @@ import argparse
 
 # Run arguments
 parser = argparse.ArgumentParser()
-parser.add_argument("--lang", 
+parser.add_argument("--language", 
                 default="de-de",
                 type=str,
                 help="'en-us' or 'de-de")
 parser.add_argument('--product',
                 default='windows',
                 type=str,
-                help="['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect']")  
+                help="['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge','ie','musicandvideo']")  
 args = parser.parse_args()
+
+# Example: python 2_extract.py --language de-de --product windows
+
 # Set params
 lang = args.language
 product = args.product
 
-# Read File
-docs = codecs.open("output-" +  product + ".txt", 'r', encoding='utf-8').read()
-
-# Prepare Links
-url_temp = re.findall(r'(https?://answers.microsoft.com/' + lang + '/' + product + '/forum/[^\s]+)', docs)
-url_temp2 = [s.strip('"') for s in url_temp]
-url_list = [x for x in url_temp2 if not x.endswith('LastReply')]
+#with open("output-" +  product + "-" + lang + ".txt") as f:
+#    urls = f.readlines()
+# you may also want to remove whitespace characters like `\n` at the end of each line
+#url_list = [x.strip() for x in urls] 
 
 # Extract text content
 def getText(soup):
@@ -83,12 +83,12 @@ def getUsernameAnswer(soup):
 
 # Create date of question
 def getDateQuestion(soup):
-    date_question = soup.find_all("span", "asking-text-asked-on-link")[0].text.replace("\nErstellt am ", "").replace("\n", "")
+    date_question = soup.find_all("span", "asking-text-asked-on-link")[0].text.replace("\nErstellt am ", "").replace("\nCréé le ", "").replace("\nCreado el ", "").replace("\nCreato il ", "").replace("\n", "")
     return date_question
 
 # Create date of answer
 def getDateAnswer(soup):
-    date_answer = soup.find_all("span", "asking-text-asked-on-link")[1].text.replace("\nBeantwortet am ", "").replace("\n", "")
+    date_answer = soup.find_all("span", "asking-text-asked-on-link")[1].text.replace("\nBeantwortet am ", "").replace("\n Répondu le ", "").replace("\nRespondió el ", "").replace("\nRisposta il ", "").replace("\n", "")
     return date_answer
 
 # Get number of same cases
@@ -120,18 +120,17 @@ def getTags(soup, product):
                 tags.append(subitem.text)
     except:
         tags = ""
-    return product + "," + ",".join(tags)
+    return f'{product},{",".join(tags)}'
 
 # Put it all together
 def scrapeMe(url, product):
-    print("Proceeding: ", url)
+    print("[URL] -", url)
     ### GET WEBSITE
     try:
         response = get(url)
     except:
-        print("### ERROR")
+        print("[ERROR] - There is an issue with the respective website.\n")
     html_soup = BeautifulSoup(response.text, 'html.parser')
-    lang = "de-de"
     fileid = uuid.uuid4().hex
     
     ### GET TEXT
@@ -185,17 +184,37 @@ def scrapeMe(url, product):
     content = json.dumps(data, indent=4, separators=(',', ': '), ensure_ascii=False)
     
     ### WRITE TO JSON FILE
-    with open("output-" + product + ".json", "a", encoding='utf-8') as file:
+    #with open("output-" + product + "-" + lang + ".json", "a", encoding='utf-8') as file:
+    with open(f"output-{lang}.json", "a", encoding='utf-8') as file:
         file.write(content+",")
-        print("Written: File", fileid, "\n")
+        print(f"[SUCCESS] - File {fileid}\n")
 
 ######################################################
 # LOOP THROUGH THE OUTPUT TEXT FILES AND CREATE JSON #
 ######################################################
-for i, value in enumerate(url_list):
-    i += 1
+
+products = ['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge', 'ie', 'musicandvideo']
+
+for product in products:
     try:
-        scrapeMe(value, product)
-    except Exception as e:
-        print(f'[ERROR] Failed to extract {value}')
-        continue
+        # Read File
+        docs = codecs.open(f"output-{product}-{lang}.txt", 'r', encoding='utf-8').read()
+
+        # Prepare Links
+        url_temp = re.findall(r'(https?://answers.microsoft.com/' + lang + '/' + product + '/forum/[^\s]+)', docs)
+        url_temp2 = [s.strip('"') for s in url_temp]
+        url_list = [x for x in url_temp2 if not x.endswith('LastReply')]
+
+        failed_url = []
+        for i, value in enumerate(url_list):
+            i += 1
+            try:
+                print(f'[STATUS] - {product}, {i}/{len(url_list)}')
+                scrapeMe(value, product)
+            except Exception as e:
+                failed_url.append(value)
+                print(f'[ERROR] - Failed to extract {value}')
+                continue
+        print(f"[DONE] - List for {product} of failed URLs: {failed_url},\nlen{failed_url}.")
+    except:
+        print(f"[ERROR] - 'output-{product}-{lang}.txt' does not exist.\n")
