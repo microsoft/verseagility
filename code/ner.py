@@ -1,6 +1,7 @@
 import pandas as pd
 import re
 from pathlib import Path
+import logging
 
 from spacy.matcher import PhraseMatcher
 from spacy.tokens import Span
@@ -58,10 +59,9 @@ class CustomNER():
         set_all_seeds(seed=42)
         device, n_gpu = initialize_device_settings(use_cuda=True)
         lang_model = he.get_farm_model(model_type, language)
-        save_dir = dt_task.model_dir.replace('model_type', model_type)
+        save_dir = dt_task.fn_lookup['fp_model']
         # ner_labels = dt_task.load('fn_label', header=None)[0].to_list() TODO:
         ner_labels = ["[PAD]", "X", "O", "B-MISC", "I-MISC", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-OTH", "I-OTH"]
-
 
         # n_epochs = 4
         # batch_size = 32
@@ -87,7 +87,7 @@ class CustomNER():
         # 2. Create a DataProcessor that handles all the conversion from raw text into a pytorch Dataset
         processor = NERProcessor(
             tokenizer=tokenizer, max_seq_len=128, 
-            data_dir=dt_task.fn_lookup['fn_train'], metric="seq_f1", 
+            data_dir=dt_task.data_dir, metric="seq_f1", 
             label_list=ner_labels
         )
 

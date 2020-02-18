@@ -49,7 +49,9 @@ def main():
                             -task 2 : classification cat \
                             -task 3 : ner \
                             -task 4 : qa") 
-
+    parser.add_argument('--run_prepare',
+                    action='store_true',
+                    help="ONLY FOR train.py, wether to run prepare.py")                 
     ### PREPARE
     parser.add_argument('--do_format',
                     action='store_true',
@@ -66,8 +68,6 @@ def main():
                     default=20,
                     type=int,
                     help="") 
-    parser.add_argument("--download_source", 
-                    action='store_true') 
 
     ### CLASSIFICATION
     parser.add_argument("--model_type", 
@@ -114,7 +114,8 @@ def main():
     args = parser.parse_args()
 
     # Run prepare
-    prepare.main(args.task, args.do_format, args.split, args.min_cat_occurance, args.min_char_length, args.download_source)
+    if args.run_prepare:
+        prepare.main(args.task, args.do_format, args.split, args.min_cat_occurance, args.min_char_length)
     
     # Run train
     classification.doc_classification(task=args.task, model_type=args.model_type, n_epochs=args.n_epochs, 

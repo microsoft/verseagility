@@ -26,7 +26,7 @@ def score(task):
     task_type = cu.tasks.get(str(task)).get('type')
     if task_type == 'classification':
         _dt = dt.Data(task=task, inference=True)
-        return Inferencer.load(_dt.fn_lookup.get('fn_cat'))
+        return Inferencer.load(_dt.fn_lookup.get('fp_model'))
     elif task_type == 'ner':
         return ner.NER(task=task, inference=True)
     elif task_type == 'qa':
@@ -38,16 +38,13 @@ def score(task):
 def init():
     global task_models, prepare_classes
 
-    # Unpack model dependencies
-    # dt_init = dt.Data(inference=True)
-    # shutil.unpack_archive(dt_init.fn_lookup['fn_asset'], dt_init.data_dir, 'zip')
-    # logger.warning(f'[INFO] Unpacked model assets from {dt_init.fn_lookup["fn_asset"]}')
-
     # Load models & prepare steps
     task_models = []
     prepare_classes = {}
     for task in cu.tasks.keys():
         task = int(task)
+        if task == 3: #TODO: temporary
+            continue
         task_models.append({
             'task' : task,
             'infer': score(task),

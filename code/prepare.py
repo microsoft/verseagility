@@ -8,7 +8,7 @@ Example (in the command line):
 > conda activate nlp
 > python code/prepare.py --do_format --task 1
 """
-
+import os
 import spacy
 import pandas as pd
 import string
@@ -48,7 +48,8 @@ class Clean():
     """
 
     def __init__(self, task,
-                        download=True,
+                        download_source=False,
+                        download_train=False,
                         inference=False):
         self.task = task
         self.language = cu.params.get('language')
@@ -56,10 +57,14 @@ class Clean():
         # Load data class
         self.dt = dt.Data(task=self.task, inference=inference)
 
-        # Download data, if needed
-        if download:
-            self.dt.download(dataset_name = self.dt.fn_lookup.get('fn_source').split('.')[0], source='datastore')
-            self.dt.download(dataset_name = self.dt.fn_lookup.get('fp_train'), source='datastore')
+        # Download data, if needed #TODO: move all downloads to data
+        if download_source and not os.path.isfile(self.dt.fn_lookup.get('fn_source')):
+            self.dt.download(dataset_name = self.dt.n_source, source = 'datastore') #TODO: still downloading?
+        if download_train:
+            self.dt.download(step = 'extra', source = 'datastore')
+            self.dt.download(task = task, step = 'train', source = 'datastore')
+        # if inference:
+            # self.dt.download(step = 'extra', source = 'datastore') #TODO: not working in deployed
 
         # Load spacy model
         self.nlp = he.load_spacy_model(language=self.language, disable=['ner','parser','tagger'])
@@ -70,14 +75,14 @@ class Clean():
         try:
             names = self.dt.load('fn_names', file_type='list')
             stopwords_active = stopwords_active + names
-        except Exception as e:
+        except FileNotFoundError as e:
             logger.warning(f'[WARNING] No names list loaded: {e}')
         
         ## Load stopwords
         try:
             stopwords = self.dt.load('fn_stopwords', file_type='list')
             stopwords_active = stopwords_active + stopwords
-        except Exception as e:
+        except FileNotFoundError as e:
             logger.warning(f'[WARNING] No stopwords list loaded: {e}')
 
         ## Add to Spacy stopword list
@@ -263,10 +268,10 @@ class Clean():
             return text[0]
 
 def prepare_classification(task, do_format, train_split, min_cat_occurance, 
-                            min_char_length, download_source):
+                            min_char_length, register_data):
 
     # Get clean object
-    cl = Clean(task=task, download=download_source)
+    cl = Clean(task=task, download_source=True)
 
     # Load data
     if do_format:
@@ -318,16 +323,16 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     cl.dt.save(label_list, fn = 'fn_label', header=False)
 
     # Upload data
-    # cl.dt.upload('fn_prep', task=task, step='prep', destination='dataset')
-    cl.dt.upload('fp_data', task=task, step='train', destination='dataset')
+    if register_data:
+        cl.dt.upload('fp_data', task=task, step='train', destination='dataset')
 
-def prepare_ner(task, do_format=True):
+def prepare_ner(task, do_format, register_data):
     pass
 
-def prepare_qa(task, do_format, min_char_length, download_source):
+def prepare_qa(task, do_format, min_char_length, register_data):
 
     # Get clean object
-    cl = Clean(task=task, download=download_source)
+    cl = Clean(task=task, download_source=True)
     
     # Load data
     if do_format:
@@ -385,57 +390,59 @@ def prepare_qa(task, do_format, min_char_length, download_source):
 
     # Save data
     cl.dt.save(data, fn = 'fn_clean')
+    # Upload data
+    if register_data:
+        cl.dt.upload('fp_data', task=task, step='train', destination='dataset')
 
 def main(task=1, 
-                do_format=False, 
-                split=0.9, 
-                min_cat_occurance=300, 
-                min_char_length=20, 
-                download_source=False):
+            do_format=False, 
+            split=0.9, 
+            min_cat_occurance=300, 
+            min_char_length=20,
+            register_data=False):
     logger.warning(f'Running <PREPARE> for task {task}')
-
     task_type = cu.tasks.get(str(task)).get('type')
     if 'classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, download_source)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
     elif 'ner' == task_type:
-        prepare_ner(task, do_format)
+        prepare_ner(task, do_format, register_data)
     elif 'qa' == task_type:
-        prepare_qa(task, do_format, min_char_length, download_source)
+        prepare_qa(task, do_format, min_char_length, register_data)
     else:
         logger.warning('[ERROR] TASK TYPE UNKNOWN. Nothing was processed.')
 
-# def run():  'TODO: run train.py for single run
-#     """Run from the command line"""
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("--task", 
-#                     default=1,
-#                     type=int,
-#                     help="Task where: \
-#                             -task 1 : classification subcat \
-#                             -task 2 : classification cat \
-#                             -task 3 : ner \
-#                             -task 4 : qa") 
-#     parser.add_argument('--do_format',
-#                     action='store_true',
-#                     help="Avoid reloading and normalizing data")
-#     parser.add_argument("--split", 
-#                     default=0.9,
-#                     type=float,
-#                     help="Train test split. Dev split is taken from train set.")    
-#     parser.add_argument("--min_char_length", 
-#                     default=20,
-#                     type=int,
-#                     help="") 
-#     parser.add_argument("--min_cat_occurance", 
-#                     default=300,
-#                     type=int,
-#                     help="Min occurance required by category.") 
-#     parser.add_argument("--download_source", 
-#                     action='store_true')          
-#     args = parser.parse_args()
-#     run_prepare(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
-#                     min_char_length=args.min_char_length, download_source=args.download_source)
-#                     #TODO: cleanup
+def run():
+    """Run from the command line"""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--task", 
+                    default=1,
+                    type=int,
+                    help="Task where: \
+                            -task 1 : classification subcat \
+                            -task 2 : classification cat \
+                            -task 3 : ner \
+                            -task 4 : qa") 
+    parser.add_argument('--do_format',
+                    action='store_true',
+                    help="Avoid reloading and normalizing data")
+    parser.add_argument("--split", 
+                    default=0.9,
+                    type=float,
+                    help="Train test split. Dev split is taken from train set.")    
+    parser.add_argument("--min_cat_occurance", 
+                    default=300,
+                    type=int,
+                    help="Min occurance required by category.")      
+    parser.add_argument("--min_char_length", 
+                    default=20,
+                    type=int,
+                    help="") 
+    parser.add_argument('--register_data',
+                    action='store_true',
+                    help="")
+    args = parser.parse_args()
+    main(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
+                    min_char_length=args.min_char_length, register_data=args.register_data)
         
 if __name__ == '__main__':
-    main()
+    run()

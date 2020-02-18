@@ -1,10 +1,9 @@
 <img src="demo/logo2.PNG" width="400" align="center"><br><br><br><br>
 
-# VERSEAGILITY
-NLP Toolkit
+# NLP Toolkit
 
 ## Supported Use cases
-- Multi-class & multi-label classification
+- Binary, multi-class & multi-label classification
 - Named entity recognition
 - Question answering
 
@@ -12,6 +11,8 @@ NLP Toolkit
 > http://nlp-demo-app.azurewebsites.net/
 
 ## Naming
+### Azure
+> nlp-\<component\>-\<environment\>
 ### Assets
 > \<project name\>(-\<task\>)-\<step\>(-\<environment\>)
 - where step in [source, train, deploy], for data assets.
@@ -19,12 +20,9 @@ NLP Toolkit
 
 ## TODO
 ### Project
-- [x] Move to single project config file (for deployment and scoring)
 - [ ] Overview architecture
 - [ ] Detailed documentation
-- [ ] Data storage strategy
 ### Prepare
-- [x] integrate with AML datastore
 - [ ] connect to CosmosDB (pipeline ready)
 - [ ] **(IP)** document cracking to standardized format
 ### Classification
@@ -32,25 +30,22 @@ NLP Toolkit
 - [ ] integrate handling for larger documents
 - [ ] dictionaries for business logic
 - [ ] integrate handling for unbalanced datasets
-- [ ] upload best model to AML Model
+- [x] upload best model to AML Model
 ### NER
 - [ ] Improve duplicate handling
 - [x] basic custom NER
 ### Rank
 - [ ] **(IP)** Improve answer quality
 ### Deployment
-- [x] Collect, Package and upload assets
-- [ ] **(IP)** Param script for deploy (incl language param!)
+- [x] Param script for deploy
 - [ ] Deploy to Azure Function (without AzureML)
 ### Notebooks
 - [x] review prepared data
 - [ ] **(IP)** review model results (auto generate after each training step)
 - [ ] review model bias (auto generate after each training step)
-- [ ] available models benchmark
+- [ ] available models benchmark (incl AutoML)
 ### Tests
-- [ ] integrate testing framework
-- [ ] placeholder for custom data loading test
-- [ ] placeholder for custom infer test
+- [ ] **(IP)** integrate testing framework (pytest)
 - [ ] automated benchmarks
 ### New Features (TBD)
 - Summarization
@@ -58,12 +53,12 @@ NLP Toolkit
 - Integration with GitHub Actions
 
 # Acknowledgements
-- Verseagility is built in part using the following:
- - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
- - [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
- - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
- - [flair](https://github.com/flairNLP/flair/) by Zalando Research
- - [gensim](https://radimrehurek.com/gensim/)
+Verseagility is built in part using the following:
+- [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
+- [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
+- [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
+- [flair](https://github.com/flairNLP/flair/) by Zalando Research
+- [gensim](https://radimrehurek.com/gensim/)
 
 # Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

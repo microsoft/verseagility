@@ -1,3 +1,4 @@
+import os
 import configparser
 import logging
 import pandas as pd
@@ -57,36 +58,36 @@ def get_context():
 ############################################
 
 def get_project_config(fn):
-    try: 
+    if os.path.isfile(f'./project/{fn}'):
         with open(f'./project/{fn}', encoding='utf-8') as fp:
             params = json.load(fp)
-    except FileNotFoundError:
-        try:
-            with open(f'../project/{fn}', encoding='utf-8') as fp:
-                params = json.load(fp)
-        except FileNotFoundError:
-            try:
-                ## Training Config
-                with open('config.json', encoding='utf-8') as fp:
-                    params = json.load(fp)
-            except FileNotFoundError:
-                ## Inference Config
-                with open('./code/config.json', encoding='utf-8') as fp:
-                    params = json.load(fp)
+    elif os.path.isfile(f'../project/{fn}'):
+        with open(f'../project/{fn}', encoding='utf-8') as fp:
+            params = json.load(fp)
+    elif os.path.isfile(f'config.json'):
+        ## Training Config
+        with open('config.json', encoding='utf-8') as fp:
+            params = json.load(fp)
+    elif os.path.isfile(f'./code/config.json'):
+        ## Inference Config
+        with open('./code/config.json', encoding='utf-8') as fp:
+            params = json.load(fp)
+    else: 
+        raise Exception(f'Project parameters not found -> {fn}')
     return params
 
-def get_config():
-    #TODO: remove this, new use: keys to env, settings to params
-    # Get config
-    run_config = configparser.ConfigParser()
-    run_config.read('./code/config.ini')
-    if 'path' not in run_config:
-        run_config.read('./config.ini')
-    if 'path' not in run_config:
-        run_config.read('../config.ini')
-    if 'path' not in run_config:
-        logger.warning('[ERROR] Could not find correct config.ini.')
-    return run_config
+# def get_config():
+#     #TODO: remove this, new use: keys to env, settings to params
+#     # Get config
+#     run_config = configparser.ConfigParser()
+#     run_config.read('./code/config.ini')
+#     if 'path' not in run_config:
+#         run_config.read('./config.ini')
+#     if 'path' not in run_config:
+#         run_config.read('../config.ini')
+#     if 'path' not in run_config:
+#         logger.warning('[ERROR] Could not find correct config.ini.')
+#     return run_config
 
 ############################################
 #####   Azure
@@ -137,13 +138,14 @@ farm_model_lookup = {
 }
 
 def get_farm_model(model_type, language):
+    ml = None
     mt = farm_model_lookup.get(model_type)
     if mt is not None:
         ml = mt.get(language)
     if ml is None:
         ml = mt.get('xx')
     if ml is None:
-        raise Exception('No Transformer/FARM model found')
+        raise Exception('No Transformer/FARM model found')
     return ml
 
 spacy_model_lookup = {
@@ -159,7 +161,7 @@ def load_spacy_model(language='xx', disable=[]):
     try:
         nlp = spacy.load(spacy_model_lookup[language], disable=disable)
     except OSError:
-        logging.warning(f'[INFO] Download spacy language model for {language}')
+        logging.warning(f'[INFO] Downloading spacy language model for {language}')
         from spacy.cli import download
         download(spacy_model_lookup[language])
         nlp = spacy.load(spacy_model_lookup[language], disable=disable)

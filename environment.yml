@@ -9,7 +9,7 @@ dependencies:
   # - azureml-defaults for aml deployment
   - azureml-sdk==1.0.85
   - azureml-dataprep[pandas,fuse]==1.1.38
-  - mlflow==1.0.0
+  - mlflow==1.6.0
   - azureml-mlflow==1.0.85
   # - imblearn
   - spacy==2.2.1

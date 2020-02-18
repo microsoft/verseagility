@@ -2,7 +2,7 @@
     "name":"msforum_en",
     "language": "en",
     "environment" : "dev",
-    "data_dir" : "./",
+    "data_dir" : "./run/",
     "prepare" : {
         "data_type" : "json"
     },
@@ -11,6 +11,9 @@
             "label": "subcat",
             "type": "classification",
             "model_type": "roberta",
+            "max_seq_len": 256,
+            "embeds_dropout":0.3,
+            "learning_rate":3e-5,
             "prepare": true
         },
         "3": {
@@ -22,12 +25,5 @@
             "model_type": "historical",
             "prepare": true
         }
-    },
-    "assets" : [
-        "fn_cat",
-        "fn_rank",
-        "fn_ner_list",
-        "fn_ner_flair",
-        "fn_names"
-    ]
+    }
 }

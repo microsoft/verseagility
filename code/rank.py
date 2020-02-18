@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import re
 import argparse
@@ -16,7 +17,7 @@ import data as dt
 logger = he.get_logger(location=__name__)
 
 rank_type_lookup = {
-    'historical' : 0, # currently only 0 is supported
+    'historical' : 0, #NOTE: currently only 0 is supported
     'textblocks' : 1,
     'historical_thread' : 2
 }
@@ -73,10 +74,17 @@ def create_bm25():
                             -task 2 : classification cat \
                             -task 3 : ner \
                             -task 4 : qa")
+    parser.add_argument('--register_model',
+                        action='store_true',
+                        help="")
+    parser.add_argument('--download_train',
+                        action='store_true',
+                        help="")
     args = parser.parse_args()
 
     # Load data
-    cl = pr.Clean(task=args.task)
+    cl = pr.Clean(task=args.task, download_train=args.download_train)
+    ##TODO: move download to data, load data only
     data = cl.dt.load('fn_clean')
 
     # Split tokenized data
@@ -90,7 +98,11 @@ def create_bm25():
     with open(cl.dt.fn_lookup['fn_rank'], 'wb') as fp:
         pickle.dump(bm, fp)
         pickle.dump(data, fp)
-    logger.warning('Create and stored BM25 object.')
+    logger.warning('[INFO] Create and stored BM25 object.')
+
+    # Upload
+    if args.register_model:
+        cl.dt.upload(cl.dt.fn_lookup['fn_rank'], task = args.task, destination='model')
 
 if __name__ == "__main__":
     create_bm25()

@@ -88,7 +88,7 @@ def getDateQuestion(soup):
 
 # Create date of answer
 def getDateAnswer(soup):
-    date_answer = soup.find_all("span", "asking-text-asked-on-link")[1].text.replace("\nBeantwortet am ", "").replace("\n Répondu le ", "").replace("\nRespondió el ", "").replace("\nRisposta il ", "").replace("\n", "")
+    date_answer = soup.find_all("span", "asking-text-asked-on-link")[1].text.replace("\nBeantwortet am ", "").replace("\nRépondu le ", "").replace("\nRespondió el ", "").replace("\nRisposta il ", "").replace("\n", "")
     return date_answer
 
 # Get number of same cases
@@ -124,8 +124,8 @@ def getTags(soup, product):
 
 # Put it all together
 def scrapeMe(url, product):
-    print("[URL] -", url)
-    ### GET WEBSITE
+    print(f"[URL] - {url}")
+    # GET WEBSITE
     try:
         response = get(url)
     except:
@@ -133,11 +133,11 @@ def scrapeMe(url, product):
     html_soup = BeautifulSoup(response.text, 'html.parser')
     fileid = uuid.uuid4().hex
     
-    ### GET TEXT
+    # GET TEXT
     text = getText(html_soup)
     q_text = cleanText(text[0])
     
-    ### GET META
+    # GET META
     q_title = getTitle(html_soup)
     q_user = getUsernameQuestion(html_soup)
     q_date = getDateQuestion(html_soup)
@@ -145,7 +145,7 @@ def scrapeMe(url, product):
     q_tags = getTags(html_soup, product)
     q_same = getSame(html_soup)
     
-    ### PACK Q JSON
+    # PACK Q JSON
     question = {}
     question['title'] = q_title
     question['author'] = q_user
@@ -153,10 +153,10 @@ def scrapeMe(url, product):
     question['text'] = q_text
     question['upvotes'] = q_same
     
-    ### CHECK IF DONE
+    # CHECK IF DONE
     a_done = getDone(html_soup, text)
     
-    ### HANDLE IF NO ANSWER
+    # HANDLE IF NO ANSWER
     if len(text) < 2:
         a_date = ""
         a_text = ""
@@ -179,32 +179,27 @@ def scrapeMe(url, product):
     except:
         answer['upvotes'] = 0
     
-    ### PACK JSON
+    # PACK JSON
     data = {'question': question, 'id': fileid, 'views': q_views, 'appliesTo': q_tags, 'url': url, 'language': lang, 'answer': answer}
     content = json.dumps(data, indent=4, separators=(',', ': '), ensure_ascii=False)
     
-    ### WRITE TO JSON FILE
-    #with open("output-" + product + "-" + lang + ".json", "a", encoding='utf-8') as file:
+    # WRITE TO JSON FILE
     with open(f"output-{lang}.json", "a", encoding='utf-8') as file:
         file.write(content+",")
         print(f"[SUCCESS] - File {fileid}\n")
 
-######################################################
-# LOOP THROUGH THE OUTPUT TEXT FILES AND CREATE JSON #
-######################################################
-
+''' LOOP THROUGH THE OUTPUT TEXT FILES AND CREATE JSON '''
 products = ['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge', 'ie', 'musicandvideo']
-
 for product in products:
     try:
         # Read File
         docs = codecs.open(f"output-{product}-{lang}.txt", 'r', encoding='utf-8').read()
-
         # Prepare Links
-        url_temp = re.findall(r'(https?://answers.microsoft.com/' + lang + '/' + product + '/forum/[^\s]+)', docs)
+        url_temp = re.findall(r'(https?://answers.microsoft.com/' + lang + r'/' + product + r'/forum/[^\s]+)', docs)
         url_temp2 = [s.strip('"') for s in url_temp]
         url_list = [x for x in url_temp2 if not x.endswith('LastReply')]
-
+        # Drop duplicates
+        url_list = list(dict.fromkeys(url_list))
         failed_url = []
         for i, value in enumerate(url_list):
             i += 1

@@ -1,6 +1,6 @@
 {
-    "name":"msforum_de",
-    "language": "de",
+    "name":"msforum_es",
+    "language": "es",
     "environment" : "dev",
     "data_dir" : "./run/",
     "prepare" : {
@@ -10,10 +10,10 @@
         "1": {
             "label": "subcat",
             "type": "classification",
-            "model_type": "distilbert",
+            "model_type": "bert",
             "max_seq_len": 256,
             "embeds_dropout":0.3,
-            "learning_rate":2e-5,
+            "learning_rate":3e-5,
             "prepare": true
         },
         "3": {

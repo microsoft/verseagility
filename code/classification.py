@@ -43,7 +43,9 @@ aml_run = he.get_context()
 def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, evaluate_every, 
                         use_cuda, max_seq_len, learning_rate, do_lower_case, 
                         register_model, save_model=True, early_stopping=True):
+    
     language = cu.params.get('language')
+
     # Check task
     if cu.tasks.get(str(task)).get('type') != 'classification':
         raise Exception('NOT A CLASSIFICATION TASK') 
@@ -52,14 +54,14 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     dt_task = dt.Data(task=task)
     ## Download training files
     if not os.path.isfile(dt_task.fn_lookup['fn_train']):
-        dt_task.download(task=task, step='train')
+        dt_task.download(task = task, step = 'train', source = 'datastore')
 
     # Settings
     set_all_seeds(seed=42)
     use_amp = None
     device, n_gpu = initialize_device_settings(use_cuda=use_cuda, use_amp=use_amp)
     lang_model = he.get_farm_model(model_type, language)
-    save_dir = dt_task.model_dir.replace('model_type', model_type)
+    save_dir = dt_task.fn_lookup['fp_model']
     label_list = dt_task.load('fn_label', header=None)[0].to_list()
     
     # AML log
@@ -120,10 +122,11 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     )
 
     # 4. Create an AdaptiveModel
-    # a) which consists of a pretrained language model as a basis
+    #TODO: pass language parameters
+    ## Pretrained language model as a basis
     language_model = LanguageModel.load(lang_model)
 
-    # b) and a prediction head on top that is suited for our task => Text classification
+    ## Prediction head on top that is suited for our task => Text classification
     prediction_head = TextClassificationHead(num_labels=len(processor.tasks["text_classification"]["label_list"]),
                                             class_weights=data_silo.calculate_class_weights(task_name="text_classification"))
 
