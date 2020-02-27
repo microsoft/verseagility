@@ -9,10 +9,6 @@
         "databaseAccounts_testverseagility_name": {
             "defaultValue": "testverseagility",
             "type": "string"
-        },
-        "smartdetectoralertrules_failure_anomalies___testverseagility_name": {
-            "defaultValue": "failure anomalies - testverseagility",
-            "type": "string"
         }
     },
     "variables": {
