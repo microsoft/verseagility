@@ -1,9 +1,6 @@
 # Protractor test config
 protractor-dev.conf.js
 
-#local azure function settings
-local.settings.json
-
 #Azure Functions Libs
 bin
 obj

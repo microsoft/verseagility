@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "This function offers REST endpoints and helper functions for the NLP toolkit Verseagility",
   "author": "Christian Vorhemus",
-  "license": "ISC",
+  "license": "MIT",
   "scripts": {
     "test": "mocha -r ts-node/register tests/\\*.test.ts",
     "tslint": "tslint -t codeFrame **/*.ts",
