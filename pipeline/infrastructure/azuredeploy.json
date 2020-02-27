@@ -118,7 +118,7 @@
                 "targetWorkerCount": 0,
                 "targetWorkerSizeId": 0
             }
-        }
+        },
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
             "apiVersion": "2019-12-12",
