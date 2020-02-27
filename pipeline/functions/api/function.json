@@ -1,0 +1,33 @@
+{
+  "bindings": [
+    {
+      "dataType": "binary",
+      "authLevel": "function",
+      "name": "req",
+      "type": "httpTrigger",
+      "direction": "in",
+      "methods": [
+        "get",
+        "post"
+      ],
+      "route": "api/{command}"
+    },
+    {
+      "name": "res",
+      "type": "http",
+      "direction": "out"
+    },
+    {
+      "direction": "out",
+      "type": "cosmosDB",
+      "name": "cosmosOutput",
+      "databaseName": "data",
+      "collectionName": "documents",
+      "partitionKey": "date",
+      "leaseCollectionName": "leases",
+      "createLeaseCollectionIfNotExists": true,
+      "connectionStringSetting": "CosmosDBConnectionString",
+      "createIfNotExists": true
+    }
+  ]
+}

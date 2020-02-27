@@ -1,0 +1,10 @@
+1) Install the node dependencies
+npm install
+
+2) Install the Azure Function extensions
+func extensions install
+
+3) If you debug locally, create a local.settings.json file in the same directory as api and common and add the following values:
+
+4) Start the function host or press F5 in VSC for debugging
+func host start
