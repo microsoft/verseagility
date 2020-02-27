@@ -32,6 +32,7 @@ func host start
 # Deploy to Azure
 
 Click on the button below to start the deployment
+
 <a href="https://github.com/microsoft/verseagility/tree/master/pipeline/infrastructure/azuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
