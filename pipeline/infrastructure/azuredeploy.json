@@ -20,9 +20,9 @@
         }
     },
     "variables": {
-        "storageName": "[toLower( concat( parameters('verseagility'), uniqueString(resourceGroup().id) ) )]",
-        "servicePlan": "[toLower( concat( parameters('ASP-Serviceplan-'), uniqueString(resourceGroup().id) ) )]",
-        "functionName": "[toLower( concat( parameters('versfunction'), uniqueString(resourceGroup().id) ) )]"
+        "storageName": "[toLower(concat('verseagility', uniqueString(resourceGroup().id) ) )]",
+        "servicePlan": "[toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) )]",
+        "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]"
     },
     "resources": [
         {
