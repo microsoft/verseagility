@@ -253,7 +253,24 @@
                 "dailyMemoryTimeQuota": 0,
                 "httpsOnly": false,
                 "redundancyMode": "None"
-            }
+            },
+            "resources": [
+                {
+                  "name": "appsettings",
+                  "type": "config",
+                  "apiVersion": "2015-08-01",
+                  "dependsOn": [
+                    "[resourceId('Microsoft.Web/sites', parameters('sites_testverseagility_name'))]"
+                  ],
+                  "tags": {
+                    "displayName": "appsettings"
+                  },
+                  "properties": {
+                    "AzureWebJobsStorage": "value1",
+                    "CosmosDBConnectionString": "value2"
+                  }
+                }
+            ]
         },
         {
             "type": "Microsoft.Web/sites/config",
@@ -332,24 +349,7 @@
                 "minTlsVersion": "1.2",
                 "ftpsState": "AllAllowed",
                 "reservedInstanceCount": 0
-            },
-            "resources": [
-                {
-                  "name": "appsettings",
-                  "type": "config",
-                  "apiVersion": "2015-08-01",
-                  "dependsOn": [
-                    "[resourceId('Microsoft.Web/sites', parameters('sites_testverseagility_name'))]"
-                  ],
-                  "tags": {
-                    "displayName": "appsettings"
-                  },
-                  "properties": {
-                    "AzureWebJobsStorage": "value1",
-                    "CosmosDBConnectionString": "value2"
-                  }
-                }
-              ]
+            }
         },
         {
             "type": "Microsoft.Web/sites/hostNameBindings",
