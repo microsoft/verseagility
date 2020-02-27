@@ -18,7 +18,8 @@
     "ms-rest-azure": "^2.5.9",
     "node-fetch": "^2.3.0",
     "stream-to-buf": "^1.0.0",
-    "csvtojson": "^2.0.10"
+    "csvtojson": "^2.0.10",
+    "superagent": "^5.2.2"
   },
   "devDependencies": {
     "@azure/functions": "^1.2.0",

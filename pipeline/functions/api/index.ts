@@ -30,9 +30,6 @@ async function storeValues(context: Context, blob: StorageResponse): Promise<boo
 }
 
 
-
-
-
 export async function run(context: Context, req: HttpRequest) {
 
     // Data can be sent as an url to a blob storage or directly as form-data

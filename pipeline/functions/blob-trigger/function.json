@@ -8,5 +8,5 @@
       "connection": "AzureWebJobsStorage"
     }
   ],
-  "disabled": true
+  "disabled": false
 }
