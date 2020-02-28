@@ -8,7 +8,7 @@
         "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
         "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
         "insightsComponent": "[toLower(concat('versinsights', uniqueString(resourceGroup().id) ) )]",
-        "repoURL": "https://github.com/AzureBytes/functionshttpecho.git",
+        "repoURL": "https://github.com/christian-vorhemus/function-app.git",
         "branch": "master",
         "ruleName": "failure anomalies - versinsights",
         "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]"
@@ -263,7 +263,8 @@
                   },
                   "properties": {
                     "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]",
-                    "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]"
+                    "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]",
+                    "FUNCTIONS_WORKER_RUNTIME": "node"
                   }
                 }
             ]
