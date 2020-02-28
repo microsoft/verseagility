@@ -201,19 +201,6 @@
             },
             "resources": [
                 {
-                    "apiVersion": "2018-11-01",
-                    "name": "web",
-                    "type": "sourcecontrols",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]"
-                    ],
-                    "properties": {
-                        "RepoUrl": "[variables('repoURL')]",
-                        "branch": "[variables('branch')]",
-                        "IsManualIntegration": true
-                    }
-                },
-                {
                   "name": "appsettings",
                   "type": "config",
                   "apiVersion": "2018-11-01",
