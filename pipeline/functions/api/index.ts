@@ -67,6 +67,9 @@ export async function run(context: Context, req: HttpRequest) {
             var response: HttpResponse = new HttpResponse(Status.BADREQUEST, "Request must contain 'source' query parameter");
             context.res = response.create();
         }
+    } else if(command == "test") {
+        var response: HttpResponse = new HttpResponse(Status.SUCCESS, "Test successful");
+        context.res = response.create();
     }
 
     var response: HttpResponse = new HttpResponse(Status.SUCCESS, "Successfully uploaded", { "test": 1 });
