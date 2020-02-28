@@ -8,7 +8,7 @@
         "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
         "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
         "insightsComponent": "[toLower(concat('versinsights', uniqueString(resourceGroup().id) ) )]",
-        "repoURL": "https://github.com/ericsk/azure-functions-node-samples",
+        "repoURL": "https://github.com/christian-vorhemus/function-app.git",
         "branch": "master",
         "ruleName": "failure anomalies - versinsights",
         "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]"
