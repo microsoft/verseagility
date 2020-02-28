@@ -264,7 +264,9 @@
                   "properties": {
                     "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]",
                     "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]",
-                    "FUNCTIONS_WORKER_RUNTIME": "node"
+                    "FUNCTIONS_WORKER_RUNTIME": "node",
+                    "FUNCTIONS_EXTENSION_VERSION": "~3",
+                    "WEBSITE_NODE_DEFAULT_VERSION": "~10"
                   }
                 }
             ]
