@@ -14,13 +14,14 @@
     "variables": {
         "storageName": "[toLower(concat('ver', uniqueString(resourceGroup().id) ) )]",
         "servicePlan": "[toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) )]",
-        "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]"
+        "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
+        "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]"
     },
     "resources": [
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "apiVersion": "2019-12-12",
-            "name": "[parameters('databaseAccounts_testverseagility_name')]",
+            "name": "[variables('databaseName')]",
             "location": "West Europe",
             "tags": {
                 "defaultExperience": "Core (SQL)",
@@ -122,9 +123,9 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases",
             "apiVersion": "2019-12-12",
-            "name": "[concat(parameters('databaseAccounts_testverseagility_name'), '/data')]",
+            "name": "[concat(variables('databaseName'), '/data')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_testverseagility_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
             ],
             "properties": {
                 "resource": {
@@ -317,10 +318,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers",
             "apiVersion": "2019-12-12",
-            "name": "[concat(parameters('databaseAccounts_testverseagility_name'), '/data/documents')]",
+            "name": "[concat(variables('databaseName'), '/data/documents')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_testverseagility_name'), 'data')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_testverseagility_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('databaseName'), 'data')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
             ],
             "properties": {
                 "resource": {
@@ -356,10 +357,10 @@
         {
             "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/throughputSettings",
             "apiVersion": "2019-12-12",
-            "name": "[concat(parameters('databaseAccounts_testverseagility_name'), '/data/default')]",
+            "name": "[concat(variables('databaseName'), '/data/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', parameters('databaseAccounts_testverseagility_name'), 'data')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', parameters('databaseAccounts_testverseagility_name'))]"
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('databaseName'), 'data')]",
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
             ],
             "properties": {
                 "resource": {

@@ -24,7 +24,7 @@ func extensions install
 }
 ```
 
-4) Start the function host or press F5 in VSC for debugging
+4) Start the function host
 ```
 func host start
 ```
