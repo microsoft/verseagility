@@ -2,7 +2,7 @@
 
 ## Local development
 
-0) Make sure you fulfill all the requirements as stated (https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-function-vs-code?pivots=programming-language-csharp)[here].
+0) Make sure you fulfill all the requirements as stated [https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-function-vs-code?pivots=programming-language-csharp](here).
 
 1) Install the node dependencies
 ```

@@ -122,7 +122,7 @@
             "name": "[variables('ruleName')]",
             "location": "global",
             "dependsOn": [
-                "[resourceId('microsoft.insights/components', variables('ruleScope'))]"
+                "[resourceId('microsoft.insights/components', variables('insightsComponent'))]"
             ],
             "properties": {
                 "description": "Failure Anomalies notifies you of an unusual rise in the rate of failed HTTP requests or dependency calls.",
@@ -141,11 +141,11 @@
                     ]
                 },
                 "scope": [
-                    "[resourceId('microsoft.insights/components', parameters('components_versinsightswkgrqhizscu2u_name'))]"
+                    "[resourceId('microsoft.insights/components', variables('insightsComponent'))]"
                 ],
                 "actionGroups": {
                     "groupIds": [
-                        "[parameters('actiongroups_application_20insights_20smart_20detection_externalid')]"
+                        "[variables('ruleScope')]"
                     ]
                 }
             }
