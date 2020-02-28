@@ -8,7 +8,7 @@
         "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
         "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
         "insightsComponent": "[toLower(concat('versinsights', uniqueString(resourceGroup().id) ) )]",
-        "repoURL": "https://github.com/christian-vorhemus/function-app.git",
+        "repoURL": "https://github.com/AzureBytes/functionshttpecho.git",
         "branch": "master"
     },
     "resources": [
@@ -200,6 +200,19 @@
                 "redundancyMode": "None"
             },
             "resources": [
+                {
+                    "apiVersion": "2018-11-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "[variables('repoURL')]",
+                        "branch": "[variables('branch')]",
+                        "IsManualIntegration": true
+                    }
+                },
                 {
                   "name": "appsettings",
                   "type": "config",
