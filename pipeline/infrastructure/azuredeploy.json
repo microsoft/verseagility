@@ -1,21 +1,13 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "components_testverseagility_name": {
-            "defaultValue": "testverseagility",
-            "type": "string"
-        },
-        "databaseAccounts_testverseagility_name": {
-            "defaultValue": "testverseagility",
-            "type": "string"
-        }
-    },
+    "parameters": {},
     "variables": {
         "storageName": "[toLower(concat('ver', uniqueString(resourceGroup().id) ) )]",
         "servicePlan": "[toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) )]",
         "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
-        "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]"
+        "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
+        "insightsComponent": "[toLower(concat('versinsights', uniqueString(resourceGroup().id) ) )]"
     },
     "resources": [
         {
@@ -54,7 +46,7 @@
         {
             "type": "microsoft.insights/components",
             "apiVersion": "2015-05-01",
-            "name": "[parameters('components_testverseagility_name')]",
+            "name": "[variables('insightsComponent')]",
             "location": "westeurope",
             "kind": "web",
             "properties": {
@@ -217,7 +209,7 @@
                     "displayName": "appsettings"
                   },
                   "properties": {
-                    "AzureWebJobsStorage": "value1",
+                    "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]",
                     "CosmosDBConnectionString": "value2"
                   }
                 }
@@ -354,20 +346,7 @@
                 "options": {}
             }
         },
-        {
-            "type": "Microsoft.DocumentDB/databaseAccounts/sqlDatabases/throughputSettings",
-            "apiVersion": "2019-12-12",
-            "name": "[concat(variables('databaseName'), '/data/default')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', variables('databaseName'), 'data')]",
-                "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
-            ],
-            "properties": {
-                "resource": {
-                    "throughput": 400
-                }
-            }
-        },
+
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-06-01",
