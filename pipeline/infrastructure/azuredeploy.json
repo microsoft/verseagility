@@ -201,6 +201,19 @@
             },
             "resources": [
                 {
+                    "apiVersion": "2018-11-01",
+                    "name": "web",
+                    "type": "sourcecontrols",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]"
+                    ],
+                    "properties": {
+                        "RepoUrl": "[variables('repoURL')]",
+                        "branch": "[variables('branch')]",
+                        "IsManualIntegration": true
+                    }
+                },
+                {
                   "name": "appsettings",
                   "type": "config",
                   "apiVersion": "2018-11-01",
@@ -214,10 +227,7 @@
                   },
                   "properties": {
                     "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]",
-                    "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]",
-                    "RepoUrl": "[variables('repoURL')]",
-                    "branch": "[variables('branch')]",
-                    "IsManualIntegration": true
+                    "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]"
                   }
                 }
             ]
