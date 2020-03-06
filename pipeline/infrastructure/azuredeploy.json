@@ -3,15 +3,17 @@
     "contentVersion": "1.0.0.0",
     "parameters": {},
     "variables": {
-        "storageName": "[toLower(concat('ver', uniqueString(resourceGroup().id) ) )]",
-        "servicePlan": "[toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) )]",
         "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
-        "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
         "insightsComponent": "[toLower(concat('versinsights', uniqueString(resourceGroup().id) ) )]",
-        "repoURL": "https://github.com/christian-vorhemus/function-app.git",
-        "branch": "master",
+        "servicePlan": "[toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) )]",
+        "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
         "ruleName": "failure anomalies - versinsights",
-        "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]"
+        "keyvaultName": "[toLower(concat('verskeys', uniqueString(resourceGroup().id) ) )]",
+        "storageName": "[toLower(concat('ver', uniqueString(resourceGroup().id) ) )]",
+        "amlWorkspaceName": "[toLower(concat('vers-aml-workspace-', uniqueString(resourceGroup().id) ) )]",
+        "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]",
+        "repoURL": "https://github.com/christian-vorhemus/function-app.git",
+        "branch": "master"
     },
     "resources": [
         {
@@ -241,7 +243,8 @@
                     "name": "web",
                     "type": "sourcecontrols",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]"
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
+                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
                     ],
                     "properties": {
                         "RepoUrl": "[variables('repoURL')]",
@@ -250,24 +253,26 @@
                     }
                 },
                 {
-                  "name": "appsettings",
-                  "type": "config",
-                  "apiVersion": "2018-11-01",
-                  "dependsOn": [
-                    "[resourceId('Microsoft.Web/sites', variables('functionName'))]",
-                    "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
-                    "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
-                  ],
-                  "tags": {
-                    "displayName": "appsettings"
-                  },
-                  "properties": {
-                    "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]",
-                    "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]",
-                    "FUNCTIONS_WORKER_RUNTIME": "node",
-                    "FUNCTIONS_EXTENSION_VERSION": "~3",
-                    "WEBSITE_NODE_DEFAULT_VERSION": "~10"
-                  }
+                    "name": "appsettings",
+                    "type": "config",
+                    "apiVersion": "2018-11-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
+                        "[resourceId('microsoft.insights/components', variables('insightsComponent'))]"
+                    ],
+                    "tags": {
+                        "displayName": "appsettings"
+                    },
+                    "properties": {
+                        "APPINSIGHTS_INSTRUMENTATIONKEY": "[reference(resourceId('Microsoft.Insights/components', variables('insightsComponent')), '2014-04-01').InstrumentationKey]",
+                        "APPLICATIONINSIGHTS_CONNECTION_STRING": "[concat('InstrumentationKey=', reference(resourceId('Microsoft.Insights/components', variables('insightsComponent')), '2014-04-01').InstrumentationKey)]",
+                        "AzureWebJobsStorage": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]",
+                        "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]",
+                        "FUNCTIONS_WORKER_RUNTIME": "node",
+                        "FUNCTIONS_EXTENSION_VERSION": "~3",
+                        "WEBSITE_NODE_DEFAULT_VERSION": "~10",
+                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.default]"
+                    }
                 }
             ]
         },
@@ -277,7 +282,8 @@
             "name": "[concat(variables('functionName'), '/web')]",
             "location": "West Europe",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', variables('functionName'))]"
+                "[resourceId('Microsoft.Web/sites', variables('functionName'))]",
+                "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
             ],
             "properties": {
                 "numberOfWorkers": 1,
@@ -448,6 +454,47 @@
             ],
             "properties": {
                 "shareQuota": 5120
+            }
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "apiVersion": "2015-06-01",
+            "name": "[variables('keyvaultName')]",
+            "location": "westeurope",
+            "properties": {
+                "accessPolicies": [],
+                "enabledForDeployment": true,
+                "enabledForTemplateDeployment": true,
+                "enabledForVolumeEncryption": true,
+                "sku": {
+                    "name": "Standard",
+                    "family": "A"
+                },
+                "tenantId": "[subscription().tenantId]"
+            }
+        },
+        {
+            "type": "Microsoft.MachineLearningServices/workspaces",
+            "apiVersion": "2018-11-19",
+            "name": "[variables('amlWorkspaceName')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
+                "[resourceId('microsoft.insights/components', variables('insightsComponent'))]"
+            ],
+            "location": "westeurope",
+            "sku": {
+                "name": "Basic",
+                "tier": "Basic"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
+                "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
+                "applicationInsights": "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
+                "discoveryUrl": "https://westeurope.experiments.azureml.net/discovery"
             }
         }
     ]

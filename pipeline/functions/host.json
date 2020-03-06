@@ -8,7 +8,7 @@
             "routePrefix": ""
         }
     },
-    "functionTimeout": "00:30:00",
+    "functionTimeout": "00:09:00",
     "version":  "2.0",
     "watchDirectories": [ "common" ]
 }
