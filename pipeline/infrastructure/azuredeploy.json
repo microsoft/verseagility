@@ -256,7 +256,8 @@
                     "type": "sourcecontrols",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
+                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]",
+                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
                     ],
                     "properties": {
                         "RepoUrl": "[variables('repoURL')]",
@@ -283,7 +284,7 @@
                         "FUNCTIONS_WORKER_RUNTIME": "node",
                         "FUNCTIONS_EXTENSION_VERSION": "~3",
                         "WEBSITE_NODE_DEFAULT_VERSION": "~10",
-                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.default.internal]"
+                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.internal]"
                     }
                 }
             ]
