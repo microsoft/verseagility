@@ -10,21 +10,6 @@
 ## Live Demo
 > http://nlp-demo-app.azurewebsites.net/
 
-## Deployment
-
-1. Click on the button to start the resource deployment:
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json" target="_blank">
-<img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
-</a>
-
-2. After the deployment has finished (~30min) as a workaround for now, add the function "default" host key as an environment variable
-named "FunctionHostKey" in the function (if the variable is already there, replace the value) and click "Save"
-<img src="demo/functionkey.png" width="400">
-
-3. If you put files in the storage account "data" container, the files are processed and put in CosmosDB following the standardized output format.
-<img src="demo/data_container.png" width="400">
-
-
 ## Naming
 ### Azure
 > nlp-\<component\>-\<environment\>

@@ -23,12 +23,12 @@ dependencies:
   - bs4
   ##DEMO ENV
   - pillow
-  - streamlit==0.48.1
+  - streamlit==0.56
 #   - langdetect
 #   - lightgbm
 #   - pandas_ml
 - numpy
-- pandas
+- pandas=1.0.1
 # - scikit-learn
 # - nltk
 # - nb_conda

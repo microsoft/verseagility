@@ -2,9 +2,10 @@
 Functions to deploy pipeline
 
 To run locally, use:
-> cd ./code
+> cd ./root
 > conda activate nlp
-> python deploy/pipeline.py
+> python deploy/pipeline.py --language en --do_prepare --do_train
+> python deploy/pipeline.py --language en --do_deploy
 
 #NOTE: not using AML Pipelines yet, 
 due to technical restrictions
@@ -14,6 +15,7 @@ import json
 import shutil
 import math
 import logging
+import argparse
 
 from azureml.core import Workspace, Experiment, Model
 from azureml.pipeline.steps import PythonScriptStep, EstimatorStep
@@ -70,15 +72,26 @@ def get_best_argument(details, argument):
 # Two stages: dev + train.
 ## dev: test changes, trial runs
 ## train: training, full runs, deployment
+parser = argparse.ArgumentParser()
+parser.add_argument("--language", 
+                    default='en',
+                    type=str,
+                    help="")
+parser.add_argument('--do_prepare',
+                        action='store_true',
+                        help="")
+parser.add_argument('--do_train',
+                        action='store_true',
+                        help="")
+parser.add_argument('--do_deploy',
+                        action='store_true',
+                        help="")
+args = parser.parse_args()
 
 # PARAMETERS
-project_name = f"msforum_en"
-compute_name = 'gpucluster-nc12'
+project_name = f"msforum_{args.language}"
+compute_name = 'gpucluster-nc6'
 experiment_name = project_name
-
-do_prepare  =   False
-do_train    =   True
-do_deploy   =   False
 
 ## Load 
 params = get_project_config(f'{project_name}.config.json')
@@ -94,12 +107,13 @@ env = params.get('environment')
 #     auth = MsiAuthentication()
 # except Exception as e:
 #     logger.warning(e)
-# auth = InteractiveLoginAuthentication(tenant_id="72f988bf-86f1-41af-91ab-2d7cd011db47")
+# auth = None
+auth = InteractiveLoginAuthentication(tenant_id="72f988bf-86f1-41af-91ab-2d7cd011db47")
 
 ws = Workspace.get(name='nlp-ml', 
                 subscription_id='50324bce-875f-4a7b-9d3c-0e33679f5d72', 
-                resource_group='nlp')
-                # ,auth=auth)
+                resource_group='nlp',
+                auth=auth)
 
 ## Compute target
 compute_target = ws.compute_targets[compute_name]
@@ -147,7 +161,7 @@ tasks = params.get("tasks")
 #####  PREPARE
 ############################################
 
-if do_prepare:
+if args.do_prepare:
     logging.warning(f'[INFO] Running  prepare for {project_name}')
     for task in tasks:
         config = tasks.get(task)
@@ -167,13 +181,14 @@ if do_prepare:
                         use_gpu = False
                         )
             run = exp.submit(est)
-    run.wait_for_completion(show_output = True)
+    if args.do_train:
+        run.wait_for_completion(show_output = True)
 
 ############################################
 #####  TRAIN
 ############################################
 
-if do_train:
+if args.do_train:
     logging.warning(f'[INFO] Running train for {project_name}')
     for task in tasks:
         config = tasks.get(task)
@@ -221,11 +236,11 @@ if do_train:
 #####  DEPLOY
 ############################################
 
-version = '0.1'
+version = '0.2'
 auth_enabled = True
 compute_type = 'ACI'
 
-if do_deploy:
+if args.do_deploy:
     logging.warning(f'[INFO] Running deploy for {project_name}')
     # Fetch Models
     models = []
@@ -240,8 +255,12 @@ if do_deploy:
         logging.warning(f'[INFO] Added Model : {model.name} (v{model.version})')
     
     # Deployment Target
+    memory_gb = 2
+    # ram_size = params.get('environment')
+    # if ram_size is not None:
+        # memory_gb = ram_size
     if compute_type == 'ACI':
-        compute_config = AciWebservice.deploy_configuration(cpu_cores=2, memory_gb=6, auth_enabled=auth_enabled)
+        compute_config = AciWebservice.deploy_configuration(cpu_cores=2, memory_gb=memory_gb, auth_enabled=auth_enabled)
     elif compute_type == 'AKS':
         compute_config = AksWebservice.deploy_configuration() #TODO:
     
@@ -288,6 +307,7 @@ if do_deploy:
     # Test service
     try:
         service.run(json.dumps([{"body": "Mein Windows Vista rechner will nicht mehr - ich kriege dauernd fehler meldungen. Ich wollte mir eh einen neuen kaufen, aber ich hab kein Geld. Kann Bill Gates mir helfen?"}]))
+        logging.warning(f'[SUCCESS] Service was deployed.')
     except Exception as e:
         logging.warning(f'[ERROR] Service was not deployed as expected. {e}')
 

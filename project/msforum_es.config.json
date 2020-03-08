@@ -10,10 +10,10 @@
         "1": {
             "label": "subcat",
             "type": "classification",
-            "model_type": "bert",
+            "model_type": "distilbert",
             "max_seq_len": 256,
             "embeds_dropout":0.3,
-            "learning_rate":3e-5,
+            "learning_rate":2e-5,
             "prepare": true
         },
         "3": {
