@@ -239,6 +239,18 @@
             },
             "resources": [
                 {
+                    "type": "Microsoft.Web/sites/host/functionKeys",
+                    "apiVersion": "2018-11-01",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
+                        "[resourceId('Microsoft.Web/sites/sourcecontrols/', variables('functionName'), 'web')]"
+                    ],
+                    "name": "[concat(variables('functionName'), '/default/internal')]",
+                    "properties": {
+                        "name": "internal"
+                    }
+                },
+                {
                     "apiVersion": "2018-11-01",
                     "name": "web",
                     "type": "sourcecontrols",
@@ -280,11 +292,12 @@
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
                         "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
-                        "[resourceId('Microsoft.Web/sites/sourcecontrols/', variables('functionName'), 'web')]"
+                        "[resourceId('Microsoft.Web/sites/sourcecontrols/', variables('functionName'), 'web')]",
+                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
                     ],
                     "properties": {
                       "FunctionHostKey": {
-                        "value": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.default]",
+                        "value": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.internal]",
                         "type": "Custom"
                       }
                     }
