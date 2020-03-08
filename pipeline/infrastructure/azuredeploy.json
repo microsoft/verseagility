@@ -242,8 +242,7 @@
                     "type": "Microsoft.Web/sites/host/functionKeys",
                     "apiVersion": "2018-11-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]"
                     ],
                     "name": "[concat(variables('functionName'), '/default/internal')]",
                     "properties": {
@@ -271,7 +270,8 @@
                     "apiVersion": "2018-11-01",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('microsoft.insights/components', variables('insightsComponent'))]"
+                        "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
+                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
                     ],
                     "tags": {
                         "displayName": "appsettings"
