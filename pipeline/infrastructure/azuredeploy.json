@@ -283,7 +283,7 @@
                         "FUNCTIONS_WORKER_RUNTIME": "node",
                         "FUNCTIONS_EXTENSION_VERSION": "~3",
                         "WEBSITE_NODE_DEFAULT_VERSION": "~10",
-                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.default]"
+                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.default.internal]"
                     }
                 }
             ]
