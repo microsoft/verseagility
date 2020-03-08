@@ -133,6 +133,7 @@ farm_model_lookup = {
         'en' : 'albert-base-v2'
     },
     'distilbert' : {
+        'xx' : 'distilbert-base-multilingual-cased',
         'de' : 'distilbert-base-german-cased'
     }
 }

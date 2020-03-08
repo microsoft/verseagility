@@ -226,11 +226,16 @@ class Data():
         logger.warning(f'SAVED: {self.fn_lookup[fn]}')
 
     def load(self, fn, header=0, encoding='utf-8', file_type='dataframe'):
+        if fn in self.fn_lookup:
+            fn = self.fn_lookup[fn]
         if file_type == 'dataframe':
-            return pd.read_csv(self.fn_lookup[fn], sep='\t', encoding=encoding, header=header)
+            data = pd.read_csv(fn, sep='\t', encoding=encoding, header=header)
         elif file_type == 'list':
-            with open(self.fn_lookup[fn], encoding=encoding) as f:
+            with open(fn, encoding=encoding) as f:
                 data = f.readlines()
-            return data
+        elif file_type == 'json':
+            with open(fn, encoding=encoding) as f:
+                data = json.load(f)
         else:
             raise Exception(f'[ERROR] - file type ({file_type}) not supported in data loader')
+        return data
