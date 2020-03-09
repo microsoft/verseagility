@@ -297,7 +297,7 @@
                     ],
                     "properties": {
                       "FunctionHostKey": {
-                        "value": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys.internal]",
+                        "value": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2016-08-01').functionKeys]",
                         "type": "Custom"
                       }
                     }
