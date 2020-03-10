@@ -293,7 +293,8 @@
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
                         "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
                         "[resourceId('Microsoft.Web/sites/sourcecontrols/', variables('functionName'), 'web')]",
-                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
+                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]",
+                        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
                     ],
                     "properties": {
                       "FunctionHostKey": {
