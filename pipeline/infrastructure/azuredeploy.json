@@ -13,6 +13,7 @@
         "amlWorkspaceName": "[toLower(concat('vers-aml-workspace-', uniqueString(resourceGroup().id) ) )]",
         "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]",
         "repoURL": "https://github.com/christian-vorhemus/function-app.git",
+        "ocrName": "[toLower(concat('versocr', uniqueString(resourceGroup().id) ) )]",
         "branch": "master"
     },
     "outputs": {
@@ -293,6 +294,19 @@
                     }
                 }
             ]
+        },
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[variables('ocrName')]",
+            "location": "westeurope",
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "ComputerVision",
+            "properties": {
+                "customSubDomainName": "[variables('ocrName')]"
+            }
         },
         {
             "type": "Microsoft.Web/sites/config",
