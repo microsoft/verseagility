@@ -15,6 +15,12 @@
         "repoURL": "https://github.com/christian-vorhemus/function-app.git",
         "branch": "master"
     },
+    "outputs": {
+        "functionKeys": {
+          "type": "object",
+          "value": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01')]"
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.DocumentDB/databaseAccounts",
@@ -282,25 +288,8 @@
                         "CosmosDBConnectionString": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName')), '2019-12-12').connectionStrings[0].connectionString]",
                         "FUNCTIONS_WORKER_RUNTIME": "node",
                         "FUNCTIONS_EXTENSION_VERSION": "~3",
-                        "WEBSITE_NODE_DEFAULT_VERSION": "~10"
-                    }
-                },
-                {
-                    "apiVersion": "2015-08-01",
-                    "name": "connectionstrings",
-                    "type": "config",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
-                        "[resourceId('Microsoft.Web/sites/sourcecontrols/', variables('functionName'), 'web')]",
-                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]",
-                        "[resourceId('Microsoft.DocumentDB/databaseAccounts', variables('databaseName'))]"
-                    ],
-                    "properties": {
-                      "FunctionHostKey": {
-                        "value": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.default]",
-                        "type": "Custom"
-                      }
+                        "WEBSITE_NODE_DEFAULT_VERSION": "~10",
+                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.default]"
                     }
                 }
             ]
