@@ -249,26 +249,11 @@
                     "type": "Microsoft.Web/sites/host/functionKeys",
                     "apiVersion": "2018-11-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('Microsoft.Web/sites/sourcecontrols/', variables('functionName'), 'web')]"
+                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]"
                     ],
                     "name": "[concat(variables('functionName'), '/default/internal')]",
                     "properties": {
                         "name": "internal"
-                    }
-                },
-                {
-                    "apiVersion": "2018-11-01",
-                    "name": "web",
-                    "type": "sourcecontrols",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
-                    ],
-                    "properties": {
-                        "RepoUrl": "[variables('repoURL')]",
-                        "branch": "[variables('branch')]",
-                        "IsManualIntegration": true
                     }
                 },
                 {
@@ -278,7 +263,8 @@
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
                         "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
-                        "[resourceId('Microsoft.CognitiveServices/accounts', variables('ocrName'))]"
+                        "[resourceId('Microsoft.CognitiveServices/accounts', variables('ocrName'))]",
+                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
                     ],
                     "tags": {
                         "displayName": "appsettings"
@@ -291,7 +277,8 @@
                         "FUNCTIONS_WORKER_RUNTIME": "node",
                         "FUNCTIONS_EXTENSION_VERSION": "~3",
                         "WEBSITE_NODE_DEFAULT_VERSION": "~10",
-                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.default]",
+                        "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/christian-vorhemus/function-app/archive/v1.0.zip",
+                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.internal]",
                         "CognitiveServiceKey": "[listkeys(concat(resourceId('Microsoft.CognitiveServices/accounts', variables('ocrName'))),'2017-04-18').key1]",
                         "CognitiveServiceName": "[variables('ocrName')]"
                     }
