@@ -278,7 +278,7 @@
                         "FUNCTIONS_EXTENSION_VERSION": "~3",
                         "WEBSITE_NODE_DEFAULT_VERSION": "~10",
                         "WEBSITE_RUN_FROM_PACKAGE": "https://github.com/christian-vorhemus/function-app/archive/v1.0.zip",
-                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.internal]",
+                        "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.default]",
                         "CognitiveServiceKey": "[listkeys(concat(resourceId('Microsoft.CognitiveServices/accounts', variables('ocrName'))),'2017-04-18').key1]",
                         "CognitiveServiceName": "[variables('ocrName')]"
                     }
