@@ -262,8 +262,7 @@
                     "type": "sourcecontrols",
                     "dependsOn": [
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
-                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]",
-                        "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
+                        "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
                     ],
                     "properties": {
                         "RepoUrl": "[variables('repoURL')]",
