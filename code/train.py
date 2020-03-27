@@ -23,6 +23,8 @@ STEPS:
 OUTPUT:
 - status
 """
+#NOTE: the following is a workaround for AML to load modules
+import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import argparse
 import mlflow
 from farm.utils import MLFlowLogger

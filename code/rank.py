@@ -26,7 +26,7 @@ class Rank():
     def __init__(self, task, rank_type='historical', inference=False):
         self.dt_rank = dt.Data(task=task, inference=inference)
         # Load bm25
-        with open(self.dt_rank.fn_lookup['fn_rank'], 'rb') as fh:  
+        with open(self.dt_rank.get_path('fn_rank', dir = 'model_dir'), 'rb') as fh:  
             self.bm = pickle.load(fh)
             self.data = pickle.load(fh)
 
@@ -67,7 +67,7 @@ def create_bm25():
     # Run arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", 
-                    default=1,
+                    default=4,
                     type=int,
                     help="Task where: \
                             -task 1 : classification subcat \
@@ -84,25 +84,23 @@ def create_bm25():
 
     # Load data
     cl = pr.Clean(task=args.task, download_train=args.download_train)
-    ##TODO: move download to data, load data only
-    data = cl.dt.load('fn_clean')
+    data = cl.dt.load('fn_clean', dir = 'data_dir')
 
     # Split tokenized data
-    #TODO: improve tokenizer
-    toks = [t.split(' ') for t in data.question_clean.to_list()]
+    toks = data.question_clean.apply(cl.transform_by_task).to_list()
 
     # Create BM25 Object
     bm = bm25.BM25(toks)
 
     # Dump objects
-    with open(cl.dt.fn_lookup['fn_rank'], 'wb') as fp:
+    with open(cl.dt.get_path('fn_rank', 'model_dir'), 'wb') as fp:
         pickle.dump(bm, fp)
         pickle.dump(data, fp)
-    logger.warning('[INFO] Create and stored BM25 object.')
+    logger.warning('[INFO] Created and stored BM25 object.')
 
     # Upload
     if args.register_model:
-        cl.dt.upload(cl.dt.fn_lookup['fn_rank'], task = args.task, destination='model')
+        cl.dt.upload('model_dir', destination = 'model')
 
 if __name__ == "__main__":
     create_bm25()

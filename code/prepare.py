@@ -8,6 +8,8 @@ Example (in the command line):
 > conda activate nlp
 > python code/prepare.py --do_format --task 1
 """
+#NOTE: the following is a workaround for AML to load modules
+import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import os
 import spacy
 import pandas as pd
@@ -58,13 +60,10 @@ class Clean():
         self.dt = dt.Data(task=self.task, inference=inference)
 
         # Download data, if needed #TODO: move all downloads to data
-        if download_source and not os.path.isfile(self.dt.fn_lookup.get('fn_source')):
-            self.dt.download(dataset_name = self.dt.n_source, source = 'datastore') #TODO: still downloading?
+        if download_source and not os.path.isfile(self.dt.get_path('fn_source')):
+            self.dt.download('fn_source', dir = 'root_dir', source = 'datastore') #TODO: still downloading?
         if download_train:
-            self.dt.download(step = 'extra', source = 'datastore')
-            self.dt.download(task = task, step = 'train', source = 'datastore')
-        # if inference:
-            # self.dt.download(step = 'extra', source = 'datastore') #TODO: not working in deployed
+            self.dt.download('data_dir', dir = 'data_dir', source = 'datastore')
 
         # Load spacy model
         self.nlp = he.load_spacy_model(language=self.language, disable=['ner','parser','tagger'])
@@ -73,14 +72,14 @@ class Clean():
         stopwords_active = []
         ## Load names
         try:
-            names = self.dt.load('fn_names', file_type='list')
+            names = self.dt.load('fn_names', dir = 'asset_dir', file_type = 'list')
             stopwords_active = stopwords_active + names
         except FileNotFoundError as e:
             logger.warning(f'[WARNING] No names list loaded: {e}')
         
         ## Load stopwords
         try:
-            stopwords = self.dt.load('fn_stopwords', file_type='list')
+            stopwords = self.dt.load('fn_stopwords', dir = 'asset_dir', file_type = 'list')
             stopwords_active = stopwords_active + stopwords
         except FileNotFoundError as e:
             logger.warning(f'[WARNING] No stopwords list loaded: {e}')
@@ -277,7 +276,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     if do_format:
         data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
     else:
-        data = cl.dt.load('fn_prep')
+        data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
 
     # Load text & label field
@@ -317,14 +316,14 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         df_cat_test = data_red.loc[test_index]
     
     # Save data
-    cl.dt.save(data_red, fn = 'fn_clean')
-    cl.dt.save(df_cat_train[['text','label']], fn = 'fn_train')
-    cl.dt.save(df_cat_test[['text','label']], fn = 'fn_test')
-    cl.dt.save(label_list, fn = 'fn_label', header=False)
+    cl.dt.save(data_red, fn = 'fn_clean', dir = 'data_dir')
+    cl.dt.save(df_cat_train[['text','label']], fn = 'fn_train', dir = 'data_dir')
+    cl.dt.save(df_cat_test[['text','label']], fn = 'fn_test', dir = 'data_dir')
+    cl.dt.save(label_list, fn = 'fn_label', header=False, dir = 'data_dir')
 
     # Upload data
     if register_data:
-        cl.dt.upload('fp_data', task=task, step='train', destination='dataset')
+        cl.dt.upload('data_dir', destination='dataset')
 
 def prepare_ner(task, do_format, register_data):
     pass
@@ -338,7 +337,7 @@ def prepare_qa(task, do_format, min_char_length, register_data):
     if do_format:
         data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
     else:
-        data = cl.dt.load('fn_prep')
+        data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
 
     # Filter relevant question answer pairs
@@ -389,10 +388,10 @@ def prepare_qa(task, do_format, min_char_length, register_data):
     data = data.reset_index(drop=True).copy()
 
     # Save data
-    cl.dt.save(data, fn = 'fn_clean')
+    cl.dt.save(data, fn = 'fn_clean', dir = 'data_dir')
     # Upload data
     if register_data:
-        cl.dt.upload('fp_data', task=task, step='train', destination='dataset')
+        cl.dt.upload('data_dir', destination='dataset')
 
 def main(task=1, 
             do_format=False, 

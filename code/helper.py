@@ -1,6 +1,7 @@
 import os
 import configparser
 import logging
+from pathlib import Path
 import pandas as pd
 import re
 import json
@@ -58,6 +59,7 @@ def get_context():
 ############################################
 
 def get_project_config(fn):
+    _fn = f"{str((Path(__file__).parent.parent / 'code').resolve())}/config.json"
     if os.path.isfile(f'./project/{fn}'):
         with open(f'./project/{fn}', encoding='utf-8') as fp:
             params = json.load(fp)
@@ -68,9 +70,9 @@ def get_project_config(fn):
         ## Training Config
         with open('config.json', encoding='utf-8') as fp:
             params = json.load(fp)
-    elif os.path.isfile(f'./code/config.json'):
+    elif os.path.isfile(_fn):
         ## Inference Config
-        with open('./code/config.json', encoding='utf-8') as fp:
+        with open(_fn, encoding='utf-8') as fp:
             params = json.load(fp)
     else: 
         raise Exception(f'Project parameters not found -> {fn}')
@@ -191,10 +193,10 @@ def get_flair_model(language, object_type):
 
 def load_flair_model(path=None, language='xx', task='ner'):
     if task == 'ner':
-        if path is None:
-            model = SequenceTagger.load(get_flair_model(language, 'model'))
-        else:
-            model = SequenceTagger.load(path)
+        # if path is None:
+        model = SequenceTagger.load(get_flair_model(language, 'model'))
+        # else:
+            # model = SequenceTagger.load(path)
     else:
         logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
         model = None
@@ -278,4 +280,11 @@ def append_ner(v, s, e, l, t=''):
 #     data = encrypt(bytes(data, encoding='utf-8'))
 #     fn_new = fn.replace(file_type, '.enc')
 #     with open(fn_new, "wb") as text_file:
-#         text_file.write(data)
+#         text_file.write(data)#
+
+
+def get_best_argument(details, argument):
+    args_list = details['runDefinition']['arguments']
+    for i, a in enumerate(args_list):
+        if argument in a :
+            return args_list[i + 1]

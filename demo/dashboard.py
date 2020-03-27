@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Simple Demo Dashboard for the NLP Toolkit.
 
@@ -21,18 +22,34 @@ from PIL import Image
 # PARAMS 
 ########################
 
-LANGUAGES = ["en","de"]
+LANGUAGES = ["en","de","fr","es","it"]
 MODEL_ENDPOINTS = {
-    'en':'http://f85b4e51-b725-4813-b383-e2b0146539c8.westeurope.azurecontainer.io/score',
-    'de':'http://97c42256-419c-4478-bab4-70d542152037.westeurope.azurecontainer.io/score'
+    'en': 'http://f85b4e51-b725-4813-b383-e2b0146539c8.westeurope.azurecontainer.io/score', #nlp-en-test
+    'de': 'http://97c42256-419c-4478-bab4-70d542152037.westeurope.azurecontainer.io/score', #nlp-de-test
+    'fr': 'http://a8a4a234-35dd-4ba8-a350-c88a2b1a1bff.westeurope.azurecontainer.io/score', #msforum-fr-int
+    'es': "http://023db8ea-d0f7-406e-a601-65de99756dfd.westeurope.azurecontainer.io/score", #msforum-es-int
+    'it': "http://53e40381-f6f3-44c8-ad5e-f4b22fab86f1.westeurope.azurecontainer.io/score" #msforum-it-int
+    }
+ENDPOINT_KEY = {
+    'en': '',
+    'de': '',
+    'fr': 'TEdRMGKPFTp6QTGkDhWFA8SEbWa1kcE7',
+    'es': "CmfVpjRQkBD0x33dhvAa1L5mhzvBJVII",
+    'it': "IKsKInamSfLc8P2NgVD8a8z66kQmwhFl"
     }
 DEFAULT_SUBJECT = {
     'en': "Windows defender shutting everything down",
-    'de': "Win 7 ohne Updates"
+    'de': "Win 7 ohne Updates",
+    'fr': "Erreur lié à l'abonnement",
+    'es': "Error de actualizacion",
+    'it': "Fotocamera schermata nera"
     }
 DEFAULT_TEXT = {
-    'en': "I am running Windows 7. Can I have Bill Gates number, need help?! Microsoft should know better...",
-    'de': "Hallo freunde. Mein Windows 7 Rechner will keine Updates mehr laden. Normalerweise funktionieren die Microsoft produkte so gut! Kann Bill Gates mir nicht helfen?"
+    'en': "I am running Windows 7 - I thought it couldn't get a virus. Can I have Bill Gates number, need help?! Microsoft should know better...",
+    'de': "Hallo freunde. Mein Windows 7 Rechner will keine Updates mehr laden - mit folgendem fehlercode 0xa00f4289. Normalerweise funktionieren die Microsoft produkte doch so gut! Kann Bill Gates mir nicht helfen?",
+    'fr': "J'ai renouvelé mon abonnement office et j'obtiens toujous le message d'erreur 'Nous avons rencontré un problème lié à votre abonnement...' J'ai fait tout ce qui est proposé y compris désinstaller et ré-installer et j'obtiens toujours le message d'erreur. Merci de me dire comment régler le tout.",
+    'es': "Cuándo actualizo mi laptop Windows 7 no se actualiza y se queda en 27% y 30% Se reinicia y no la actualiza necesito ayuda.",
+    'it': "Buonasera, se apro la fotocamera, la schermata resta nera e ogni tanto compare il messaggio Non è possibile trovare la fotocamera... codice errore fotocamera 0xa00f4289 Acitve Camera Unplugged. Ho fatto varie verifiche nelle impostazioni del pc (win 10), provato ad aggiornare il driver, disinstallare e riavviare, ho aggiunto la fotocamera nelle eccezioni dell'antivirus... Cosa potrei fare ancora? Grazie!"
     }
 
 ########################
@@ -40,12 +57,13 @@ DEFAULT_TEXT = {
 ########################
 
 HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem; margin-bottom: 2.5rem">{}</div>"""
+# Logo loading
 try:
     logo = Image.open('~/app/logo2_nbg.PNG')
-    # ms = Image.open('~/app/microsoft.png')
+    ms = Image.open('~/app/microsoft.png')
 except FileNotFoundError:
     logo = Image.open('logo2_nbg.png')
-    # ms = Image.open('microsoft.png')
+    ms = Image.open('microsoft.png') 
 
 # @st.cache(allow_output_mutation=True)
 def load_model(name):
@@ -73,11 +91,13 @@ def validate_concat(col1, col2, max_len=1000):
 
 # @st.cache(allow_output_mutation=True)
 def process_text(model_name, subject, text):
-    r = requests.post(MODEL_ENDPOINTS[lang], json=[{
-		"subject": subject,
-		"body":text
-	}
-    ])
+    r = requests.post(MODEL_ENDPOINTS[lang], 
+        json=[{
+            "subject": subject,
+            "body":text
+        }],
+        headers={"Authorization": f"Bearer {ENDPOINT_KEY[lang]}"}
+    )
     nlp = load_model(model_name)
     return nlp, nlp(validate_concat(subject, text)[0]), r.json()
 
@@ -97,15 +117,14 @@ support emails and attachments.
 st.sidebar.subheader("Language")
 lang = st.sidebar.selectbox("Select language", LANGUAGES)
 
-# # Credits
-# st.sidebar.subheader("Credits")
-# st.sidebar.markdown(
-# """
-# Authors: Timm Walz, Martin Kayser
+# Credits
+st.sidebar.subheader("Data Source")
+st.sidebar.markdown(
+"""
+https://answers.microsoft.com/
 
-# Powered by
-# """
-# )
+"""
+)
 # st.sidebar.image(ms, width=200)
 
 # Submit text
@@ -118,15 +137,29 @@ st.button("Submit")
 
 st.header("--------------------------------------------------------------")
 
-# Classification Output
-st.header(f"CATEGORY")
-res_cat = res[0].get('result')[0]
-st.subheader(f"> {res_cat.get('category').capitalize()} ({res[0].get('result')[0].get('score')})")
+# Get results
+res_cat = None
+res_ner = None
+res_qa = None
+for r in res:
+    if r.get('task') == 1:
+        res_cat = r
+    elif r.get('task') == 3:
+        res_ner = r
+    elif r.get('task') == 4:
+        res_qa = r
+
+# Classification Output 
+##TODO: show logo
+if res_cat is not None:
+    st.header(f"CATEGORY")
+    res_cat = res_cat.get('result')[0]
+    st.subheader(f"> {res_cat.get('category').capitalize()} ({res[0].get('result')[0].get('score')})")
 
 # Extracted Entities
-if len(res[1]['result']) > 0:
+if res_ner is not None and len(res_ner.get('result')) > 0:
     st.header("NAMED ENTITIES")
-    df_ner = pd.read_json(json.dumps(res[1]['result']))
+    df_ner = pd.read_json(json.dumps(res_ner.get('result')))
     # Get value pairs as dict
     entity_names = {x:[] for x in df_ner.label}
     for x, y in zip(df_ner.label,df_ner.value):
@@ -177,9 +210,9 @@ if len(res[1]['result']) > 0:
     ]
 
 # Similar Questions Output
-if len(res[2]['result']) > 0:
+if res_qa is not None and len(res_qa.get('result')) > 0:
     st.header("ANSWER SUGGESTIONS")
-    def_qa = pd.read_json(json.dumps(res[2]['result']))[['answer_text_clean','score','appliesTo']]
+    def_qa = pd.read_json(json.dumps(res_qa.get('result')))[['answer_text_clean','score','appliesTo']]
     for i, (a, s, t) in enumerate(zip(def_qa.answer_text_clean, def_qa.score, def_qa.appliesTo)):
         st.subheader(f'> Suggestion {i + 1}')
         st.write(a)
