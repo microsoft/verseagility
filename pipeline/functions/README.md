@@ -1,4 +1,4 @@
-# Getting started
+# NLP toolkit pipeline
 
 ## Local development
 
