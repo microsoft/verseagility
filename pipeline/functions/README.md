@@ -35,12 +35,7 @@ func host start
 
 ## Deploy to Azure
 
-<<<<<<< HEAD
-Click on the button below to start the deployment
-
-=======
 1. Click on the button to start the resource deployment:
->>>>>>> 05d879dced305289a0a322780faa587e9da4904e
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
