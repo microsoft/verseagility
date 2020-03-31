@@ -1,0 +1,7 @@
+.vscode/
+demo/
+mlruns/
+notebook/
+pipeline/
+run/
+.git/

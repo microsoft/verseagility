@@ -5,9 +5,10 @@ model assets.
 
 """
 import pandas as pd
+import numpy as np
+import pickle
 import json
 import os
-import pathlib
 from io import StringIO
 from pathlib import Path
 from azureml.core import Run, Dataset, Model
@@ -20,6 +21,38 @@ import helper as he
 import custom as cu
 
 logger = he.get_logger(location=__name__)
+
+try:
+    from azureml.core import Run, Dataset, Model, Workspace
+    from azureml.core.authentication import InteractiveLoginAuthentication
+except Exception as e:
+    logger.warning(f'AML not installed -> {e}')
+
+def get_repo_dir():
+    """Get repository root directory"""
+    root_dir = './'
+    if os.path.isdir(Path(__file__).parent.parent / 'code'):
+        root_dir = f"{str((Path(__file__).parent.parent).resolve())}/"
+    elif os.path.isdir('../code'):
+        root_dir = '../'
+    elif os.path.isdir('./code'):
+        root_dir = './'
+    else:
+        logger.warning(f'ROOT FOLDER NOT FOUND. {os.getcwd()}')
+    return root_dir
+
+def get_assets_dir():
+    """Get assets directory"""
+    assets_dir = ''
+    if os.path.isdir(Path(__file__).parent.parent / 'assets'):
+        assets_dir = f"{str((Path(__file__).parent.parent).resolve() / 'assets')}/"
+    elif os.path.isdir('../assets'):
+        assets_dir = '../assets/'
+    elif os.path.isdir('./assets'):
+        assets_dir = './assets/'
+    else:
+        logger.warning(f'ASSETS FOLDER NOT FOUND. {os.getcwd()}')
+    return assets_dir
 
 class Data():
     def __init__(self,  task            =   1,
@@ -36,177 +69,197 @@ class Data():
         self.env = cu.params.get('environment')
 
         # Directories
-        ## Asset directory
+        self.data_dir = f'{self.name}-data-{self.task}'
+        self.model_dir = f"{self.name}-model-t{self.task}"
         ## Assuming deployment via AzureML
         if 'AZUREML_MODEL_DIR' in os.environ:
-            self.data_dir = f"{os.environ['AZUREML_MODEL_DIR']}/{self.name}-{self.task}-{self.env}"
-            if os.path.isdir(self.data_dir):
+            _dir = f"{os.environ['AZUREML_MODEL_DIR']}/{self.model_dir}"
+            if os.path.isdir(_dir):
                 ### Deployed with multiple model objects in AML
-                self.data_dir = f'{self.data_dir}/{os.listdir(self.data_dir)[0]}'
+                self.root_dir = f'{_dir}/{os.listdir(_dir)[0]}/'
             else:
                 ### Deployed with single model objects in AML
-                self.data_dir = f"{os.environ['AZUREML_MODEL_DIR']}"
+                self.root_dir = f"{os.environ['AZUREML_MODEL_DIR']}/"
         else:
-            self.data_dir =  os.path.abspath(cu.params.get('data_dir'))
-            os.makedirs(self.data_dir, exist_ok=True)
-        logger.warning(f'[INFO] Root data directory: {self.data_dir}')
+            self.root_dir = f"{os.path.abspath(cu.params.get('data_dir'))}/"
+            os.makedirs(f"{self.root_dir}{self.data_dir}", exist_ok=True)
+            os.makedirs(f"{self.root_dir}{self.model_dir}", exist_ok=True)
         
-        ## Model directory
-        self.n_model = f"{self.name}-model-t{self.task}"
-        ### NOTE: source file expected to follow naming convention, otherwise edit here
-        self.n_source = f"{cu.params.get('name')}-source"
+        logger.warning(f'[INFO] Root directory: {self.root_dir}')
+        logger.warning(f'[INFO] Data directory: {self.data_dir}')
+        logger.warning(f'[INFO] Model directory: {self.model_dir}')
 
         # Lookup
+        ## Directory
+        self.dir_lookup = {
+            'repo_dir'   : get_repo_dir(),
+            'root_dir'   : self.root_dir,
+            'data_dir'   : self.data_dir,
+            # 'train_dir'  : self.train_dir,
+            'model_dir'  : self.model_dir,
+            'asset_dir'  : get_assets_dir()
+        }
+        ## Filename
         self.fn_lookup = {
-            ## LOCAL
-            'fp_data'   : self.data_dir,
-            'fn_source' : f'{self.data_dir}/{self.n_source}.{cu.params.get("prepare").get("data_type")}',
-            'fn_prep'   : f'{self.data_dir}/data-l{self.language}.txt',
-            'fn_clean'  : f'{self.data_dir}/clean-l{self.language}-t{self.task}.txt',
-            'fn_train'  : f'{self.data_dir}/train-l{self.language}-t{self.task}.txt',
-            'fn_test'   : f'{self.data_dir}/test-l{self.language}-t{self.task}.txt',
-            'fn_label'  : f'{self.data_dir}/label-l{self.language}-t{self.task}.txt',
-            'fn_eval'   : f'TODO:',
-            'fp_model'  : f'{self.data_dir}/{self.n_model}',
-            ## ASSETS #TODO: cleanup
-            # 'fn_asset'      : f'{self.data_dir}/assets-{self.language}.zip',     
-            # 'fn_cat'        : self.model_dir.replace('model_type', cu.params.get('tasks').get('1').get('model_type')),
-            'fn_rank'       : f'{self.data_dir}/data-l{self.language}-t4.pkl',
-            'fn_ner_list'   : f'{self.data_dir}/ner.txt',
-            'fn_ner_flair'  : f'{self.data_dir}/{he.get_flair_model(self.language, "fn")}',
-            'fn_ner_spacy'  : f'TODO:',
-            'fn_names'      : f'{self.data_dir}/names.txt',
-            'fn_stopwords'  : f'{self.data_dir}/stopwords-{self.language}.txt',
+            'fn_source'     : f"{self.name}-source.json",
+            'fn_prep'       : f'data-l{self.language}.txt',
+            'fn_train'      : f'train-l{self.language}-t{self.task}.txt',
+            'fn_clean'      : f'clean-l{self.language}-t{self.task}.txt',
+            'fn_test'       : f'test-l{self.language}-t{self.task}.txt',
+            'fn_label'      : f'label-l{self.language}-t{self.task}.txt',
+            'fn_rank'       : f'data-l{self.language}-t4.pkl',
+            'fn_ner_list'   : f'ner.txt',
+            'fn_ner_flair'  : f'{he.get_flair_model(self.language, "fn")}',
+            'fn_names'      : f'names.txt',
+            'fn_stopwords'  : f'stopwords-{self.language}.txt',
         }
 
-        # AML Components
+        # Load AML
         try:
             run = Run.get_context()
             self.ws = run.experiment.workspace
         except Exception as e:
+            #TODO: for local runs only
+            # auth = InteractiveLoginAuthentication(tenant_id="72f988bf-86f1-41af-91ab-2d7cd011db47")
+            # self.ws = Workspace.get(name='nlp-ml', 
+            #                 subscription_id='50324bce-875f-4a7b-9d3c-0e33679f5d72', 
+            #                 resource_group='nlp',
+            #                 auth=auth)
             logger.warning(f'[WARNING] AML Workspace not loaded -> {e}')
 
-    ### DOWNLOAD
-    def _download_blob(self):
-        # self.block_blob_service = BlockBlobService(account_name=run_config['blob']['account'], 
-        #                                             account_key=run_config['blob']['key'])
-        # if no_run_version:
-        #     self.block_blob_service.get_blob_to_path(container, fn_blob, fn_local)
-        # elif not encrypted:
-        #     self.block_blob_service.get_blob_to_path(container, 
-        #             str(fn_blob).replace('./',''),
-        #             fn_local)
-        # elif encrypted:
-        #     self.block_blob_service.get_blob_to_path(container, 
-        #             str(fn_blob).replace('.txt', '.enc').replace('./',''),
-        #             fn_local)
-        # if to_dataframe:
-        #     with open(str(fn_local), "rb") as text_file:
-        #         _data = text_file.read()
-        #     if encrypted:
-        #         df = decrypt(_data, dataframe=True)
-        #     else:
-        #         df = pd.read_csv(_data, sep='\t', error_bad_lines=False, warn_bad_lines=False,  encoding='utf-8') 
-        #     df.to_csv(fn_local, sep='\t', encoding='utf-8', index=False)
-        pass
-
-    def _download_datastore(self, dataset_name, task, step):
-        run = Run.get_context()
-        ws = run.experiment.workspace
-        if dataset_name is None:
-            if task != '':
-                task = f'-{task}'
-            dataset_name = f'{cu.params.get("name")}{task}-{step}-{cu.params.get("environment")}'
+        # Load Storage Account
         try:
-            Dataset.get_by_name(workspace=ws, name=dataset_name).download(target_path=self.data_dir, overwrite=True)
+            from azure.storage.blob import BlockBlobService
+            self.blob_connection_string = ''
+            self.bbs = BlockBlobService(connection_string=self.blob_connection_string)
         except Exception as e:
-            logger.warning(f'[WARNING] Dataset {dataset_name} not found. Trying without <env>. -> {e}')
-            Dataset.get_by_name(workspace=ws, name=dataset_name.replace(f'_{self.env}', '')).download(target_path=self.data_dir, overwrite=True)
-        logger.warning(f'[INFO] Downloaded data from data store {dataset_name}')
+            logger.warning(f'[WARNING] Storage account not loaded -> {e}')
 
-    def _download_model(self, dataset_name, task):
-        from azureml.core import Model
-        run = Run.get_context()
-        ws = run.experiment.workspace
-        name = f'{cu.params.get("name")}-{task}-{cu.params.get("environment")}'
-        Model(ws, name=name).download(self.fn_lookup['fp_model'])
-        #NOTE: models are passed as assets, and do not need to be downloaded
 
-    def download(self, dataset_name=None, 
-                        task='',
-                        step='',
+    def get_path(self, fn, dir='root_dir'):
+        """Resolve standardized file and directory paths"""
+        # Resolve fn
+        if fn in self.fn_lookup:
+            fn = self.fn_lookup.get(fn)
+        elif fn in self.dir_lookup:
+            if 'root' in fn:
+                dir = None
+            fn = self.dir_lookup.get(fn)
+
+        # Append directory
+        # ## If deployed to AML
+        # if fn in self.root_dir:
+        #     fn = self.root_dir
+        #     dir = None
+        # ## Else append directory
+        if dir is not None:
+            if dir == 'repo_dir':
+                fn = f"{self.dir_lookup.get('repo_dir')}{fn}"
+            elif dir == 'root_dir':
+                fn = f"{self.root_dir}{fn}"
+            elif dir == 'data_dir':
+                fn = f"{self.root_dir}{self.data_dir}/{fn}"
+            elif dir == 'model_dir':
+                fn = f"{self.root_dir}{self.model_dir}/{fn}"
+            elif dir == 'asset_dir':
+                fn = f"{self.dir_lookup.get('asset_dir')}{fn}"
+        return fn
+
+    ##### DOWNLOAD #####
+    def _download_blob(self, fn, fp):
+        """Download from blob storage account"""
+        self.bbs.get_blob_to_path(self.name, fn, fp)
+
+    def _download_datastore(self, fn, dir='data_dir'):
+        """Download from AML Data Store"""
+        Dataset.get_by_name(workspace=self.ws, name=fn).download(target_path=self.get_path(dir), overwrite=True)
+    
+    def _download_model(self, fn, dir='model_dir'):
+        """Download from AML Model Management"""
+        Model(self.ws, name=fn).download(self.get_path(dir))
+        #NOTE: models are loaded in inference, and do not need to be downloaded
+
+    def download(self, fn ='', 
+                        dir = 'root_dir',
                         container=None, 
-                        fn_blob=None, 
-                        fn_local=None,
-                        no_run_version=False,
-                        encrypted=False,
-                        to_dataframe=False,
                         source='datastore'):
         """Download file from online storage"""
+        fn = self.get_path(fn, dir=None)
+        fp = self.get_path(fn, dir=dir)
+
         if source == 'blob':
-            self._download_blob()
+            self._download_blob(fn, fp)
         elif source == 'datastore':
-            self._download_datastore(dataset_name, task, step)
+            self._download_datastore(fn, dir = dir)
         elif source == 'model':
-            self._download_model(dataset_name, task)
+            self._download_model(fn)  # TODO: include dir
         else:
             logger.warning(f'[ERROR] Source <{source}> does not exist. Cannot download file.')
+        logger.warning(f'[INFO] Downloaded data {fn} from {source}')
 
     ### UPLOAD
-    def _upload_dataset(self, fp, task, step, ws):
+    def _upload_blob(self, fn, fp):
+        """Upload to blob storage"""
+        self.bbs.create_blob_from_path(self.name, fn, fp)
+    
+    def _upload_datastore(self, fn, fp):
         """Upload dataset to AzureML Datastore
         Note:
         -only works for single file or directory
         -not meant for model assets, see _upload_model
         """
-        target_name = f'{cu.params.get("name")}-{task}-{step}-{cu.params.get("environment")}'
-        datastore = ws.get_default_datastore()
+        datastore = self.ws.get_default_datastore()
         if os.path.isdir(fp):
-            datastore.upload(src_dir = str(fp),
-                        target_path = target_name,
+            datastore.upload(src_dir = fp,
+                        target_path = fn,
                         overwrite = True,
                         show_progress = True)
         elif os.path.isfile(fp):
             datastore.upload_files([fp],
-                                target_path = target_name,
+                                target_path = fn,
                                 overwrite = True,
                                 show_progress = True)
         else:
-            raise Exception(f'File type not determined for {fp}, could not upload to datastore.')
-        ds = Dataset.File.from_files([(datastore, target_name)])
-        ds.register(workspace = ws,
-                    name = target_name,
-                    description = f'Data set for {step}',
+            raise Exception(f'File type not determined for {fn}, could not upload to datastore.')
+        ds = Dataset.File.from_files([(datastore, fn)])
+        ds.register(workspace = self.ws,
+                    name = fn,
+                    description = f'Data for task {self.task}',
                     create_new_version = True)
 
-    def _upload_model(self, fp, task, ws):
+    def _upload_model(self, fn, fp):
         """Upload model assets to AzureML Models"""
-        Model.register(workspace=ws,
-                model_name=f'{cu.params.get("name")}-{task}-{cu.params.get("environment")}',
+        Model.register(workspace = self.ws,
+                model_name= fn, 
                 model_path=fp, # Local file to upload and register as a model.
                 description='Model assets',
-                tags={'task' : task,
+                tags={'task' : self.task,
                     'language': cu.params.get('language'), 
                     'environment': cu.params.get('environment')})
-
-    def upload(self, fp, task='', step='', destination='model'):
+    
+    def upload(self,    fp, 
+                        dir='root_dir', 
+                        destination='model'):
         """Upload any data or assets to the cloud"""
-        if fp in self.fn_lookup:
-            fp = self.fn_lookup[fp]
-        if destination == 'dataset':
-            self._upload_dataset(fp, task, step, self.ws)
+        fn = self.get_path(fp, dir=None)
+        fp = self.get_path(fp, dir=dir)
+
+        if destination == 'blob':
+            self._upload_blob(fn, fp)
+        elif destination == 'dataset':
+            self._upload_datastore(fn, fp)
         elif destination == 'model':
-            self._upload_model(fp, task, self.ws)
+            self._upload_model(fn, fp) 
         else:
-            logger.warning(f'[ERROR] Destination <{destination}> does not exist. Can not upload file.')
+            logger.warning(f'[ERROR] Destination <{destination}> does not exist. Cannot upload file.')
         logger.warning(f'[INFO] Upload complete to <{destination}> completed.')
 
-    ## PROCESS
+    ##### PROCESS #####
     def process(self, data_type='json', save=True):
         """Convert source data to normalized data structure"""
         # Load source data
         if data_type == 'json':
-            with open(self.fn_lookup['fn_source'], encoding='utf-8') as fp:
+            with open(self.get_path('fn_source', dir='root_dir'), encoding='utf-8') as fp:
                 data = json.load(fp)
         elif data_type == 'dataframe':
             data = self.load('fn_source')
@@ -221,21 +274,53 @@ class Data():
             self.save(df, 'fn_prep')
         return df
 
-    def save(self, data, fn, header=True):
-        data.to_csv(self.fn_lookup[fn], sep='\t', encoding='utf-8', index=False, header=header)
-        logger.warning(f'SAVED: {self.fn_lookup[fn]}')
-
-    def load(self, fn, header=0, encoding='utf-8', file_type='dataframe'):
-        if fn in self.fn_lookup:
-            fn = self.fn_lookup[fn]
+    ##### I/O #####
+    def save(self, data, fn, file_type='dataframe', dir = 'data_dir', 
+                sep='\t', encoding='utf-8', header=True, index=False):
+        """Data saver
+        
+        Save/dump supported data types in standardized manner.
+        """
+        fn = self.get_path(fn, dir=dir)
         if file_type == 'dataframe':
-            data = pd.read_csv(fn, sep='\t', encoding=encoding, header=header)
+            data.to_csv(fn, sep=sep, encoding=encoding, index=index, header=header)
         elif file_type == 'list':
-            with open(fn, encoding=encoding) as f:
-                data = f.readlines()
+            with open(fn, 'w', encoding=encoding) as f:
+                f.writelines(data)
+        elif file_type == 'json':
+            with open(fn, 'w', encoding=encoding) as f:
+                json.dump(data, f)
+        elif file_type == 'numpy':
+            data.save(fn)
+        elif file_type == 'pickle':
+            with open(fn, 'wb') as f:
+                pickle.dump(data, f)
+        else:
+            raise Exception(f'[ERROR] - file type ({file_type}) not supported in data saver. {fn} not saved.')
+        logger.warning(f'SAVED: {fn}')
+
+    def load(self, fn, file_type='dataframe', dir = 'data_dir',
+                    sep='\t', encoding='utf-8', header=0, low_memory=True, dtype=None):
+        """Data loader
+        
+        Load/read supported data types in standardized manner.
+        """
+        fn = self.get_path(fn, dir=dir)
+        if file_type == 'dataframe':
+            data = pd.read_csv(fn, sep=sep, encoding=encoding, header=header, low_memory=low_memory, dtype=dtype)
+        elif file_type == 'list':
+            data = [line.rstrip('\n') for line in open(fn, encoding=encoding)]
         elif file_type == 'json':
             with open(fn, encoding=encoding) as f:
                 data = json.load(f)
+        elif file_type == 'numpy':
+            data = np.load(fn)
+        elif file_type == 'pickle':
+            with open(fn, 'rb') as f:
+                data = pickle.load(f)
+        elif file_type == 'parquet':
+            data = pd.read_parquet(fn)
         else:
-            raise Exception(f'[ERROR] - file type ({file_type}) not supported in data loader')
+            raise Exception(f'[ERROR] - file type ({file_type}) not supported in data loader. {fn} not loaded.')
+        logger.warning(f'LOADED: {fn}')
         return data

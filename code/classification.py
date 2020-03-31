@@ -53,16 +53,16 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     # Data
     dt_task = dt.Data(task=task)
     ## Download training files
-    if not os.path.isfile(dt_task.fn_lookup['fn_train']):
-        dt_task.download(task = task, step = 'train', source = 'datastore')
+    if not os.path.isfile(dt_task.get_path('fn_train', dir='data_dir')):
+        dt_task.download('data_dir', dir = 'data_dir', source = 'datastore')
 
     # Settings
     set_all_seeds(seed=42)
     use_amp = None
-    device, n_gpu = initialize_device_settings(use_cuda=use_cuda, use_amp=use_amp)
+    device, n_gpu = initialize_device_settings(use_cuda = use_cuda, use_amp = use_amp)
     lang_model = he.get_farm_model(model_type, language)
-    save_dir = dt_task.fn_lookup['fp_model']
-    label_list = dt_task.load('fn_label', header=None)[0].to_list()
+    save_dir = dt_task.get_path('model_dir')
+    label_list = dt_task.load('fn_label', dir = 'data_dir', header = None)[0].to_list()
     
     # AML log
     try:
@@ -109,8 +109,8 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
                                             label_list=label_list,
                                             metric=metric,
                                             label_column_name="label",
-                                            train_filename=dt_task.fn_lookup['fn_train'],
-                                            test_filename=dt_task.fn_lookup['fn_test']
+                                            train_filename=dt_task.get_path('fn_train', dir ='data_dir'),
+                                            test_filename=dt_task.get_path('fn_test', dir = 'data_dir')
                                             )
 
 
@@ -188,7 +188,7 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
         processor.save(save_dir)
 
         if register_model:
-            dt_task.upload(save_dir, task, destination='model')
+            dt_task.upload('model_dir', destination='model')
 
 def run():
     # Run arguments

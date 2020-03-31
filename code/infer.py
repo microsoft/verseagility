@@ -2,11 +2,12 @@
 INFERENCE: Orchestration service for serving the model.
 
 """
+#NOTE: the following is a workaround for AML to load modules
+import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import os
 import json
 import shutil
-import threading
-
+# import threading
 from farm.infer import Inferencer
 
 # Custom functions
@@ -26,7 +27,7 @@ def score(task):
     task_type = cu.tasks.get(str(task)).get('type')
     if task_type == 'classification':
         _dt = dt.Data(task=task, inference=True)
-        return Inferencer.load(_dt.fn_lookup.get('fp_model'))
+        return Inferencer.load(_dt.get_path('model_dir'))
     elif task_type == 'ner':
         return ner.NER(task=task, inference=True)
     elif task_type == 'qa':
@@ -43,8 +44,6 @@ def init():
     prepare_classes = {}
     for task in cu.tasks.keys():
         task = int(task)
-        if task == 3: #TODO: temporary
-            continue
         task_models.append({
             'task' : task,
             'infer': score(task),

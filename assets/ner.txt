@@ -32,3 +32,6 @@ surface headphones	Product
 bill gates	Boss
 satya nadella	Boss
 steve ballmer	Boss
+surface	Product
+windows	Product
+office	Product

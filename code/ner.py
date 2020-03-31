@@ -2,6 +2,8 @@ import pandas as pd
 import re
 from pathlib import Path
 import logging
+import requests
+import os
 
 from spacy.matcher import PhraseMatcher
 from spacy.tokens import Span
@@ -18,6 +20,8 @@ from farm.modeling.prediction_head import TokenClassificationHead
 from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer
 from farm.utils import set_all_seeds, MLFlowLogger, initialize_device_settings
+
+from azure.ai.textanalytics import TextAnalyticsClient, TextAnalyticsApiKeyCredential
 
 # Custom functions
 import sys
@@ -42,6 +46,23 @@ class FlairMatcher(object):
             doc.ents = list(doc.ents) + [span]
         return doc
 
+class TextAnalyticsMatcher(object):
+    name = "textanalytics"
+    def __init__(self):
+        self.key = ""
+        self.endpoint = "https://nlp-csta.cognitiveservices.azure.com/"
+        self.ta_credential = TextAnalyticsApiKeyCredential(self.key)
+        self.text_analytics_client = TextAnalyticsClient(
+                endpoint=self.endpoint, credential=self.ta_credential)
+        
+    def __call__(self, doc):
+        text = doc.text
+        result = self.text_analytics_client.recognize_entities(inputs=[text])[0]
+        for entity in result.entities:
+            span = doc.char_span(entity.grapheme_offset, entity.grapheme_offset + entity.grapheme_length, label=entity.category)
+            doc.ents = list(doc.ents) + [span]
+        return doc
+
 class CustomNER():
     def init(self):
         pass
@@ -59,7 +80,7 @@ class CustomNER():
         set_all_seeds(seed=42)
         device, n_gpu = initialize_device_settings(use_cuda=True)
         lang_model = he.get_farm_model(model_type, language)
-        save_dir = dt_task.fn_lookup['fp_model']
+        save_dir = dt_task.get_path('model_dir')
         # ner_labels = dt_task.load('fn_label', header=None)[0].to_list() TODO:
         ner_labels = ["[PAD]", "X", "O", "B-MISC", "I-MISC", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-OTH", "I-OTH"]
 
@@ -153,13 +174,16 @@ class NER():
         # Load default model
         self.nlp = he.load_spacy_model(language=cu.params.get('language'), disable=['ner','parser','tagger'])
         
-        # Add flair pipeline
-        flair_matcher = FlairMatcher(dt_ner.fn_lookup['fn_ner_flair'])
-        self.nlp.add_pipe(flair_matcher)
+        # Add flair pipeline #TODO: excluding FALIR for now, to be compared with text analytics
+        # flair_matcher = FlairMatcher(dt_ner.get_path('fn_ner_flair'))
+        # self.nlp.add_pipe(flair_matcher)
+        # Text Analytics
+        ta_matcher = TextAnalyticsMatcher()
+        self.nlp.add_pipe(ta_matcher)
 
         # Load phrase matcher
         self.matcher = PhraseMatcher(self.nlp.vocab, attr="LOWER")
-        matcher_items = pd.read_csv(dt_ner.fn_lookup['fn_ner_list'], encoding='utf-8', sep = '\t')
+        matcher_items = pd.read_csv(dt_ner.get_path('fn_ner_list', dir='asset_dir'), encoding='utf-8', sep = '\t')
         for product in matcher_items['key'].drop_duplicates():
             _values = matcher_items[matcher_items['key'] == product]
             patterns = [self.nlp.make_doc(v) for v in _values.value]
