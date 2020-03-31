@@ -37,6 +37,7 @@ func host start
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fverseagility%2Fmaster%2Fpipeline%2Finfrastructure%2Fazuredeploy.json%3Ftoken%3DAAYUN4AAXA6CLH26YOWISU26PCNAE" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
+
 2. After the deployment has finished (~30min) as a workaround for now, add the function "default" host key as an environment variable
 named "FunctionHostKey" in the function (if the variable is already there, replace the value) and click "Save"
 
