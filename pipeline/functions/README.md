@@ -21,7 +21,9 @@ func extensions install
   "Values": {
     "AzureWebJobsStorage": "<AzureStorageConnectionstring>",
     "CosmosDBConnectionString": "<CosmosDBConnectionstring>",
-    "FUNCTIONS_WORKER_RUNTIME": "node"
+    "FUNCTIONS_WORKER_RUNTIME": "node",
+    "CognitiveServiceKey": "<OCRServiceKey>",
+    "CognitiveServiceName": "<OCRServiceName>"
   }
 }
 ```
