@@ -6,7 +6,7 @@ var Status;
     Status["BADREQUEST"] = "error";
 })(Status = exports.Status || (exports.Status = {}));
 class HttpResponse {
-    constructor(status = Status.SUCCESS, message = "", values = null, headers = { "Content-Type": "application/json", "X-own": "1" }) {
+    constructor(status = Status.SUCCESS, message = "", values = null, headers = { "Content-Type": "application/json" }) {
         this.status = status;
         this.message = message;
         this.values = values;

@@ -9,7 +9,7 @@ export class HttpResponse {
     private values: any;
     private headers: any;
 
-    public constructor(status: Status = Status.SUCCESS, message: string = "", values: any = null, headers: object = { "Content-Type": "application/json", "X-own": "1" }) {
+    public constructor(status: Status = Status.SUCCESS, message: string = "", values: any = null, headers: object = { "Content-Type": "application/json" }) {
         this.status = status;
         this.message = message;
         this.values = values;

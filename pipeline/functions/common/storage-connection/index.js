@@ -9,15 +9,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const storage_blob_1 = require("@azure/storage-blob");
+const http_client_1 = require("../../common/http-client");
 const streamToBuffer = require('stream-to-buf');
+const httpClient = http_client_1.HttpClient.getInstance();
 class StorageResponse {
 }
 exports.StorageResponse = StorageResponse;
 class StorageConnection {
-    constructor(account, accountKey, containerName = "data") {
+    constructor(account, accountKey, containerName = null) {
         const sharedKeyCredential = new storage_blob_1.StorageSharedKeyCredential(account, accountKey);
         this.blobServiceClient = new storage_blob_1.BlobServiceClient(`https://${account}.blob.core.windows.net`, sharedKeyCredential);
-        this.containerClient = this.blobServiceClient.getContainerClient(containerName);
+        if (containerName != null) {
+            this.containerClient = this.blobServiceClient.getContainerClient(containerName);
+        }
     }
     streamToString(readableStream) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -33,6 +37,38 @@ class StorageConnection {
             });
         });
     }
+    containerExists(containerName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                this.containerClient = this.blobServiceClient.getContainerClient(containerName);
+                var exists = yield this.containerClient.exists();
+                if (exists) {
+                    resolve(true);
+                }
+                else {
+                    resolve(false);
+                }
+            }));
+        });
+    }
+    listContainerBlobs(containerName) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+                this.containerClient = this.blobServiceClient.getContainerClient(containerName);
+                var blobs = [];
+                var iter = yield this.containerClient.listBlobsFlat();
+                var entity = yield iter.next();
+                while (!entity.done) {
+                    blobs.push(entity.value);
+                    entity = yield iter.next();
+                }
+                // for await (let blob of this.containerClient.listBlobsFlat()) {
+                //     blobs.push(blob);
+                // }
+                resolve(blobs);
+            }));
+        });
+    }
     getBlob(blobName) {
         return __awaiter(this, void 0, void 0, function* () {
             return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
@@ -42,6 +78,7 @@ class StorageConnection {
                     var contentType = response.contentType;
                     streamToBuffer(response.readableStreamBody).then((buffer) => {
                         var res = new StorageResponse();
+                        res.name = blobName;
                         res.contentType = contentType;
                         res.content = buffer;
                         resolve(res);

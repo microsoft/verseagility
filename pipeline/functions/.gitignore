@@ -42,7 +42,6 @@ Icon?
 Thumbs.db
 
 # Node Files #
-/node_modules
 /bower_components
 
 # Coverage #
@@ -58,6 +57,7 @@ Thumbs.db
 /dist
 /build
 /public/__build__/
+node_modules/
 /src/*/__build__/
 __build__/**
 .webpack.json
@@ -71,7 +71,3 @@ __build__/**
 /local.settings.json
 bin/
 obj/
-
-# Ignores compiled TypeScript files
-/*/*.js
-/*/*.js.map
