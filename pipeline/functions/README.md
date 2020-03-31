@@ -36,7 +36,7 @@ func host start
 ## Deploy to Azure
 
 1. Click on the button to start the resource deployment:
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fverseagility%2Fmaster%2Fpipeline%2Finfrastructure%2Fazuredeploy.json%3Ftoken%3DAAYUN4AAXA6CLH26YOWISU26PCNAE" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json" target="_blank">
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
 </a>
 
