@@ -61,7 +61,7 @@ Note: If you want to link attachments to the documents in the CSV file, create a
 
 2. If no matching parser is implemented, the default-parser will be used. It forwards the document to another function called "documentconverter-function". The document converter can also be called manually by performing the following HTTP request:
 `POST https://myfunctionapp.azurewebsites.net/documentconverter?code=[function-key]`
-The content of the HTTP request is of type application/json and is a single object containg the properties "name" (the name of the document), "content" (the binary file encoded as base64 string) and "conentType" (MIME-Type). It may look like this:
+The content of the HTTP request is of type application/json and is a single object containing the properties "name" (the name of the document), "content" (the binary file encoded as base64 string) and "contentType" (MIME-Type). It may look like this:
 ```javascript
 {
   "name": "sample.pdf",
