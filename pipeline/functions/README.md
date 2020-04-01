@@ -49,11 +49,11 @@ named "FunctionHostKey" in the function (if the variable is already there, repla
 
 The purpose of the pipeline is twofold: 1) It automatically processes supported documents that are put into the "data" container of the created Azure Storage. 2) It creates a REST endpoint that can be used to convert documents (like images, PDFs) into text.
 
-1. If you put files in the storage account "data" container, the files are processed and put in CosmosDB following the standardized output format.
+1. If you put files in the storage account "data" container, the files are processed and put in Cosmos DB following the standardized output format.
 
 <img src="https://github.com/microsoft/verseagility/blob/master/demo/data_container.png" width="400">
 
-What happens in the background is that the "processor-function" gets triggered. This function takes the newly added blob and parses it based on the content/MIME-type of the blob. To tell the function how a certain document has to be handled, you must write your own parser, parsers are stored in the /parsers directory. By default, three parsers are already implemented (CSV, JSON and default). If you take a look at e.g. csv-parser, you see that the job of the parser is to map content of the CSV file to an object called "OutputSchema". OutputSchema is the document schema that will be used to store the document in CosmosDB (of course you can also adopt the schema to fit your needs). For example, if your CSV file contains a list of documents and the ID in the first column (index 0), the number of views for this document in the second column and the URI to the document in the third column, the parser iterates over all rows and maps all columns to the right OutputSchema properties:
+What happens in the background is that the "processor-function" gets triggered. This function takes the newly added blob and parses it based on the content/MIME-type of the blob. To tell the function how a certain document has to be handled, you must write your own parser, parsers are stored in the /parsers directory. By default, three parsers are already implemented (CSV, JSON and default). If you take a look at e.g. csv-parser, you see that the job of the parser is to map content of the CSV file to an object called "OutputSchema". OutputSchema is the document schema that will be used to store the document in Cosmos DB (of course you can also adopt the schema to fit your needs). For example, if your CSV file contains a list of documents and the ID in the first column (index 0), the number of views for this document in the second column and the URI to the document in the third column, the parser iterates over all rows and maps all columns to the right OutputSchema properties:
 
 <img src="https://github.com/microsoft/verseagility/blob/master/demo/mapping.png" width="500">
 
@@ -72,7 +72,7 @@ The content of the HTTP request is of type application/json and is a single obje
 
 The job of the documentconverter-function is to return an XML document containing the textual representation of the binary file. If the passed file is a PDF, the text of the PDF is returned (embedded in an XML structure). If the file is an image, OCR will be performed and the result is returned.
 
-3. If you want to store documents for scoring, the "api-function" can be used. It accepts "application/json" HTTP requests and stores the documents described in the HTTP body in CosmosDB following the "OutputSchema". It also parses linked attachments that are stored in the storage account that was created during deployment. You can call the API by using
+3. If you want to store documents for scoring, the "api-function" can be used. It accepts "application/json" HTTP requests and stores the documents described in the HTTP body in Cosmos DB following the "OutputSchema". It also parses linked attachments that are stored in the storage account that was created during deployment. You can call the API by using
 `POST https://myfunctionapp.azurewebsites.net/api/score?code=[function-key]`
 
 The HTTP request body may look like this
@@ -88,5 +88,5 @@ The HTTP request body may look like this
 }
 ```
 
-The function will parse sample.pdf and add the content of the PDF as well as the other properties (subject and body in this case) to the CosmosDB collection. 
+The function will parse sample.pdf and add the content of the PDF as well as the other properties (subject and body in this case) to the Cosmos DB collection. 
 
