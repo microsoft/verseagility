@@ -2,13 +2,15 @@
 
 # NLP Toolkit
 
+See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) for detailed documentation.
+
 ## Supported Use cases
 - Binary, multi-class & multi-label classification
 - Named entity recognition
 - Question answering
 
 ## Live Demo
-> http://nlp-demo-app.azurewebsites.net/
+> https://aka.ms/nlp-demo
 
 ## Naming
 ### Azure
@@ -20,13 +22,13 @@
 
 ## TODO
 ### Project
-- [ ] Overview architecture
-- [ ] Detailed documentation
+- [x] Overview architecture
+- [x] Detailed documentation
 ### Prepare
-- [ ] connect to CosmosDB (pipeline ready)
-- [ ] **(IP)** document cracking to standardized format
+- [x] connect to CosmosDB (pipeline ready)
+- [x] document cracking to standardized format
 ### Classification
-- [ ] **(IP)** Multi label support
+- [ ] multi label support
 - [ ] integrate handling for larger documents
 - [ ] dictionaries for business logic
 - [ ] integrate handling for unbalanced datasets
@@ -45,7 +47,7 @@
 - [ ] review model bias (auto generate after each training step)
 - [ ] available models benchmark (incl AutoML)
 ### Tests
-- [ ] **(IP)** integrate testing framework (pytest)
+- [ ] unit tests (pytest)
 - [ ] automated benchmarks
 ### New Features (TBD)
 - Summarization

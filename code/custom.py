@@ -41,27 +41,27 @@ def get_placeholder(line):
 
 ## CLASSIFICATION
 def load_text(data):
-    return he.validate_concat(data.question_title, data.question_text)
+    return he.validate_concat(data.subject, data.body)
 
 def load_label(data, task):
     if task == 1:
-        label = data.appliesTo.apply(lambda x: x.split(',')[0])
+        label = data.label_classification_simple
     elif task == 2:
-        label = data.appliesTo.apply(lambda x: x.split(',')[-1])
+        label = data.label_classification_multi
     return label
 
 ## QA
 def load_qa(data):
-    return he.validate_concat(data.question_title, data.question_text), data.answer_text.values
+    return he.validate_concat(data.subject, data.body), data.label_answer_body.values
 
 def filter_qa(data):
     # Filter by marked as answer
-    _temp = data[data.answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
+    _temp = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
     if len(_temp) == 0:
-        _temp = data[data.answer_markedAsAnswer == True].reset_index(drop=True).copy()
+        _temp = data[data.label_answer_markedAsAnswer == True].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(_temp)}  \t- after marked as answer ')
     # Filter by UpVotes
     # _temp = _temp[_temp['answer_upvotes'] > 1].reset_index(drop=True).copy() #TODO: evaluate
     logger.warning(f'Data Length : {len(_temp)}  \t- after min upvotes of 2')
-    return _temp
+    return data #_temp #TODO: not used
 

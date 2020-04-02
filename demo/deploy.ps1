@@ -3,7 +3,7 @@ Deploy demo to web app.
 
 To start:
 > cd to root (/demo in repo)
-> ./deploy.ps1
+> .\deploy.ps1
 > ..update app settings in portal
 Note that this is not meant for automate deployment (yet).
 
@@ -17,7 +17,7 @@ $acr = 'nlpdemoacr'
 $image =  'nlp-demo-image'
 $sp = 'nlpdemoserviceplan'
 $app = 'nlp-demo-app'
-$url = $image + '.azurecr.io/' + $image + ':latest'
+$url = $acr + '.azurecr.io/' + $image + ':latest'
 $create = $FALSE # create or update app
 
 # az login # if needed

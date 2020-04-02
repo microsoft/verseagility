@@ -16,7 +16,6 @@ import pandas as pd
 import string
 import re
 import argparse
-
 from sklearn.model_selection import StratifiedShuffleSplit
 
 # Custom functions
@@ -34,6 +33,7 @@ class Clean():
     - EN
     - DE
     - IT
+    - ES
     - XX (multi - NER only)
 
     SUPPORTED MODULES
@@ -60,8 +60,6 @@ class Clean():
         self.dt = dt.Data(task=self.task, inference=inference)
 
         # Download data, if needed #TODO: move all downloads to data
-        if download_source and not os.path.isfile(self.dt.get_path('fn_source')):
-            self.dt.download('fn_source', dir = 'root_dir', source = 'datastore') #TODO: still downloading?
         if download_train:
             self.dt.download('data_dir', dir = 'data_dir', source = 'datastore')
 
@@ -96,6 +94,9 @@ class Clean():
                 rm_punctuation=False):
         """Remove content from text"""
     
+        if not isinstance(line, str):
+            line = str(line)
+        
         # Customer Remove
         line = cu.remove(line)
 
@@ -139,6 +140,8 @@ class Clean():
                         rp_custom=False,
                         rp_num=False):
         '''Replace text with type specfic placeholders'''
+
+
         # Customer placeholders
         line = cu.get_placeholder(line)
 
@@ -271,10 +274,9 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
 
     # Get clean object
     cl = Clean(task=task, download_source=True)
-
     # Load data
-    if do_format:
-        data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
+    if not os.path.isfile(cl.dt.get_path('fn_prep', dir = 'data_dir')) or do_format:
+        data = dt.get_dataset(cl, source="cdb")
     else:
         data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
@@ -334,8 +336,8 @@ def prepare_qa(task, do_format, min_char_length, register_data):
     cl = Clean(task=task, download_source=True)
     
     # Load data
-    if do_format:
-        data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
+    if not os.path.isfile(cl.dt.get_path('fn_prep', dir = 'data_dir')) or do_format:
+        data = dt.get_dataset(cl, source="cdb")
     else:
         data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')

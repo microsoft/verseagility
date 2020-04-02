@@ -1,5 +1,6 @@
 """
 Functions to deploy service
+(RELEASE pipeline)
 
 To run locally, use:
 > cd ./root
@@ -14,7 +15,7 @@ import logging
 import argparse
 
 from azureml.core import Workspace, Experiment, Model, Webservice
-from azureml.core.authentication import InteractiveLoginAuthentication, MsiAuthentication
+from azureml.core.authentication import InteractiveLoginAuthentication
 from azureml.core.resource_configuration import ResourceConfiguration
 from azureml.core.webservice import AciWebservice, AksWebservice
 from azureml.core import Environment
@@ -56,46 +57,16 @@ env = params.get('environment')
 ############################################
 
 ## Workspace
-# try:
-#     auth = MsiAuthentication()
-# except Exception as e:
-#     logger.warning(e)
-# auth = None
-auth = InteractiveLoginAuthentication(tenant_id="72f988bf-86f1-41af-91ab-2d7cd011db47")
-
-ws = Workspace.get(name='nlp-ml', 
-                subscription_id='50324bce-875f-4a7b-9d3c-0e33679f5d72', 
-                resource_group='nlp',
+auth = None
+# auth = InteractiveLoginAuthentication(tenant_id="72f988bf-86f1-41af-91ab-2d7cd011db47")
+ws = Workspace.get(name=he.get_secret('aml-ws-name'), 
+                subscription_id=he.get_secret('aml-ws-sid'), 
+                resource_group=he.get_secret('aml-ws-rg'),
                 auth=auth)
 
-#TODO: load from file (load_env)
-pip_packages=[
-                        'azureml-sdk',
-                        'azureml-dataprep[pandas,fuse]',
-                        'mlflow', 
-                        'azureml-mlflow',
-                        'spacy',
-                        'transformers==2.4.1',
-                        'scipy',
-                        'azure-storage-blob',
-                        'tqdm',
-                        'boto3',
-                        'scipy>=1.3.2',
-                        'sklearn',
-                        'seqeval',
-                        'dotmap==1.3.0',
-                        'farm==0.4.1',
-                        'flair==0.4.5',
-                        'azure-ai-textanalytics'
-                    ]
-conda_packages=[
-                        'pip==19.3.1', #NOTE: workaround for #745 issue
-                        # 'pytorch', #Included in the PytorchEstimator
-                        # 'torchvision',
-                        'gensim',
-                        'numpy',
-                        'pandas'
-                    ]
+# Python dependencies
+pip_packages=he.get_requirements(req_type='pip')
+conda_packages=he.get_requirements(req_type='conda')
 
 ## Local Config
 fn_config_infer = 'config.json'
@@ -129,21 +100,15 @@ if args.do_deploy:
     
     # Deployment Target
     memory_gb = 2
-    # ram_size = params.get('environment')
-    # if ram_size is not None:
-        # memory_gb = ram_size
     if compute_type == 'ACI':
         compute_config = AciWebservice.deploy_configuration(cpu_cores=2, memory_gb=memory_gb, auth_enabled=auth_enabled)
     elif compute_type == 'AKS':
-        compute_config = AksWebservice.deploy_configuration() #TODO:
+        compute_config = AksWebservice.deploy_configuration()
     
     # Prepare Environment
-    environment = Environment('farmenv')
+    environment = Environment('env')
     conda_packages = ['pytorch', 'torchvision'] +  conda_packages
-    conda_packages.remove('pip==19.3.1')
     pip_packages = ['azureml-defaults'] + pip_packages
-    # pip_packages.remove('azureml-sdk')
-    # pip_packages.remove('azureml-dataprep[pandas,fuse]')
     environment.python.conda_dependencies = CondaDependencies.create(pip_packages=pip_packages,
                                                                     conda_packages=conda_packages)
 

@@ -114,3 +114,5 @@ cache
 scraper/*.txt
 scraper/*.json
 scraper/old
+/run
+.azureml

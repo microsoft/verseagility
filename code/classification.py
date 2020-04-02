@@ -122,7 +122,6 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     )
 
     # 4. Create an AdaptiveModel
-    #TODO: pass language parameters
     ## Pretrained language model as a basis
     language_model = LanguageModel.load(lang_model)
 
@@ -244,20 +243,10 @@ def run():
                         help="Register model in AML")
     args = parser.parse_args()
 
-    # Params
-    max_seq_len     = args.max_seq_len
-    learning_rate   = args.learning_rate
-    do_lower_case   = args.do_lower_case
-    task            = args.task
-    model_type      = args.model_type
-    n_epochs        = args.n_epochs
-    batch_size      = args.batch_size
-    embeds_dropout  = args.embeds_dropout
-    evaluate_every  = args.evaluate_every
-    use_cuda        = args.use_cuda
-    register_model  = args.register_model
-
-    doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, evaluate_every, use_cuda, max_seq_len, learning_rate, do_lower_case, register_model)
+    doc_classification(args.task, args.model_type, args.n_epochs, 
+                    args.batch_size, args.embeds_dropout, args.evaluate_every, 
+                    args.use_cuda, args.max_seq_len, args.learning_rate, 
+                    args.do_lower_case, args.register_model)
 
 if __name__ == "__main__":
     run()

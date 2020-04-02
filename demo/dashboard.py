@@ -24,23 +24,23 @@ from PIL import Image
 
 LANGUAGES = ["en","de","fr","es","it"]
 MODEL_ENDPOINTS = {
-    'en': 'http://f85b4e51-b725-4813-b383-e2b0146539c8.westeurope.azurecontainer.io/score', #nlp-en-test
-    'de': 'http://97c42256-419c-4478-bab4-70d542152037.westeurope.azurecontainer.io/score', #nlp-de-test
-    'fr': 'http://a8a4a234-35dd-4ba8-a350-c88a2b1a1bff.westeurope.azurecontainer.io/score', #msforum-fr-int
-    'es': "http://023db8ea-d0f7-406e-a601-65de99756dfd.westeurope.azurecontainer.io/score", #msforum-es-int
-    'it': "http://53e40381-f6f3-44c8-ad5e-f4b22fab86f1.westeurope.azurecontainer.io/score" #msforum-it-int
-    }
+    'en': 'http://29efd3ea-2d9d-4c54-99b0-89a099f7aa80.westeurope.azurecontainer.io/score', #msforum-en-prod
+    'de': 'http://c6908907-a5a7-4e13-9f10-65244454c4f9.westeurope.azurecontainer.io/score', #msforum-de-prod
+    'fr': 'http://8ed7f04f-7204-4915-9c32-8df13f78ed05.westeurope.azurecontainer.io/score', #msforum-fr-prod
+    'es': "http://486fb2b1-8dae-4dd0-95d8-da5a28319acb.westeurope.azurecontainer.io/score", #msforum-es-prod
+    'it': "http://738fdb8f-1bfb-4a49-b0bb-fb14794cdcee.westeurope.azurecontainer.io/score" #msforum-it-prod
+}
 ENDPOINT_KEY = {
-    'en': '',
-    'de': '',
-    'fr': 'TEdRMGKPFTp6QTGkDhWFA8SEbWa1kcE7',
-    'es': "CmfVpjRQkBD0x33dhvAa1L5mhzvBJVII",
-    'it': "IKsKInamSfLc8P2NgVD8a8z66kQmwhFl"
+    'en': 'Nm8MKM8FT8KshjtPGNfKioMykltg3pGj',
+    'de': '4Y9AK0Vq9fok6KLPvdNg610Bjiax4Tha',
+    'fr': 'Hylxrkunuo7PAhubR4B931VwEfiZGno0',
+    'es': '1Zo51udDhFNEEunklGYhxVYzBkqtI0WX',
+    'it': 'HcC8eC75enP1Lx5ZebJd5SSHO03K2IXs'
     }
 DEFAULT_SUBJECT = {
     'en': "Windows defender shutting everything down",
     'de': "Win 7 ohne Updates",
-    'fr': "Erreur lié à l'abonnement",
+    'fr': "Erreur lié à l abonnement",
     'es': "Error de actualizacion",
     'it': "Fotocamera schermata nera"
     }

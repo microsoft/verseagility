@@ -49,8 +49,8 @@ class FlairMatcher(object):
 class TextAnalyticsMatcher(object):
     name = "textanalytics"
     def __init__(self):
-        self.key = ""
-        self.endpoint = "https://nlp-csta.cognitiveservices.azure.com/"
+        self.key = he.get_secret('text-analytics-key')
+        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/"
         self.ta_credential = TextAnalyticsApiKeyCredential(self.key)
         self.text_analytics_client = TextAnalyticsClient(
                 endpoint=self.endpoint, credential=self.ta_credential)
@@ -158,16 +158,6 @@ class CustomNER():
         processor.save(save_dir)
 
 
-        # 9. Load it & harvest your fruits (Inference)
-        basic_texts = [
-            {"text": "Schartau sagte dem Tagesspiegel, dass Fischer ein Idiot sei"},
-            {"text": "Martin Müller spielt Handball in Berlin"},
-        ]
-        model = Inferencer.load(save_dir)
-        result = model.inference_from_dicts(dicts=basic_texts)
-        print(result)
-
-
 class NER():
     def __init__(self, task, inference=False):
         dt_ner = dt.Data(task=task, inference=inference)
@@ -177,6 +167,7 @@ class NER():
         # Add flair pipeline #TODO: excluding FALIR for now, to be compared with text analytics
         # flair_matcher = FlairMatcher(dt_ner.get_path('fn_ner_flair'))
         # self.nlp.add_pipe(flair_matcher)
+        
         # Text Analytics
         ta_matcher = TextAnalyticsMatcher()
         self.nlp.add_pipe(ta_matcher)
@@ -200,7 +191,7 @@ class NER():
                 ent.start_char, 
                 ent.end_char, 
                 ent.label_,
-                'flair'
+                'spacy'
             ))
         return ents
 

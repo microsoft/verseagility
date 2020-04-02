@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 import re
 import json
+import yaml
 import spacy
 from flair.models import SequenceTagger
 
@@ -58,58 +59,112 @@ def get_context():
 #####   Config
 ############################################
 
+def get_repo_dir():
+    """Get repository root directory"""
+    root_dir = './'
+    if os.path.isdir(Path(__file__).parent.parent / 'code'):
+        root_dir = f"{str((Path(__file__).parent.parent).resolve())}/"
+    elif os.path.isdir('../code'):
+        root_dir = '../'
+    elif os.path.isdir('./code'):
+        root_dir = './'
+    else:
+        logging.warning('ROOT FOLDER NOT FOUND.')
+    return root_dir
+
 def get_project_config(fn):
-    _fn = f"{str((Path(__file__).parent.parent / 'code').resolve())}/config.json"
-    if os.path.isfile(f'./project/{fn}'):
-        with open(f'./project/{fn}', encoding='utf-8') as fp:
+    _fn1 = f"{get_repo_dir()}/project/{fn}"
+    _fn2 = f"{get_repo_dir()}/code/config.json"
+    if os.path.isfile(_fn1):
+        with open(_fn1, encoding='utf-8') as fp:
             params = json.load(fp)
-    elif os.path.isfile(f'../project/{fn}'):
-        with open(f'../project/{fn}', encoding='utf-8') as fp:
-            params = json.load(fp)
-    elif os.path.isfile(f'config.json'):
-        ## Training Config
-        with open('config.json', encoding='utf-8') as fp:
-            params = json.load(fp)
-    elif os.path.isfile(_fn):
+    elif os.path.isfile(_fn2):
         ## Inference Config
-        with open(_fn, encoding='utf-8') as fp:
+        with open(_fn2, encoding='utf-8') as fp:
             params = json.load(fp)
     else: 
         raise Exception(f'Project parameters not found -> {fn}')
     return params
 
-# def get_config():
-#     #TODO: remove this, new use: keys to env, settings to params
-#     # Get config
-#     run_config = configparser.ConfigParser()
-#     run_config.read('./code/config.ini')
-#     if 'path' not in run_config:
-#         run_config.read('./config.ini')
-#     if 'path' not in run_config:
-#         run_config.read('../config.ini')
-#     if 'path' not in run_config:
-#         logger.warning('[ERROR] Could not find correct config.ini.')
-#     return run_config
+def get_config():
+    """Load local config file"""
+    run_config = configparser.ConfigParser()
+    run_config.read(get_repo_dir() + 'config.ini')
+    if len(run_config) == 1:
+        run_config = None
+    return run_config
 
 ############################################
-#####   Azure
+#####   Requirements
 ############################################
 
-# def get_credentials():
-#     '''Retrieve Service Principal Credentials'''
-#     credentials = ServicePrincipalCredentials(
-#         client_id = run_config['sp']['client_id'],
-#         secret = run_config['sp']['secret'],
-#         tenant = run_config['sp']['tenant']
-#     )
-#     return credentials
+def get_requirements(req_type='conda'):
+    """Load pip requirements, for deployment"""
+    # Load requirements file
+    with open(get_repo_dir() + 'environment.yml') as file:
+        reqs = yaml.load(file, Loader=yaml.FullLoader)
+    conda = []
+    for r in reqs.get('dependencies'):
+        if not isinstance(r, str):
+            pip = r.get('pip')
+        else:
+            conda.append(r)
+    if req_type == 'conda':
+        return conda
+    elif req_type == 'pip':
+        return pip
 
-# def get_secret():
-#     '''Retrieve Secret from KeyVault'''
-#     client = KeyVaultClient(get_credentials())
-#     vault_url = run_config['keyvault']['url']
-#     vault_name = run_config['keyvault']['name_data']
-#     return client.get_secret(vault_url, vault_name, "").value
+############################################
+#####   Secret Management
+############################################
+
+def _get_sp_credentials(run_config):
+    '''Retrieve Service Principal Credentials'''
+    credentials = ServicePrincipalCredentials(
+        client_id = run_config['keyvault']['client_id'],
+        secret = run_config['keyvault']['secret'],
+        tenant = run_config['keyvault']['tenant'],
+        resource = 'https://vault.azure.net/'
+    )
+    return credentials
+
+def _get_kv_secret(run_config, name):
+    ''' Retrieve Secret from KeyVault'''
+    client = KeyVaultClient(_get_sp_credentials())
+    vault_url = run_config['keyvault']['url']
+    return client.get_secret(vault_url, name, "").value
+
+# Key Vault
+def get_secret(name):
+    """Get KeyVault Secret
+    
+    - First check Env variables (for DevOps)
+    - Then, try via local config file
+    - Last, try via AML
+    """
+    secret = None
+    if name in os.environ:
+        # Get secret from environment variable
+        secret = os.environ[name]
+    else:
+        # Get secret from AML linked KeyVault
+        try:
+            from azureml.core import Run
+            run = Run.get_context()
+            secret = run.get_secret(name=name)
+        except Exception as e:
+            logging.info(f'[WARNING] Azure ML not loaded for secret retrieval. {e}')
+            pass
+        # TODO: Get secret form config, via service principal
+        # from azure.keyvault import KeyVaultClient
+        # from azure.common.credentials import ServicePrincipalCredentials
+        # secret = _get_kv_secret(get_config(), name)
+    
+    if secret is None:
+        # Local config
+        config = get_config()['environ']
+        secret = config[name]
+    return secret
 
 ############################################
 #####   ML Frameworks
@@ -148,7 +203,7 @@ def get_farm_model(model_type, language):
     if ml is None:
         ml = mt.get('xx')
     if ml is None:
-        raise Exception('No Transformer/FARM model found')
+        raise Exception(f'No Transformer/FARM model found. model = {model_type}, lang = {language}')
     return ml
 
 spacy_model_lookup = {
