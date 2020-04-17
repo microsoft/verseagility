@@ -48,7 +48,7 @@ class Rank():
         # Filter by classified label
         if cats is not None and cats != '':
             #TODO: does not work for lists
-            _data = _data[_data.appliesTo.str.contains(cats)].reset_index(drop=True)
+            _data = _data[_data.label_classification_simple.str.contains(cats)].reset_index(drop=True)
             logger.warning(f'[INFO] Reduced answer selection to {len(_data)} from {len(self.data)}.')
         
         # BM25 Score threshold
@@ -60,7 +60,7 @@ class Rank():
         """Used for inference
         NOTE: expects one input, one output given
         """
-        return self.run(dicts[0]['text'], cats=dicts[0]['cat'])[['question_clean','answer_text_clean','appliesTo','score']].to_dict(orient='records')
+        return self.run(dicts[0]['text'], cats=dicts[0]['cat'])[['question_clean','answer_text_clean','label_classification_multi','score']].to_dict(orient='records')
 
 def create_bm25():
     """Function to create or update BM25 object"""

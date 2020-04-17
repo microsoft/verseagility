@@ -100,7 +100,8 @@ class Data():
             _dir = f"{_base}/{self.model_dir}/"
             if os.path.isdir(_dir):
                 ### Deployed with multiple model objects in AML
-                self.root_dir = f'{_base}/{os.listdir(_dir)[0]}/'
+                self.root_dir = f'{_base}/'
+                self.model_dir = f'{self.model_dir}/{os.listdir(_dir)[0]}/{self.model_dir}/'
                 # NOTE: get's latest version of model
             else:
                 ### Deployed with single model objects in AML

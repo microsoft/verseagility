@@ -42,7 +42,7 @@ aml_run = he.get_context()
 
 def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, evaluate_every, 
                         use_cuda, max_seq_len, learning_rate, do_lower_case, 
-                        register_model, save_model=True, early_stopping=True):
+                        register_model, save_model=True, early_stopping=False):
     
     language = cu.params.get('language')
 

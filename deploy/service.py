@@ -88,7 +88,7 @@ if args.do_deploy:
     # Fetch Models
     models = []
     for task in tasks:
-        model_name = f'{project_name}-model-t{task}'
+        model_name = f'{project_name}-model-{task}' ####
         if int(task) == 3:
             # NOTE: task 3 does not have a model
             continue
@@ -99,9 +99,9 @@ if args.do_deploy:
         logging.warning(f'[INFO] Added Model : {model.name} (v{model.version})')
     
     # Deployment Target
-    memory_gb = 2
+    memory_gb = 1
     if compute_type == 'ACI':
-        compute_config = AciWebservice.deploy_configuration(cpu_cores=2, memory_gb=memory_gb, auth_enabled=auth_enabled)
+        compute_config = AciWebservice.deploy_configuration(cpu_cores=1, memory_gb=memory_gb, auth_enabled=auth_enabled)
     elif compute_type == 'AKS':
         compute_config = AksWebservice.deploy_configuration()
     
