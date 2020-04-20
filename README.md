@@ -13,23 +13,15 @@ See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) f
 > https://aka.ms/nlp-demo
 
 ## Naming
-### Azure
-> nlp-\<component\>-\<environment\>
 ### Assets
 > \<project name\>(-\<task\>)-\<step\>(-\<environment\>)
 - where step in [source, train, deploy], for data assets.
 - where task is an int, referring to the parameters, for models.
 
 ## TODO
-### Project
-- [x] Overview architecture
-- [x] Detailed documentation
-### Prepare
-- [x] connect to CosmosDB (pipeline ready)
-- [x] document cracking to standardized format
 ### Classification
 - [ ] multi label support
-- [ ] integrate handling for larger documents
+- [ ] integrate handling for larger documents vs short documents
 - [ ] dictionaries for business logic
 - [ ] integrate handling for unbalanced datasets
 - [x] upload best model to AML Model

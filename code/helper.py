@@ -1,6 +1,13 @@
-import os
-import configparser
+"""
+General helper file with functions relevant across use cases.
+
+"""
 import logging
+log = logging.getLogger(__name__)
+
+import os
+import platform
+import configparser
 from pathlib import Path
 import pandas as pd
 import re
@@ -9,8 +16,20 @@ import yaml
 import spacy
 from flair.models import SequenceTagger
 
-# from azure.keyvault import KeyVaultClient
-# from azure.common.credentials import ServicePrincipalCredentials
+try:
+    from azure.common.credentials import ServicePrincipalCredentials
+    from azure.keyvault import KeyVaultClient
+except Exception as e:
+    log.warning(f'Azure KeyVault is not installed, \
+        but may not be needed for local development or training. Details: {e}')
+
+try:
+    from azureml.core import Run
+    from azureml.core.authentication import ServicePrincipalAuthentication
+    from azureml.core import Workspace
+except Exception as e:
+    log.warning(f'Azure Machine Learning is not installed, \
+        but may not be needed for local development or endpoint deployment. Details: {e}')
 
 ############################################
 #####   Logging
@@ -48,7 +67,6 @@ def get_logger(level='info', location = None, excl_az_storage=True):
 def get_context():
     '''Get AML Run Context for Logging to AML Services'''
     try:
-        from azureml.core import Run
         run = Run.get_context()
     except Exception as e:
         logger.warning(f'[WARNING] Azure ML not loaded. Nothing will be logged. {e}')
@@ -63,13 +81,14 @@ def get_repo_dir():
     """Get repository root directory"""
     root_dir = './'
     if os.path.isdir(Path(__file__).parent.parent / 'code'):
-        root_dir = f"{str((Path(__file__).parent.parent).resolve())}/"
+        root_dir = f"{(Path(__file__).parent.parent).resolve()}/"
     elif os.path.isdir('../code'):
         root_dir = '../'
     elif os.path.isdir('./code'):
         root_dir = './'
     else:
-        logging.warning('ROOT FOLDER NOT FOUND.')
+        log.warning('Root repository directory not found. This may \
+            be an issue when trying to load from /assets or the local config.ini.')
     return root_dir
 
 def get_project_config(fn):
@@ -86,12 +105,14 @@ def get_project_config(fn):
         raise Exception(f'Project parameters not found -> {fn}')
     return params
 
-def get_config():
+def get_config(section = None):
     """Load local config file"""
     run_config = configparser.ConfigParser()
     run_config.read(get_repo_dir() + 'config.ini')
     if len(run_config) == 1:
         run_config = None
+    elif section is not None:
+        run_config = run_config[section]
     return run_config
 
 ############################################
@@ -118,53 +139,103 @@ def get_requirements(req_type='conda'):
 #####   Secret Management
 ############################################
 
-def _get_sp_credentials(run_config):
-    '''Retrieve Service Principal Credentials'''
+def _get_sp_credentials():
+    """Retrieve Service Principal Credentials"""
     credentials = ServicePrincipalCredentials(
-        client_id = run_config['keyvault']['client_id'],
-        secret = run_config['keyvault']['secret'],
-        tenant = run_config['keyvault']['tenant'],
-        resource = 'https://vault.azure.net/'
+        client_id   = get_secret('sp-client-id'),
+        secret      = get_secret('sp-secret'),
+        tenant      = get_secret('sp-tenant-id'),
+        resource    = 'https://vault.azure.net/'
     )
     return credentials
 
-def _get_kv_secret(run_config, name):
-    ''' Retrieve Secret from KeyVault'''
+def _get_kv_secret(name):
+    """ Retrieve Secret from KeyVault"""
     client = KeyVaultClient(_get_sp_credentials())
-    vault_url = run_config['keyvault']['url']
+    vault_url = get_secret('keyvault-url')
     return client.get_secret(vault_url, name, "").value
 
-# Key Vault
-def get_secret(name):
+def get_secret(name, section = 'environ'):
     """Get KeyVault Secret
     
-    - First check Env variables (for DevOps)
-    - Then, try via local config file
-    - Last, try via AML
+    Order of trials:
+    - config.ini (local)
+    - ENV variable (deployment)
+    - KeyVault direct (deployment)
+    - KeyVault via AML (training)
     """
     secret = None
-    if name in os.environ:
+    config = get_config(section = section)
+
+    if config is not None and name in config:
+        # Get secret from local config
+        secret = config[name]
+    elif name in os.environ:
         # Get secret from environment variable
         secret = os.environ[name]
+    elif 'sp-tenant-id' in os.environ:
+        # Get via KeyVault
+        secret = _get_kv_secret(name)
     else:
-        # Get secret from AML linked KeyVault
-        try:
-            from azureml.core import Run
-            run = Run.get_context()
-            secret = run.get_secret(name=name)
-        except Exception as e:
-            logging.info(f'[WARNING] Azure ML not loaded for secret retrieval. {e}')
-            pass
-        # TODO: Get secret form config, via service principal
-        # from azure.keyvault import KeyVaultClient
-        # from azure.common.credentials import ServicePrincipalCredentials
-        # secret = _get_kv_secret(get_config(), name)
-    
+        # Get via AML linked KeyVault
+        run_context = get_aml_context()
+        if run_context is not None:
+            secret = run_context.get_secret(name = name)
+
     if secret is None:
-        # Local config
-        config = get_config()['environ']
-        secret = config[name]
+        raise Exception(f'The secret {name} was not found via the helper.')
+    
     return secret
+
+############################################
+#####   Azure Machine Learning
+############################################
+
+def get_aml_context():
+    """Get Azure Machine Learning Run context"""
+    try:
+        run = Run.get_context()
+        run.experiment #NOTE: this raises an error when not loaded
+    except Exception:
+        run = None
+    return run
+
+def get_aml_ws():
+    """Get Azure Machine Learning Workspace object"""
+    ws = get_aml_context()
+    config = get_config(section = 'environ')
+
+    if ws is not None:
+        # Fetch from context
+        ws = ws.experiment.workspace
+    elif config is not None and platform.system() == 'Windows':
+        # Fetch via config
+        try:
+            # Authenticate via Interactive
+            ws = Workspace.get(name = get_secret('aml-ws-name'),
+                    resource_group  = get_secret('aml-ws-rg'),
+                    auth            = None,
+                    subscription_id = get_secret('aml-ws-sid'))
+            # NOTE: alt. if tenant is not correct:
+            # auth = InteractiveLoginAuthentication(tenant_id=he.get_secret('tenant_id'))
+        except Exception as e:
+            log.warning(f'[WARNING] Unable to get AML workspace via config file. {e}')
+    else:
+        # Fetch via SP
+        try:
+            # Authenticate via SP
+            sp = ServicePrincipalAuthentication(tenant_id           = get_secret('sp-tenant-id'),
+                                        service_principal_id        = get_secret('sp-client-id'),
+                                        service_principal_password  = get_secret('sp-secret'))
+            # Get workspace
+            ws = Workspace.get(name = get_secret('aml-ws-name'),
+                    resource_group  = get_secret('aml-ws-rg'),
+                    auth            = sp,
+                    subscription_id = get_secret('aml-ws-sid'))
+        except Exception as e:
+            log.warning(f'[WARNING] Unable to get AML workspace via Service Principal. {e}')
+
+    return ws
 
 ############################################
 #####   ML Frameworks

@@ -24,18 +24,18 @@ from PIL import Image
 
 LANGUAGES = ["en","de","fr","es","it"]
 MODEL_ENDPOINTS = {
-    'en': 'http://29efd3ea-2d9d-4c54-99b0-89a099f7aa80.westeurope.azurecontainer.io/score', #msforum-en-prod
-    'de': 'http://c6908907-a5a7-4e13-9f10-65244454c4f9.westeurope.azurecontainer.io/score', #msforum-de-prod
-    'fr': 'http://8ed7f04f-7204-4915-9c32-8df13f78ed05.westeurope.azurecontainer.io/score', #msforum-fr-prod
-    'es': "http://486fb2b1-8dae-4dd0-95d8-da5a28319acb.westeurope.azurecontainer.io/score", #msforum-es-prod
-    'it': "http://738fdb8f-1bfb-4a49-b0bb-fb14794cdcee.westeurope.azurecontainer.io/score" #msforum-it-prod
+    'en': 'http://632632c6-d926-4cd3-961a-fe1ba5dbf003.southcentralus.azurecontainer.io/score', #msforum-en-prod
+    'de': 'http://ca073ab1-ec54-4fc3-92be-234c16201112.southcentralus.azurecontainer.io/score', #msforum-de-prod
+    'fr': 'http://26e0d4f6-07d4-4736-a2e7-9ec8e0823bf4.southcentralus.azurecontainer.io/score', #msforum-fr-prod
+    'es': "http://9918c9b2-7447-49e7-a2e1-84c3710e62ce.southcentralus.azurecontainer.io/score", #msforum-es-prod
+    'it': "http://242e81ec-731a-4101-80cd-4ed2885a1dd3.southcentralus.azurecontainer.io/score" #msforum-it-prod
 }
 ENDPOINT_KEY = {
-    'en': 'Nm8MKM8FT8KshjtPGNfKioMykltg3pGj',
-    'de': '4Y9AK0Vq9fok6KLPvdNg610Bjiax4Tha',
-    'fr': 'Hylxrkunuo7PAhubR4B931VwEfiZGno0',
-    'es': '1Zo51udDhFNEEunklGYhxVYzBkqtI0WX',
-    'it': 'HcC8eC75enP1Lx5ZebJd5SSHO03K2IXs'
+    'en': '97nZStGWNHfOLqkuHHlS9zm3a6Ivv0ex',
+    'de': 'fdcHcveUDSqBUAfvwe9jklQKB0F30sBo',
+    'fr': 'lhDUPH3qpLiiwfeVl1ZBS3fbjyICvbc0',
+    'es': 'BF0FYTbXMjSuUtsCI31vbNgAc47xGfiE',
+    'it': 'AbYdmTYoKUkiwf0AdbVnpP5KhMjLwZUS'
     }
 DEFAULT_SUBJECT = {
     'en': "Windows defender shutting everything down",
@@ -59,10 +59,10 @@ DEFAULT_TEXT = {
 HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem; margin-bottom: 2.5rem">{}</div>"""
 # Logo loading
 try:
-    logo = Image.open('~/app/logo2_nbg.PNG')
+    logo = Image.open('~/app/logo.png')
     ms = Image.open('~/app/microsoft.png')
 except FileNotFoundError:
-    logo = Image.open('logo2_nbg.png')
+    logo = Image.open('logo.png')
     ms = Image.open('microsoft.png') 
 
 # @st.cache(allow_output_mutation=True)
@@ -150,7 +150,6 @@ for r in res:
         res_qa = r
 
 # Classification Output 
-##TODO: show logo
 if res_cat is not None:
     st.header(f"CATEGORY")
     res_cat = res_cat.get('result')[0]
@@ -212,8 +211,8 @@ if res_ner is not None and len(res_ner.get('result')) > 0:
 # Similar Questions Output
 if res_qa is not None and len(res_qa.get('result')) > 0:
     st.header("ANSWER SUGGESTIONS")
-    def_qa = pd.read_json(json.dumps(res_qa.get('result')))[['answer_text_clean','score','appliesTo']]
-    for i, (a, s, t) in enumerate(zip(def_qa.answer_text_clean, def_qa.score, def_qa.appliesTo)):
+    def_qa = pd.read_json(json.dumps(res_qa.get('result')))[['answer_text_clean','score','label_classification_multi']]
+    for i, (a, s, t) in enumerate(zip(def_qa.answer_text_clean, def_qa.score, def_qa.label_classification_multi)):
         st.subheader(f'> Suggestion {i + 1}')
         st.write(a)
         st.table(pd.DataFrame({'score':[s],'applies to':[t]}, index=[i + 1]))

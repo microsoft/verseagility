@@ -1,14 +1,11 @@
 """
-Functions to deploy training pipeline
-(BUILD pipeline)
+Functions to deploy hyperparameter sweep
 
 To run locally, use:
 > cd ./root
 > conda activate nlp
-> python deploy/training.py --language en --do_prepare --do_train
+> python deploy/hyperdrive.py --project_name msforum_en --do_prepare --do_train
 
-#NOTE: not using AML Pipelines yet, 
-due to technical restrictions
 """
 import os
 import json
@@ -39,32 +36,24 @@ import helper as he
 #####   Parameters
 ############################################
 
+## Arguments
 parser = argparse.ArgumentParser() 
-parser.add_argument("--language", 
-                    default='en',
-                    type=str,
-                    help="")
+parser.add_argument("--project_name", 
+                    default='msforum_en',
+                    type=str)
 parser.add_argument("--compute_name", 
                     default='gpucluster-nc12',
-                    type=str,
-                    help="")
+                    type=str)
 parser.add_argument('--do_prepare',
-                        action='store_true',
-                        help="")
+                        action='store_true')
 parser.add_argument('--do_train',
-                        action='store_true',
-                        help="")
+                        action='store_true')
 parser.add_argument('--update_model',
-                        action='store_true',
-                        help="")
+                        action='store_true')
 args = parser.parse_args()
 
-# PARAMETERS
-project_name = f"msforum_{args.language}"
-compute_name = args.compute_name
-
 ## Load 
-params = he.get_project_config(f'{project_name}.config.json')
+params = he.get_project_config(f'{args.project_name}.config.json')
 language = params.get('language')
 env = params.get('environment')
 
@@ -73,21 +62,17 @@ env = params.get('environment')
 ############################################
 
 ## Workspace
-auth = None
-ws = Workspace.get(name=he.get_secret('aml-ws-name'), 
-                subscription_id=he.get_secret('aml-ws-sid'), 
-                resource_group=he.get_secret('aml-ws-rg'),
-                auth=auth)
+ws = he.get_aml_ws()
 
 ## Compute target   
 try:
-    compute_target = ComputeTarget(workspace=ws, name=compute_name)
-    logging.warning(f'[INFO] Using compute {compute_name}')
+    compute_target = ComputeTarget(workspace=ws, name=args.compute_name)
+    logging.warning(f'[INFO] Using compute {args.compute_name}')
 except ComputeTargetException:
-    logging.warning(f'[INFO] Creating compute {compute_name}')
+    logging.warning(f'[INFO] Creating compute {args.compute_name}')
     compute_config = AmlCompute.provisioning_configuration(vm_size='Standard_NC12',
                                                             max_nodes=5)
-    compute_target = ComputeTarget.create(ws, compute_name, compute_config)
+    compute_target = ComputeTarget.create(ws, args.compute_name, compute_config)
     compute_target.wait_for_completion(show_output=True)
 
 # Python dependencies
@@ -96,7 +81,7 @@ conda_packages=he.get_requirements(req_type='conda')
 
 ## Local Config
 fn_config_infer = 'config.json'
-shutil.copy(f'./project/{project_name}.config.json', f'./code/{fn_config_infer}')
+shutil.copy(f'./project/{args.project_name}.config.json', f'./code/{fn_config_infer}')
 
 script_folder = "./"
 tasks = params.get("tasks")
@@ -106,11 +91,11 @@ tasks = params.get("tasks")
 ############################################
 
 if args.do_prepare:
-    logging.warning(f'[INFO] Running  prepare for {project_name}')
+    logging.warning(f'[INFO] Running  prepare for {args.project_name}')
     for task in tasks:
         config = tasks.get(task)
         if config.get('prepare'):
-            exp = Experiment(workspace = ws, name = f'{project_name}_prepare_{task}')
+            exp = Experiment(workspace = ws, name = f'{args.project_name}_prepare_{task}')
             print(f'[INFO] Running prepare for {task}')
             script_params = {
                 '--task'            : int(task),
@@ -134,9 +119,9 @@ if args.do_prepare:
 ############################################
 
 if args.do_train:
-    logging.warning(f'[INFO] Running train for {project_name}')
+    logging.warning(f'[INFO] Running train for {args.project_name}')
     for task in tasks:
-        exp = Experiment(workspace = ws, name = f'{project_name}_train_{task}')
+        exp = Experiment(workspace = ws, name = f'{args.project_name}_train_{task}')
         config = tasks.get(task)
         if config.get('type') == 'classification':
             script_params = {
@@ -188,7 +173,7 @@ if args.do_train:
                 ## Get Results
                 best_run = hyperdrive_run.get_best_run_by_primary_metric()
                 ## Experiment
-                experiment_name = project_name + "-train"
+                experiment_name = args.project_name + "-train"
                 exp = Experiment(workspace = ws, name = experiment_name)
                 #Parameters determined by hyperparams
                 script_params_hyper = {

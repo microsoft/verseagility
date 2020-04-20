@@ -2,18 +2,17 @@ name: nlp
 dependencies:
 # - python=3.7
 - numpy
-- pandas=1.0.1
+- pandas==1.0.1
+- gensim=3.8.0
 # - pytorch=1.3.1
 # - torchvision
 # - cudatoolkit=10.1 #For GPU training only
-- gensim=3.8.1
 - pip:
-  # - azureml-defaults for aml deployment
   - azureml-sdk>=1.1.5
   - azureml-dataprep[pandas,fuse]>=1.3.5
   - mlflow>=1.6.0
   - azureml-mlflow>=1.1.5
-  - azure-ai-textanalytics
+  - azure-ai-textanalytics==1.0.0b3
   - azure-cosmos
   - azure-storage-blob==2.1.0
   - spacy==2.2.1

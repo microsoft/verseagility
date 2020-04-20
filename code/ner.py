@@ -59,8 +59,13 @@ class TextAnalyticsMatcher(object):
         text = doc.text
         result = self.text_analytics_client.recognize_entities(inputs=[text])[0]
         for entity in result.entities:
-            span = doc.char_span(entity.grapheme_offset, entity.grapheme_offset + entity.grapheme_length, label=entity.category)
-            doc.ents = list(doc.ents) + [span]
+            if entity.subcategory != 'Number':
+                if entity.subcategory is not None:
+                    label = f"{entity.category} ({entity.subcategory})"
+                else:
+                    label = entity.category
+                span = doc.char_span(entity.grapheme_offset, entity.grapheme_offset + entity.grapheme_length, label=label)
+                doc.ents = list(doc.ents) + [span]
         return doc
 
 class CustomNER():
@@ -81,7 +86,7 @@ class CustomNER():
         device, n_gpu = initialize_device_settings(use_cuda=True)
         lang_model = he.get_farm_model(model_type, language)
         save_dir = dt_task.get_path('model_dir')
-        # ner_labels = dt_task.load('fn_label', header=None)[0].to_list() TODO:
+        # ner_labels = dt_task.load('fn_label', header=None)[0].to_list()
         ner_labels = ["[PAD]", "X", "O", "B-MISC", "I-MISC", "B-PER", "I-PER", "B-ORG", "I-ORG", "B-LOC", "I-LOC", "B-OTH", "I-OTH"]
 
         # n_epochs = 4
@@ -232,10 +237,14 @@ class NER():
         for ent in entity_list:
             if ''.join(ent['value'].lower().split()) not in [''.join(x['value'].lower().split()) for x in entity_list_clean]:
                 entity_list_clean.append(ent)
-        return entity_list_clean
+        return entity_list_clean[::-1]
 
     def inference_from_dicts(self, dicts):
         """Used for inference
         NOTE: expects one input, one output given
         """
         return self.run(dicts[0]['text'])
+
+if __name__ == '__main__':
+    res = NER(task=3, inference=True).run('Microsoft Surface Laptop with Windows 7 by Bill Gates. I loved win 7. My surface laptop is great, however I lost my typecover.')
+    print(res)

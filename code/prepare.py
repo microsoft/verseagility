@@ -59,7 +59,7 @@ class Clean():
         # Load data class
         self.dt = dt.Data(task=self.task, inference=inference)
 
-        # Download data, if needed #TODO: move all downloads to data
+        # Download data, if needed
         if download_train:
             self.dt.download('data_dir', dir = 'data_dir', source = 'datastore')
 

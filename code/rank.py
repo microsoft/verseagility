@@ -47,7 +47,6 @@ class Rank():
         _data = _data.iloc[score_indexes].reset_index(drop=True)
         # Filter by classified label
         if cats is not None and cats != '':
-            #TODO: does not work for lists
             _data = _data[_data.label_classification_simple.str.contains(cats)].reset_index(drop=True)
             logger.warning(f'[INFO] Reduced answer selection to {len(_data)} from {len(self.data)}.')
         

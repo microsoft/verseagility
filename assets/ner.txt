@@ -1,16 +1,17 @@
 value	key
+windows xp	Product
+win xp	Product
+windows vista	Product
+win vista	Product
 windows 7	Product
 win 7	Product
 windows 8	Product
 win 8	Product
 windows 10	Product
+win 10	Product
 windows mail	Product
-Win XP	Product
 Visual Studio 2017	Product
 Windows Defender	Product
-windows vista	Product
-win vista	Product
-win 10	Product
 office 2007	Product
 office 365	Product
 office 2013	Product
