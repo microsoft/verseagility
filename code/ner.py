@@ -43,7 +43,11 @@ class FlairMatcher(object):
         for match in matches[0].get_spans('ner'):
             _match = match.to_dict()
             span = doc.char_span(_match.get('start_pos'), _match.get('end_pos'), label=_match.get('type'))
-            doc.ents = list(doc.ents) + [span]
+            # Pass, in case a match already exists
+            try:
+                doc.ents = list(doc.ents) + [span]
+            except:
+                pass
         return doc
 
 class TextAnalyticsMatcher(object):
@@ -65,7 +69,11 @@ class TextAnalyticsMatcher(object):
                 else:
                     label = entity.category
                 span = doc.char_span(entity.grapheme_offset, entity.grapheme_offset + entity.grapheme_length, label=label)
-                doc.ents = list(doc.ents) + [span]
+                # Pass, in case a match already exists
+                try:
+                    doc.ents = list(doc.ents) + [span]
+                except:
+                    pass
         return doc
 
 class CustomNER():

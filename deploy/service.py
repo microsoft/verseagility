@@ -38,8 +38,9 @@ parser.add_argument("--project_name",
                     default='msforum_en',
                     type=str)
 parser.add_argument('--do_deploy',
-                        action='store_true',
-                        help="")
+                        action='store_true')
+parser.add_argument('--show_output',
+                        action='store_true')
 args = parser.parse_args()
 
 ## Load 
@@ -116,7 +117,7 @@ if args.do_deploy:
                             deployment_config=compute_config, 
                             overwrite=True)
     logging.warning('[INFO] Creating web service')
-    service.wait_for_deployment(show_output=True)
+    service.wait_for_deployment(show_output=args.show_output)
 
     # Get service details
     logging.warning(service.get_keys)

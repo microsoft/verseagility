@@ -1,4 +1,5 @@
 value	key
+azure	Product
 windows xp	Product
 win xp	Product
 windows vista	Product
@@ -10,8 +11,8 @@ win 8	Product
 windows 10	Product
 win 10	Product
 windows mail	Product
-Visual Studio 2017	Product
-Windows Defender	Product
+visual studio 2017	Product
+windows defender	Product
 office 2007	Product
 office 365	Product
 office 2013	Product
@@ -33,6 +34,3 @@ surface headphones	Product
 bill gates	Boss
 satya nadella	Boss
 steve ballmer	Boss
-surface	Product
-windows	Product
-office	Product
