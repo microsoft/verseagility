@@ -34,6 +34,7 @@ class Clean():
     - DE
     - IT
     - ES
+    - FR
     - XX (multi - NER only)
 
     SUPPORTED MODULES
