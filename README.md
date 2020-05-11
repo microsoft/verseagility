@@ -20,13 +20,13 @@ See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) f
 
 ## TODO
 ### Classification
-- [ ] multi label support
+- [ ] **(IP)** multi label support
 - [ ] integrate handling for larger documents vs short documents
-- [ ] dictionaries for business logic
+- [x] dictionaries for business logic
 - [ ] integrate handling for unbalanced datasets
 - [x] upload best model to AML Model
 ### NER
-- [ ] Improve duplicate handling
+- [ ] improve duplicate handling
 - [x] basic custom NER
 ### Rank
 - [ ] **(IP)** Improve answer quality
