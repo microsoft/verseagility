@@ -1,4 +1,4 @@
-<img src="demo/logo.png" width="400" align="center"><br><br><br><br>
+<img src="demo/logo.png" width="500" align="center"><br><br>
 
 # NLP Toolkit
 
