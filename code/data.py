@@ -100,7 +100,9 @@ class Data():
         self.train_dir = f'train_{self.task}'
         if 'AZUREML_MODEL_DIR' in os.environ:
             ### AzureML deployed run
-            _base = os.environ['AZUREML_MODEL_DIR']
+            _base = "azureml-models" 
+            #NOTE: this input changes everytime, therefore hardcoded
+            # os.environ['AZUREML_MODEL_DIR']
             _dir = f"{_base}/{self.model_dir}/"
             if os.path.isdir(_dir):
                 ### Deployed with multiple model objects in AML
