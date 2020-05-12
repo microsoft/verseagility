@@ -1,8 +1,9 @@
-<img src="demo/logo2.PNG" width="400" align="center"><br><br><br><br>
+<img src="demo/logo.png" width="500" align="center"><br>
 
 # NLP Toolkit
+Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Services Knowledge Mining offering.
 
-See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) for detailed documentation.
+See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) for detailed documentation how to get started with the toolkit.
 
 ## Supported Use cases
 - Binary, multi-class & multi-label classification
@@ -10,6 +11,7 @@ See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) f
 - Question answering
 
 ## Live Demo
+The live demo of models resulting from Verseagility is hosted at MTC Germany:
 > https://aka.ms/nlp-demo
 
 ## Naming
@@ -20,13 +22,13 @@ See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) f
 
 ## TODO
 ### Classification
-- [ ] multi label support
+- [ ] **(IP)** multi label support
 - [ ] integrate handling for larger documents vs short documents
-- [ ] dictionaries for business logic
+- [x] dictionaries for business logic
 - [ ] integrate handling for unbalanced datasets
 - [x] upload best model to AML Model
 ### NER
-- [ ] Improve duplicate handling
+- [ ] improve duplicate handling
 - [x] basic custom NER
 ### Rank
 - [ ] **(IP)** Improve answer quality
@@ -46,7 +48,7 @@ See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) f
 - Deployable feedback loop
 - Integration with GitHub Actions
 
-# Acknowledgements
+## Acknowledgements
 Verseagility is built in part using the following:
 - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
 - [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
@@ -54,7 +56,7 @@ Verseagility is built in part using the following:
 - [flair](https://github.com/flairNLP/flair/) by Zalando Research
 - [gensim](https://radimrehurek.com/gensim/)
 
-# Contributing
+## Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
