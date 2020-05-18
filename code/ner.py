@@ -61,7 +61,7 @@ class TextAnalyticsMatcher(object):
         
     def __call__(self, doc):
         text = doc.text
-        result = self.text_analytics_client.recognize_entities(inputs=[text])[0]
+        result = self.text_analytics_client.recognize_entities(inputs=[text], language=cu.params.get('language'))[0]
         for entity in result.entities:
             if entity.subcategory != 'Number':
                 if entity.subcategory is not None:
