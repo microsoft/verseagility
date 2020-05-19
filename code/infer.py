@@ -84,8 +84,9 @@ def run(req):
                 ))
             _cat = _temp[0].get('category')
             result = _temp
-        except:
-            pass
+        except Exception as e:
+            logger.info(f"Not a FARM model -> {e}")
+
         # Prepare output
         res.append({
             "task" : int(tm['task']),
