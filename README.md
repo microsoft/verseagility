@@ -21,32 +21,29 @@ The live demo of models resulting from Verseagility is hosted at MTC Germany:
 - where task is an int, referring to the parameters, for models.
 
 ## TODO
+
 ### Classification
 - [ ] **(IP)** multi label support
 - [ ] integrate handling for larger documents vs short documents
-- [x] dictionaries for business logic
-- [ ] integrate handling for unbalanced datasets
-- [x] upload best model to AML Model
+- [ ] integrate explicit handling for unbalanced datasets
+- [ ] ONNX support
 ### NER
 - [ ] improve duplicate handling
-- [x] basic custom NER
-### Rank
-- [ ] **(IP)** Improve answer quality
+### Question Answering
+- [ ] Apply advanced IR methods
 ### Deployment
-- [x] Param script for deploy
-- [ ] Deploy to Azure Function (without AzureML)
+- [ ] Deploy service to Azure Function (without AzureML)
 ### Notebooks
 - [x] review prepared data
 - [ ] **(IP)** review model results (auto generate after each training step)
 - [ ] review model bias (auto generate after each training step)
-- [ ] available models benchmark (incl AutoML)
+- [ ] **(IP)** available models benchmark (incl AutoML)
 ### Tests
 - [ ] unit tests (pytest)
-- [ ] automated benchmarks
 ### New Features (TBD)
-- Summarization
-- Deployable feedback loop
-- Integration with GitHub Actions
+- [ ] **(IP)** Summarization
+- [ ] Deployable feedback loop
+- [ ] Integration with GitHub Actions
 
 ## Acknowledgements
 Verseagility is built in part using the following:
@@ -55,6 +52,11 @@ Verseagility is built in part using the following:
 - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
 - [flair](https://github.com/flairNLP/flair/) by Zalando Research
 - [gensim](https://radimrehurek.com/gensim/)
+
+Maintainers:
+- [Timm Walz](mailto:timm.walz@microsoft.com)
+- [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
+- [Martin Kayser](mailto:martin.kayser@microsoft.com)
 
 ## Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
