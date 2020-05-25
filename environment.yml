@@ -1,4 +1,4 @@
-name: nlp
+name: vsg
 dependencies:
 # - python=3.7
 - numpy

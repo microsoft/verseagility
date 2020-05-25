@@ -1,3 +1,4 @@
+''' MICROSOFT FORUM TICKET SCRAPER '''
 import re
 import urllib
 import urllib.request
@@ -22,7 +23,7 @@ parser.add_argument("--language",
                 type=str,
                 help="'en-us' or 'de-de")
 parser.add_argument('--product',
-                default='windows',
+                default='list',
                 type=str,
                 help="['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge','ie','musicandvideo']")  
 args = parser.parse_args()
@@ -31,12 +32,7 @@ args = parser.parse_args()
 
 # Set params
 lang = args.language
-product = args.product
-
-#with open("output-" +  product + "-" + lang + ".txt") as f:
-#    urls = f.readlines()
-# you may also want to remove whitespace characters like `\n` at the end of each line
-#url_list = [x.strip() for x in urls] 
+productsel = args.product
 
 # Extract text content
 def getText(soup):
@@ -117,10 +113,10 @@ def getTags(soup, product):
         for item in tag:
             subtag = item.find_all("a", "c-hyperlink")
             for subitem in subtag:
-                tags.append(subitem.text)
+                tags.append(subitem.text.replace(', ', '_').replace(' ', '_'))
     except:
         tags = ""
-    return f'{product},{",".join(tags)}'
+    return f'{product.capitalize()},{",".join(tags)}'
 
 # Put it all together
 def scrapeMe(url, product):
@@ -128,8 +124,8 @@ def scrapeMe(url, product):
     # GET WEBSITE
     try:
         response = get(url)
-    except:
-        print("[ERROR] - There is an issue with the respective website.\n")
+    except Exception as e:
+        print(f"[ERROR] - There is an issue with the respective website -> {e}.")
     html_soup = BeautifulSoup(response.text, 'html.parser')
     fileid = uuid.uuid4().hex
     
@@ -189,7 +185,12 @@ def scrapeMe(url, product):
         print(f"[SUCCESS] - File {fileid}\n")
 
 ''' LOOP THROUGH THE OUTPUT TEXT FILES AND CREATE JSON '''
-products = ['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge', 'ie', 'musicandvideo']
+# Check mode
+if productsel == "list":
+    products = ['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge', 'musicandvideo', 'msteams', 'microsoftedge']
+else:
+    products = [productsel]
+# Loop through product
 for product in products:
     try:
         # Read File
@@ -204,12 +205,13 @@ for product in products:
         for i, value in enumerate(url_list):
             i += 1
             try:
-                print(f'[STATUS] - {product}, {i}/{len(url_list)}')
+                print(f'[STATUS] - {product}, {i}/{len(url_list)}.')
                 scrapeMe(value, product)
             except Exception as e:
                 failed_url.append(value)
-                print(f'[ERROR] - Failed to extract {value}')
+                print(f'[ERROR] - Failed to extract {value}.\n')
                 continue
-        print(f"[DONE] - List for {product} of failed URLs: {failed_url},\nlen{failed_url}.")
+        print(f"[DONE] - List for {product} of failed URLs: {failed_url},\n{len(url_list) - len(failed_url)} successfully extracted.")
+        os.rename(f"output-{product}-{lang}.txt", f"_output-{product}-{lang}.txt")
     except:
         print(f"[ERROR] - 'output-{product}-{lang}.txt' does not exist.\n")
