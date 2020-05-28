@@ -16,7 +16,7 @@ dependencies:
   - azure-storage-blob==2.1.0
   - spacy==2.2.1
   - transformers==2.4.1
-  - farm==0.4.1
+  - farm==0.4.3
   - flair==0.4.5
   - selenium==3.141.0
   - bs4
