@@ -12,7 +12,7 @@ dependencies:
   - mlflow>=1.6.0
   - azureml-mlflow>=1.1.5
   - azure-ai-textanalytics==1.0.0b3
-  - azure-cosmos
+  - azure-cosmos==3.1.2
   - azure-storage-blob==2.1.0
   - spacy==2.2.1
   - transformers==2.4.1
