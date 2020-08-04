@@ -4,7 +4,7 @@ dependencies:
 - numpy
 - pandas==1.0.1
 - gensim=3.8.0
-# - pytorch=1.3.1 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT
+# - pytorch=1.4.0 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT
 # - cudatoolkit=10.1 #For GPU training only
 - pip:
   - azureml-sdk>=1.1.5
