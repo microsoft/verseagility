@@ -16,7 +16,7 @@ logger = he.get_logger(location=__name__)
 ############################################
 
 # Load parameters from config
-params = he.get_project_config('msforum_en.config.json')
+params = he.get_project_config('msforum_de.config.json')
 tasks = params.get('tasks')
 logger.warning(f'[INFO] *** Project target lang \t-> {params.get("language")} \t***')
 logger.warning(f'[INFO] *** Project target env \t-> {params.get("environment")} \t***')
@@ -58,10 +58,10 @@ def filter_qa(data):
     # Filter by marked as answer
     _temp = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
     if len(_temp) == 0:
-        _temp = data[data.label_answer_markedAsAnswer == True].reset_index(drop=True).copy()
+        _temp = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(_temp)}  \t- after marked as answer ')
     # Filter by UpVotes
-    # _temp = _temp[_temp['answer_upvotes'] > 1].reset_index(drop=True).copy() #TODO: evaluate
+    _temp = _temp[_temp['label_answer_upvotes'] > 1].reset_index(drop=True).copy() #TODO: evaluate
     logger.warning(f'Data Length : {len(_temp)}  \t- after min upvotes of 2')
     return data #_temp #TODO: not used
 

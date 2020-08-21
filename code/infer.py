@@ -28,6 +28,9 @@ def score(task):
     if task_type == 'classification':
         _dt = dt.Data(task=task, inference=True)
         return Inferencer.load(_dt.get_path('model_dir'))
+    elif task_type == 'multi_classification':
+        _dt = dt.Data(task=task, inference=True)
+        return Inferencer.load(_dt.get_path('model_dir'))   
     elif task_type == 'ner':
         return ner.NER(task=task, inference=True)
     elif task_type == 'qa':
@@ -73,19 +76,26 @@ def run(req):
         clean = prepare_classes[tm['task']].transform_by_task(text)
         # Infer text
         result = tm['infer'].inference_from_dicts(dicts=[{"text": clean, "cat": _cat}])
-        try:
+        _temp = []
+        if tm['params'].get('type') == 'multi_classification':
             # Special treatment for classification (FARM)
             ##TODO: standardize for all
-            _temp = []
+            for r in result[0]['predictions']:
+                _labels = r.get('label').replace('"', "").replace("'", "").strip('][').split(', ')
+                _indices = sorted(r.get("probability").argsort()[-len(_labels):][::-1].tolist())
+                _ref = r.get("probability").tolist()
+                _temp.append(dict(
+                    category = _labels,
+                    score = [_ref[i] for i in _indices]
+                ))
+        else:
             for r in result[0]['predictions']:
                 _temp.append(dict(
                     category = r.get('label'),
                     score = f"{r.get('probability'):.3}"
                 ))
-            _cat = _temp[0].get('category')
-            result = _temp
-        except Exception as e:
-            logger.info(f"Not a FARM model -> {e}")
+        _cat = _temp[0].get('category')
+        result = _temp
 
         # Prepare output
         res.append({
