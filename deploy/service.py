@@ -5,7 +5,7 @@ Functions to deploy service
 To run locally, use:
 > cd ./root
 > conda activate nlp
-> python deploy/pipeline.py  --project_name msforum_en --do_deploy
+> python deploy/service.py --project_name msforum_en --do_deploy
 """
 import os
 import json
@@ -65,6 +65,7 @@ shutil.copy(f'./project/{args.project_name}.config.json', f'./code/{fn_config_in
 
 script_folder = "."
 tasks = params.get("tasks")
+deploy = params.get("deploy")
 
 ############################################
 #####  DEPLOY
@@ -72,7 +73,6 @@ tasks = params.get("tasks")
 
 version = '0.2'
 auth_enabled = True
-compute_type = 'ACI'
 
 if args.do_deploy:
     logging.warning(f'[INFO] Running deploy for {args.project_name}')
@@ -80,7 +80,7 @@ if args.do_deploy:
     models = []
     for task in tasks:
         model_name = f'{args.project_name}-model-{task}' ####
-        if int(task) == 3:
+        if tasks.get(task)['type'] == 'ner': # int(task) == 3: 
             # NOTE: task 3 does not have a model
             continue
         model = Model(ws, model_name)
@@ -90,10 +90,9 @@ if args.do_deploy:
         logging.warning(f'[INFO] Added Model : {model.name} (v{model.version})')
     
     # Deployment Target
-    memory_gb = 2
-    if compute_type == 'ACI':
-        compute_config = AciWebservice.deploy_configuration(cpu_cores=1, memory_gb=memory_gb, auth_enabled=auth_enabled)
-    elif compute_type == 'AKS':
+    if deploy.get('type') == 'ACI':
+        compute_config = AciWebservice.deploy_configuration(cpu_cores=deploy.get('cpu'), memory_gb=deploy.get('memory'), auth_enabled=auth_enabled) #2
+    elif deploy.get('type') == 'AKS':
         compute_config = AksWebservice.deploy_configuration()
     
     # Prepare Environment

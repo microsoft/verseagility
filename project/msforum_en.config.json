@@ -8,12 +8,11 @@
     },
     "tasks": {
         "1": {
-            "label": "subcat",
             "type": "classification",
             "model_type": "roberta",
             "max_seq_len": 256,
             "embeds_dropout":0.3,
-            "learning_rate":3e-5,
+            "learning_rate":2e-5,
             "prepare": true
         },
         "3": {
@@ -25,5 +24,10 @@
             "model_type": "historical",
             "prepare": true
         }
+    },
+    "deploy": {
+        "type": "ACI",
+        "memory": 2,
+        "cpu": 1
     }
 }

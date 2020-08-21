@@ -13,6 +13,7 @@ import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import os
 import spacy
 import pandas as pd
+import numpy as np
 import string
 import re
 import argparse
@@ -241,8 +242,14 @@ class Clean():
             return df_texts.to_list()
 
     def transform_by_task(self, text):
-        # CUTOM FUNCTION
+        # CUSTOM FUNCTION
         if cu.tasks.get(str(self.task)).get('type') == 'classification':
+            return self.transform(text,
+                    rm_email_formatting = True, 
+                    rm_email_header     = True,
+                    rm_email_footer     = True,
+                    rp_generic          = True)[0]
+        elif cu.tasks.get(str(self.task)).get('type') == 'multi_classification':
             return self.transform(text,
                     rm_email_formatting = True, 
                     rm_email_header     = True,
@@ -285,7 +292,18 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     # Load text & label field
     text_raw = cu.load_text(data)
     data['label'] = cu.load_label(data, task)
-    label_list_raw = data.label.drop_duplicates()
+    if cu.tasks.get(str(task)).get('type') == 'multi_classification':
+        data['label'] = data['label'].str.replace(', ', '_').str.replace(' ', '_')
+        flat_labels = [row['label'].split(',') for index, row in data.iterrows()] 
+        labels_clean = []
+        for labels in flat_labels:
+            for label in labels:
+                labels_clean.append(label)
+        label_list_raw = pd.DataFrame({'label':labels_clean})
+        label_list_raw = label_list_raw[label_list_raw.label != '']
+        label_list_raw = label_list_raw.label.drop_duplicates()
+    elif cu.tasks.get(str(task)).get('type') == 'classification': # in case of single label classification
+        label_list_raw = data.label.drop_duplicates()
     
     # Clean text
     data['text'] = cl.transform(text_raw,
@@ -303,20 +321,45 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     logger.warning(f'Data Length : {len(data_red)}')
     
     # Min class occurance
-    data_red = data_red[data_red.groupby('label').label.transform('size') > min_cat_occurance]
+    if cu.tasks.get(str(task)).get('type') == 'classification':
+        data_red = data_red[data_red.groupby('label').label.transform('size') > min_cat_occurance]
+    elif cu.tasks.get(str(task)).get('type') == 'multi_classification':
+        # Split rows
+        data_transform = data_red[['id', 'label']].copy()
+        data_transform['label'] = [row['label'].split(",") for index, row in data_transform.iterrows()] # pipe it to list
+        data_transform = pd.DataFrame({'index':data_transform.index.repeat(data_transform.label.str.len()), 'label':np.concatenate(data_transform.label.values)}) # explode df
+        data_transform = data_transform[data_transform.groupby('label').label.transform('size') > min_cat_occurance] # count for min occurance and only keep relevant ones
+        data_transform = data_transform.groupby(['index'])['label'].apply(lambda x: ','.join(x.astype(str))).reset_index() # re-merge
+        data_transform = data_transform.set_index('index')
+        del data_red['label']
+        data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
-
     data_red = data_red.reset_index(drop=True).copy()
 
     # Label list
-    label_list = data_red.label.drop_duplicates()
+    if cu.tasks.get(str(task)).get('type') == 'multi_classification': # 2 = task for multi-label classification
+        flat_labels = [row['label'].split(',') for index, row in data_red.iterrows()]
+        labels_clean = []
+        for labels in flat_labels:
+            for label in labels:
+                labels_clean.append(label)
+        label_list = pd.DataFrame({'label':labels_clean})
+        label_list = label_list[label_list.label != '']
+        label_list = label_list.label.drop_duplicates()
+    elif cu.tasks.get(str(task)).get('type') == 'classification': # in case of single label classification
+        label_list = data_red.label.drop_duplicates()
     logger.warning(f'Excluded labels: {list(set(label_list_raw)-set(label_list))}')
 
     # Split data
     strf_split = StratifiedShuffleSplit(n_splits = 1, test_size=(1-train_split), random_state=200)
-    for train_index, test_index in strf_split.split(data_red, data_red['label']):
-        df_cat_train = data_red.loc[train_index]
-        df_cat_test = data_red.loc[test_index]
+    if cu.tasks.get(str(task)).get('type') == 'classification':
+        for train_index, test_index in strf_split.split(data_red, data_red['label']):
+            df_cat_train = data_red.loc[train_index]
+            df_cat_test = data_red.loc[test_index]
+    elif cu.tasks.get(str(task)).get('type') == 'multi_classification':
+        for train_index, test_index in strf_split.split(data_red, pd.DataFrame({'label':[l.split(',')[0] for l in data_red['label']]})['label']):
+            df_cat_train = data_red.loc[train_index]
+            df_cat_test = data_red.loc[test_index]
     
     # Save data
     cl.dt.save(data_red, fn = 'fn_clean', dir = 'data_dir')
@@ -405,6 +448,8 @@ def main(task=1,
     logger.warning(f'Running <PREPARE> for task {task}')
     task_type = cu.tasks.get(str(task)).get('type')
     if 'classification' == task_type:
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
+    elif 'multi_classification' == task_type:
         prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
     elif 'ner' == task_type:
         prepare_ner(task, do_format, register_data)
