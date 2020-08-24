@@ -1,10 +1,15 @@
-''' MICROSOFT FORUM PAGE SCRAPER '''
+""" MICROSOFT FORUM PAGE SCRAPER 
+
+Website: answers.microsoft.com
+Example: 
+> python 1_getsites.py --language de-de --product xbox
+
+"""
 import argparse
 import re
 import sys
 import os
-# Run arguments
-# example: python 1_getsites.py --language de-de --product xbox
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--language", 
                 default="de-de",

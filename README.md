@@ -5,45 +5,63 @@ Verseagility is a Python-based toolkit for your custom natural language processi
 
 See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) for detailed documentation how to get started with the toolkit.
 
-## Supported Use cases
+## Supported Use Cases
 - Binary, multi-class & multi-label classification
 - Named entity recognition
 - Question answering
+- Text summarization
 
 ## Live Demo
 The live demo of models resulting from Verseagility is hosted at MTC Germany:
 > https://aka.ms/nlp-demo
+
+Repository Structure
+------------
+
+    ├── README.md          <- The top-level README for developers using this project.
+    ├── assets             <- Version controlled assets, such as stopword lists. Max size 
+    │                         per file: 10 MB. Training data should
+    │                         be stored in local data directory, outside of repository or within gitignore. 
+    │
+    ├── demo               <- Demo environment that can be deployed as is, or customized. 
+    │
+    ├── notebooks          <- Jupyter notebooks. Naming convention is <[Task]-[Short Description]>,
+    │                         for example: 'Data - Exploration.ipynb'
+    │
+    ├── pipeline           <- Document processing pipeline components, including document cracker. 
+    │
+    │
+    ├── scraper            <- Website scraper used to fetch sample data. 
+    │                         Can be reused for similarly structured forum websites.
+    │
+    ├── src                <- Source code for use in this project.
+    │   ├── infer.py       <- Inference file, for scoring the model
+    │   │   
+    │   ├── data.py        <- Use case agnostic utils file, for data management incl upload/download
+    │   │
+    │   └── helper.py      <- Use case agnostic utils file, with common functions incl secret handling
+    │
+    ├── deploy             <- Scripts used for deploying training or test service  
+    │   ├── training.py    <- Deploy your training to a remote compute instance, via AML
+    │   │   
+    │   ├── hyperdrive.py  <- Deploy hyperparemeter sweep on a remote compute instance, via AML
+    │   │
+    │   └── service.py     <- Deploy a service (endpoint) to ACI or AKS, via AML
+    │
+    ├── tests              <- Unit tests (using pytest)
+    │
+    ├── requirements.txt   <- The requirements file for reproducing the analysis environment.
+    │                         Can be generated using `pip freeze > requirements.txt`
+    │
+    └── config.ini         <- Configuration and secrets used while developing locally
+                              Secrets in production should be stored in the Azure KeyVault
+--------
 
 ## Naming
 ### Assets
 > \<project name\>(-\<task\>)-\<step\>(-\<environment\>)
 - where step in [source, train, deploy], for data assets.
 - where task is an int, referring to the parameters, for models.
-
-## TODO
-
-### Classification
-- [ ] **(IP)** multi label support
-- [ ] integrate handling for larger documents vs short documents
-- [ ] integrate explicit handling for unbalanced datasets
-- [ ] ONNX support
-### NER
-- [ ] improve duplicate handling
-### Question Answering
-- [ ] Apply advanced IR methods
-### Deployment
-- [ ] Deploy service to Azure Function (without AzureML)
-### Notebooks
-- [x] review prepared data
-- [ ] **(IP)** review model results (auto generate after each training step)
-- [ ] review model bias (auto generate after each training step)
-- [ ] **(IP)** available models benchmark (incl AutoML)
-### Tests
-- [ ] unit tests (pytest)
-### New Features (TBD)
-- [ ] **(IP)** Summarization
-- [ ] Deployable feedback loop
-- [ ] Integration with GitHub Actions
 
 ## Acknowledgements
 Verseagility is built in part using the following:
@@ -57,6 +75,29 @@ Maintainers:
 - [Timm Walz](mailto:timm.walz@microsoft.com)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
 - [Martin Kayser](mailto:martin.kayser@microsoft.com)
+
+## To-Dos
+The following section contains a list of possible new features or enhancements. Feel free to contribute. 
+### Classification
+- [x] multi label support
+- [ ] integrate handling for larger documents vs short documents
+- [ ] integrate explicit handling for unbalanced datasets
+- [ ] ONNX support
+### NER
+- [ ] improve duplicate handling
+### Question Answering
+- [ ] apply advanced IR methods
+### Summarization
+- [ ] **(IP)** full test of integration
+### Deployment
+- [ ] deploy service to Azure Function (without AzureML)
+- [ ] setup GitHub actions
+### Notebooks Templates
+- [ ] **(IP)** review model results (auto generate after each training step)
+- [ ] review model bias (auto generate after each training step)
+- [ ] **(IP)** available models benchmark (incl AutoML)
+### Tests
+- [ ] unit tests (pytest)
 
 ## Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

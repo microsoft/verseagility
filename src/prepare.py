@@ -141,7 +141,7 @@ class Clean():
                         rp_generic=False,
                         rp_custom=False,
                         rp_num=False):
-        '''Replace text with type specfic placeholders'''
+        """Replace text with type specfic placeholders"""
 
 
         # Customer placeholders
@@ -166,7 +166,7 @@ class Clean():
         return line
 
     def tokenize(self, line, lemmatize = False, rm_stopwords = False):
-        '''Tokenizer for non DL tasks'''
+        """Tokenizer for non DL tasks"""
         if not isinstance(line, str):
             line = str(line)
         

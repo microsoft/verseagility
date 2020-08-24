@@ -1,18 +1,17 @@
 """
-TRAIN MULTI CLASSIFICATION MODEL
+TRAIN CLASSIFICATION MODEL
 
 Before running train, you need to run prepare.py with the respective task.
 
 Example (in the command line):
 > cd to root dir
 > conda activate nlp
-> python code/multi_classification.py --task 2 --model_type roberta --use_cuda
+> python code/classification.py --task 1 --model_type bert --use_cuda
 
 """
-import logging
+import os
 from pathlib import Path
 import json
-import os
 import argparse
 
 from farm.data_handler.data_silo import DataSilo
@@ -20,11 +19,12 @@ from farm.data_handler.processor import TextClassificationProcessor
 from farm.modeling.optimization import initialize_optimizer
 from farm.infer import Inferencer
 from farm.modeling.adaptive_model import AdaptiveModel
-from farm.modeling.language_model import Roberta
-from farm.modeling.prediction_head import MultiLabelTextClassificationHead
-from farm.modeling.tokenization import Tokenizer
-from farm.train import Trainer
-from farm.utils import set_all_seeds, MLFlowLogger, initialize_device_settings
+from farm.modeling.language_model import LanguageModel, Roberta, Albert, DistilBert
+from farm.modeling.prediction_head import TextClassificationHead, MultiLabelTextClassificationHead
+from farm.modeling.tokenization import Tokenizer, RobertaTokenizer, AlbertTokenizer
+from farm.train import Trainer, EarlyStopping
+from farm.utils import set_all_seeds, initialize_device_settings
+from farm.eval import Evaluator
 from sklearn.metrics import (matthews_corrcoef, recall_score, precision_score,
                          f1_score, mean_squared_error, r2_score)
 from farm.evaluation.metrics import simple_accuracy, register_metrics
@@ -43,13 +43,13 @@ aml_run = he.get_context()
 def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, evaluate_every, 
                         use_cuda, max_seq_len, learning_rate, do_lower_case, 
                         register_model, save_model=True, early_stopping=False):
-
+    
     language = cu.params.get('language')
 
     # Check task
-    if cu.tasks.get(str(task)).get('type') != 'multi_classification':
-        raise Exception('NOT A MULTI CLASSIFICATION TASK') 
-
+    if cu.tasks.get(str(task)).get('type') != 'classification':
+        raise Exception('NOT A CLASSIFICATION TASK') 
+    
     # Data
     dt_task = dt.Data(task=task)
     ## Download training files
@@ -80,8 +80,8 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
 
     # 1.Create a tokenizer
     tokenizer = Tokenizer.load(
-        pretrained_model_name_or_path=lang_model, 
-        do_lower_case=do_lower_case
+        pretrained_model_name_or_path=lang_model,
+        do_lower_case = do_lower_case
     )
 
     # The evaluation on the dev-set can be done with one of the predefined metrics or with a
@@ -107,14 +107,13 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
                                             max_seq_len=max_seq_len,
                                             data_dir=dt_task.data_dir,
                                             label_list=label_list,
-                                            label_column_name="label",
                                             metric=metric,
-                                            quote_char='"',
-                                            multilabel=True,
+                                            label_column_name="label",
                                             train_filename=dt_task.get_path('fn_train', dir ='data_dir'),
-                                            test_filename=dt_task.get_path('fn_test', dir = 'data_dir'),
-                                            dev_split=0.3
+                                            test_filename=dt_task.get_path('fn_test', dir = 'data_dir')
                                             )
+
+
 
     # 3. Create a DataSilo that loads several datasets (train/dev/test), provides DataLoaders for them and calculates a few descriptive statistics of our datasets
     data_silo = DataSilo(
@@ -123,15 +122,17 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     )
 
     # 4. Create an AdaptiveModel
-    # a) which consists of a pretrained language model as a basis
-    language_model = Roberta.load(lang_model)
-    # b) and a prediction head on top that is suited for our task => Text classification
-    prediction_head = MultiLabelTextClassificationHead(num_labels=len(processor.tasks["text_classification"]["label_list"]))
+    ## Pretrained language model as a basis
+    language_model = LanguageModel.load(lang_model)
+
+    ## Prediction head on top that is suited for our task => Text classification
+    prediction_head = TextClassificationHead(num_labels=len(processor.tasks["text_classification"]["label_list"]),
+                                            class_weights=data_silo.calculate_class_weights(task_name="text_classification"))
 
     model = AdaptiveModel(
         language_model=language_model,
         prediction_heads=[prediction_head],
-        embeds_dropout_prob=embeds_dropout,
+        embeds_dropout_prob=embeds_dropout, 
         lm_output_types=["per_sequence"],
         device=device
     )
@@ -139,13 +140,28 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     # 5. Create an optimizer
     model, optimizer, lr_schedule = initialize_optimizer(
         model=model,
-        learning_rate=learning_rate,
-        device=device,
         n_batches=len(data_silo.loaders["train"]),
-        n_epochs=n_epochs)
+        n_epochs=n_epochs,
+        device=device,
+        learning_rate=learning_rate,
+        use_amp=use_amp
+    )
 
     # 6. Feed everything to the Trainer, which keeps care of growing our model into powerful plant and evaluates it from time to time
     # Also create an EarlyStopping instance and pass it on to the trainer
+
+    # An early stopping instance can be used to save the model that performs best on the dev set
+    # according to some metric and stop training when no improvement is happening for some iterations.
+    if early_stopping:
+        earlystopping = EarlyStopping(
+            metric="f1_macro", mode="max",  # use f1_macro from the dev evaluator of the trainer
+            # metric="loss", mode="min",   # use loss from the dev evaluator of the trainer
+            save_dir=save_dir,  # where to save the best model
+            patience=2    # number of evaluations to wait for improvement before terminating the training
+        )
+    else:
+        earlystopping = None
+
     trainer = Trainer(
         model=model,
         optimizer=optimizer,
@@ -154,7 +170,8 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
         n_gpu=n_gpu,
         lr_schedule=lr_schedule,
         evaluate_every=evaluate_every,
-        device=device
+        device=device,
+        early_stopping=earlystopping
     )
 
     # 7. Let it grow
@@ -176,7 +193,7 @@ def run():
     # Run arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", 
-                    default=2,
+                    default=1,
                     type=int,
                     help="Task where: \
                             -task 1 : classification subcat \
@@ -184,7 +201,7 @@ def run():
                             -task 3 : ner \
                             -task 4 : qa")
     parser.add_argument("--model_type", 
-                    default='roberta',
+                    default='bert',
                     type=str,
                     help="Available model types: \
                             -bert: en/de/... \
@@ -203,11 +220,11 @@ def run():
                     type=int,
                     help='')  
     parser.add_argument('--embeds_dropout',
-                    default=0.1,
+                    default=0.2,
                     type=float,
                     help='')
     parser.add_argument('--evaluate_every',
-                    default=500,
+                    default=100,
                     type=int,
                     help='')  
     parser.add_argument('--max_seq_len',

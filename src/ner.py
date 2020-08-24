@@ -19,7 +19,7 @@ from farm.modeling.language_model import LanguageModel
 from farm.modeling.prediction_head import TokenClassificationHead
 from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer
-from farm.utils import set_all_seeds, MLFlowLogger, initialize_device_settings
+from farm.utils import set_all_seeds, initialize_device_settings
 
 from azure.ai.textanalytics import TextAnalyticsClient, TextAnalyticsApiKeyCredential
 
