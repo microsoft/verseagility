@@ -1,22 +1,18 @@
 numpy>=1.18.1
 pandas>=1.0.3
-
 azure-storage-blob==2.1.0
 azure-cosmos==3.1.2
 azureml-sdk>=1.1.5
 azureml-dataprep[pandas,fuse]>=1.3.5
 # mlflow>=1.6.0 #NOT NEEDED?
 # azureml-mlflow>=1.1.5 #NOT NEEDED?
-
-azure-ai-textanalytics==5.0.0 #UPGRADED?!
+azure-ai-textanalytics==1.0.0b3 #TO BE UPGRADED -> 5.0.0
 gensim==3.8.0
 spacy==2.3.2 #UPGRADED
 transformers==3.0.2 #UPGRADED
 farm==0.4.6 #UPGRADED
 flair==0.6 #UPGRADED
-
 selenium==3.141.0
-
 bs4
 boto3
 scipy>=1.3.2
@@ -24,7 +20,6 @@ sklearn
 seqeval
 dotmap==1.3.0
 pyyml
-
 opencensus==0.7
 opencensus-ext-azure==1
 ##DEPLOY ONLY
@@ -38,6 +33,8 @@ flake8>=3.7.9
 ipykernel>=5.1.4
 streamlit==0.65
 tqdm
-
-# - pytorch=1.4.0 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT
+torch==1.6.0+cpu torchvision==0.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+# torch==1.6.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+# torchvision==0.7.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+# pytorch==1.4.0 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT
 # - cudatoolkit=10.1 #For GPU training only
