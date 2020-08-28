@@ -21,7 +21,7 @@ from azure.cosmos import cosmos_client
 
 # Custom functions
 import sys
-sys.path.append('../code')
+sys.path.append('../src')
 import helper as he
 import custom as cu
 
@@ -43,9 +43,9 @@ def get_repo_dir():
     root_dir = './'
     if os.path.isdir(Path(__file__).parent.parent / 'code'):
         root_dir = f"{str((Path(__file__).parent.parent).resolve())}/"
-    elif os.path.isdir('../code'):
+    elif os.path.isdir('../src'):
         root_dir = '../'
-    elif os.path.isdir('./code'):
+    elif os.path.isdir('./src'):
         root_dir = './'
     else:
         log.warning('ROOT FOLDER NOT FOUND.')

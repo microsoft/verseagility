@@ -6,7 +6,7 @@ Before running train, you need to run prepare.py with the respective task.
 Example (in the command line):
 > cd to root dir
 > conda activate nlp
-> python code/classification.py --task 1 --model_type bert --use_cuda
+> python src/classification.py --task 1 --model_type bert --use_cuda
 
 """
 import os
@@ -31,7 +31,7 @@ from farm.evaluation.metrics import simple_accuracy, register_metrics
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import data as dt
 import custom as cu

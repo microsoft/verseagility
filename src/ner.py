@@ -25,7 +25,7 @@ from azure.ai.textanalytics import TextAnalyticsClient, TextAnalyticsApiKeyCrede
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import custom as cu
 import data as dt
 import helper as he

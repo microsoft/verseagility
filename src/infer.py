@@ -12,7 +12,7 @@ from farm.infer import Inferencer
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import data as dt
 import prepare as pr

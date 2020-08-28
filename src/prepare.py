@@ -6,7 +6,7 @@ Before running train, you need to run prepare.py with the respective task.
 Example (in the command line):
 > cd to root dir
 > conda activate nlp
-> python code/prepare.py --do_format --task 1
+> python src/prepare.py --do_format --task 1
 """
 #NOTE: the following is a workaround for AML to load modules
 import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -21,7 +21,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import data as dt
 import custom as cu
