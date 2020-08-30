@@ -17,6 +17,7 @@ import pandas as pd
 import json
 import requests
 from PIL import Image
+import os
 
 ########################
 # PARAMS 
@@ -24,18 +25,18 @@ from PIL import Image
 
 LANGUAGES = ["en","de","fr","es","it"]
 MODEL_ENDPOINTS = {
-    'en': 'http://632632c6-d926-4cd3-961a-fe1ba5dbf003.southcentralus.azurecontainer.io/score', #msforum-en-prod
-    'de': 'http://ca073ab1-ec54-4fc3-92be-234c16201112.southcentralus.azurecontainer.io/score', #msforum-de-prod
-    'fr': 'http://26e0d4f6-07d4-4736-a2e7-9ec8e0823bf4.southcentralus.azurecontainer.io/score', #msforum-fr-prod
-    'es': "http://9918c9b2-7447-49e7-a2e1-84c3710e62ce.southcentralus.azurecontainer.io/score", #msforum-es-prod
-    'it': "http://242e81ec-731a-4101-80cd-4ed2885a1dd3.southcentralus.azurecontainer.io/score" #msforum-it-prod
+    'en': os.environ.get('ACI_EN'), #msforum-en-prod
+    'de': os.environ.get('ACI_DE'), #msforum-de-prod
+    'fr': os.environ.get('ACI_FR'), #msforum-fr-prod
+    'es': os.environ.get('ACI_ES'), #msforum-es-prod
+    'it': os.environ.get('ACI_IT') #msforum-it-prod
 }
 ENDPOINT_KEY = {
-    'en': '97nZStGWNHfOLqkuHHlS9zm3a6Ivv0ex',
-    'de': 'fdcHcveUDSqBUAfvwe9jklQKB0F30sBo',
-    'fr': 'lhDUPH3qpLiiwfeVl1ZBS3fbjyICvbc0',
-    'es': 'BF0FYTbXMjSuUtsCI31vbNgAc47xGfiE',
-    'it': 'AbYdmTYoKUkiwf0AdbVnpP5KhMjLwZUS'
+    'en': os.environ.get('ACI_EN_KEY'),
+    'de': os.environ.get('ACI_DE_KEY'),
+    'fr': os.environ.get('ACI_FR_KEY'),
+    'es': os.environ.get('ACI_ES_KEY'),
+    'it': os.environ.get('ACI_IT_KEY')
     }
 DEFAULT_SUBJECT = {
     'en': "Windows defender shutting everything down",
