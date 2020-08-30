@@ -11,7 +11,7 @@ azure-ai-textanalytics==1.0.0b3 #TO BE UPGRADED -> 5.0.0
 gensim==3.8.0
 spacy==2.3.2 #UPGRADED
 transformers==3.0.2 #UPGRADED
-farm==0.4.6 #UPGRADED
+farm==0.4.7 #UPGRADED
 flair==0.6 #UPGRADED
 selenium==3.141.0
 bs4

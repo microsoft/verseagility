@@ -3,7 +3,7 @@
 # NLP Toolkit
 Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Services Knowledge Mining offering.
 
-See the [wiki](https://dev.azure.com/DAISolutions/KnowledgeMining/_wiki/wikis) for detailed documentation how to get started with the toolkit.
+See the [wiki](./docs/README.md) for detailed documentation how to get started with the toolkit.
 
 ## Supported Use Cases
 - Binary, multi-class & multi-label classification
@@ -18,37 +18,41 @@ The live demo of models resulting from Verseagility is hosted at MTC Germany:
 Repository Structure
 ------------
 
-    ├── README.md          <- The top-level README for developers using this project.
-    ├── assets             <- Version controlled assets, such as stopword lists. Max size 
+    ├── /assets            <- Version controlled assets, such as stopword lists. Max size 
     │                         per file: 10 MB. Training data should
     │                         be stored in local data directory, outside of repository or within gitignore. 
     │
-    ├── demo               <- Demo environment that can be deployed as is, or customized. 
+    ├── /demo              <- Demo environment that can be deployed as is, or customized. 
     │
-    ├── notebooks          <- Jupyter notebooks. Naming convention is <[Task]-[Short Description]>,
-    │                         for example: 'Data - Exploration.ipynb'
-    │
-    ├── pipeline           <- Document processing pipeline components, including document cracker. 
-    │
-    │
-    ├── scraper            <- Website scraper used to fetch sample data. 
-    │                         Can be reused for similarly structured forum websites.
-    │
-    ├── src                <- Source code for use in this project.
-    │   ├── infer.py       <- Inference file, for scoring the model
-    │   │   
-    │   ├── data.py        <- Use case agnostic utils file, for data management incl upload/download
-    │   │
-    │   └── helper.py      <- Use case agnostic utils file, with common functions incl secret handling
-    │
-    ├── deploy             <- Scripts used for deploying training or test service  
+    ├── /deploy            <- Scripts used for deploying training or test service  
     │   ├── training.py    <- Deploy your training to a remote compute instance, via AML
     │   │   
     │   ├── hyperdrive.py  <- Deploy hyperparemeter sweep on a remote compute instance, via AML
     │   │
     │   └── service.py     <- Deploy a service (endpoint) to ACI or AKS, via AML
     │
-    ├── tests              <- Unit tests (using pytest)
+    ├── /docs              <- Detailed documentation.
+    │
+    ├── /notebook          <- Jupyter notebooks. Naming convention is <[Task]-[Short Description]>,
+    │                         for example: 'Data - Exploration.ipynb'
+    │
+    ├── /pipeline          <- Document processing pipeline components, including document cracker. 
+    │
+    ├── /project           <- Project configuration files, detailing the tasks to be completed.
+    │
+    ├── /scraper           <- Website scraper used to fetch sample data. 
+    │                         Can be reused for similarly structured forum websites.
+    │
+    ├── /src               <- Source code for use in this project.
+    │   ├── infer.py       <- Inference file, for scoring the model
+    │   │   
+    │   ├── data.py        <- Use case agnostic utils file, for data management incl upload/download
+    │   │
+    │   └── helper.py      <- Use case agnostic utils file, with common functions incl secret handling
+    │
+    ├── /tests              <- Unit tests (using pytest)
+    │
+    ├── README.md          <- The top-level README for developers using this project.
     │
     ├── requirements.txt   <- The requirements file for reproducing the analysis environment.
     │                         Can be generated using `pip freeze > requirements.txt`

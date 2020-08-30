@@ -334,7 +334,9 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         del data_red['label']
         data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
-    data_red = data_red.reset_index(drop=True).copy()
+    data_red = data_red.tail(300000).reset_index(drop=True).copy() 
+    #TODO: .tail() temp is for debugging
+    ## There is a memory issue for the EN dataset, due to its size. Needs further investigation.
 
     # Label list
     if cu.tasks.get(str(task)).get('type') == 'multi_classification': # 2 = task for multi-label classification
