@@ -224,7 +224,7 @@ def run():
                     type=float,
                     help='')
     parser.add_argument('--evaluate_every',
-                    default=100,
+                    default=3000,
                     type=int,
                     help='')  
     parser.add_argument('--max_seq_len',
