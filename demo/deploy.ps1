@@ -11,12 +11,12 @@ SOURCE: https://towardsdatascience.com/deploying-a-streamlit-web-app-with-azure-
 """
 
 # Params
-$location = 'westeurope'
-$rg = 'nlpdemo'
-$acr = 'nlpdemoacr'
-$image =  'nlp-demo-image'
-$sp = 'nlpdemoserviceplan'
-$app = 'nlp-demo-app'
+$location = 'southcentralus'
+$rg = 'rg_verseagility_services'
+$acr = 'verseagility'
+$image =  'nlp-demo-mtc'
+$sp = 'verseagility-sp'
+$app = 'verseagility'
 $url = $acr + '.azurecr.io/' + $image + ':latest'
 $create = $FALSE # create or update app
 

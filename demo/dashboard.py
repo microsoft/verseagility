@@ -179,10 +179,10 @@ def process_text(model_name, subject, text):
     nlp = load_model(model_name)
     return nlp, nlp(validate_concat(subject, text)[0]), r.json()
 
-st.sidebar.image(logo, use_column_width=True, format='PNG')
+st.sidebar.image(logo, use_column_width=True, output_format='PNG')
 st.sidebar.subheader("NLP Toolkit Demo")
 st.sidebar.markdown(
-    """
+"""
 Text classification, named entity recognition 
 and answer suggestions for 
 support emails and attachments.
