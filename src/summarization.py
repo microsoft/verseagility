@@ -9,13 +9,13 @@ from gensim.summarization.summarizer import summarize
 import networkx as nx
 import numpy as np
 
-''' BERTABS '''
+""" BERTABS """
 def summarizeText(text, minLength=60):
     result = model(text, min_length = minLength)
     full = ''.join(result)
     return full
 
-''' SAMPLING '''
+""" SAMPLING """
 def sentencenize(text):
     sentences = []
     for sent in text:
@@ -36,11 +36,11 @@ def removeStopwords(sen, sw):
     sentence = " ".join([i for i in sen if i not in sw])
     return sentence
 
-''' BERTABS '''
+""" BERTABS """
 model = Summarizer()
 
-''' SAMPLING '''
+""" SAMPLING """
 clean_sentences = [removeStopwords(r.split(), sw) for r in clean_sentences]
 
-''' GENSIM '''
+""" GENSIM """
 summarize()

@@ -8,7 +8,7 @@ from gensim.summarization import bm25
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import prepare as pr
 import custom as cu

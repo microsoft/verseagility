@@ -21,7 +21,7 @@ from azure.cosmos import cosmos_client
 
 # Custom functions
 import sys
-sys.path.append('../code')
+sys.path.append('../src')
 import helper as he
 import custom as cu
 
@@ -37,15 +37,17 @@ try:
 except Exception as e:
     log.warning(f'Azure Storage Account (2.1.0) not installed, \
         but may not be needed for local development or endpoint deployment. Details: {e}')
+    #TODO:  Azure Storage Account package needs to be upgraded to v12. This will break the 
+    #       current implementation.
 
 def get_repo_dir():
     """Get repository root directory"""
     root_dir = './'
     if os.path.isdir(Path(__file__).parent.parent / 'code'):
         root_dir = f"{str((Path(__file__).parent.parent).resolve())}/"
-    elif os.path.isdir('../code'):
+    elif os.path.isdir('../src'):
         root_dir = '../'
-    elif os.path.isdir('./code'):
+    elif os.path.isdir('./src'):
         root_dir = './'
     else:
         log.warning('ROOT FOLDER NOT FOUND.')
@@ -299,8 +301,10 @@ class Data():
                 dir = 'root_dir', 
                 container = None
             ):
-        """Upload any data or assets to the cloud"""
-        ##TODO: support multiple paths
+        """Upload any data or assets to the cloud
+        
+        NOTE: only works with single files
+        """
         fp = self.get_path(fn, dir = dir)
         fn = self.get_path(fn, dir = None)
 

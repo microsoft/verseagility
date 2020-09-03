@@ -4,7 +4,7 @@ Functions to deploy training pipeline
 
 To run locally, use:
 > cd ./root
-> conda activate nlp
+> activate environment
 > python deploy/training.py --project_name msforum_en --do_prepare --do_train
 
 """
@@ -30,7 +30,7 @@ from azureml.exceptions import WebserviceException
 
 # Custom Functions
 import sys 
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 
 ############################################
@@ -75,12 +75,11 @@ except ComputeTargetException:
     compute_target.wait_for_completion(show_output=True)
 
 # Python dependencies
-pip_packages=he.get_requirements(req_type='pip')
-conda_packages=he.get_requirements(req_type='conda')
+pip_packages=he.get_requirements(req_type='train')
 
 ## Local Config
 fn_config_infer = 'config.json'
-shutil.copy(f'./project/{args.project_name}.config.json', f'./code/{fn_config_infer}')
+shutil.copy(f'./project/{args.project_name}.config.json', f'./src/{fn_config_infer}')
 
 script_folder = "./"
 tasks = params.get("tasks")
@@ -104,9 +103,8 @@ if args.do_prepare:
             est = Estimator(source_directory = script_folder,
                         compute_target = compute_target,
                         script_params = script_params,
-                        entry_script = 'code/prepare.py',
+                        entry_script = 'src/prepare.py',
                         pip_packages = pip_packages,
-                        conda_packages = conda_packages,
                         use_gpu = False
                         )
             run = exp.submit(est)
@@ -126,7 +124,7 @@ if args.do_train:
             script_params = {
                 '--task'            : int(task),
                 '--use_cuda'        : '',
-                # '--n_epochs'        : 3,
+                '--n_epochs'        : 3,
                 '--learning_rate'   : config.get('learning_rate'),
                 '--model_type'      : config.get('model_type'),
                 '--max_seq_len'     : config.get('max_seq_len'),
@@ -136,9 +134,8 @@ if args.do_train:
             est = PyTorch(source_directory = script_folder,
                         compute_target = compute_target,
                         script_params = script_params,
-                        entry_script = 'code/classification.py',
+                        entry_script = 'src/classification.py',
                         pip_packages = pip_packages,
-                        conda_packages = conda_packages,
                         use_gpu = True)
             run = exp.submit(est)
             print(f'[INFO] Task {task} deployed for training.')
@@ -151,9 +148,8 @@ if args.do_train:
             est = Estimator(source_directory = script_folder,
                         compute_target = compute_target,
                         script_params = script_params,
-                        entry_script = 'code/rank.py',
+                        entry_script = 'src/rank.py',
                         pip_packages = pip_packages,
-                        conda_packages = conda_packages,
                         use_gpu = False
                         )
             run = exp.submit(est)
@@ -166,4 +162,4 @@ if args.do_train:
 ############################################
 
 #Remove temp config
-os.remove(f'./code/{fn_config_infer}')
+os.remove(f'./src/{fn_config_infer}')
