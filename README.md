@@ -1,4 +1,4 @@
-<img src="demo/logo.png" width="500" align="center"><br>
+<img src="demo/logo.PNG" width="500" align="center"><br>
 
 # NLP Toolkit
 Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Services Knowledge Mining offering.

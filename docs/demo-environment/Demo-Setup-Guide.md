@@ -39,7 +39,7 @@ There are different approaches of possible demo environment setups.
 
 ## Dashboard Customization
 This section is only required if you follow the _Dashboard - Basic_ or _Dashboard - Premium_ track. If you follow the _Dashboard - Advanced_ track, you can skip it.
-1.	Navigate to the `demo`-subfolder and add your custom logo by replacing the active logo file `logo2_nbg.png`. Alternatively, you can change the value in the code and use any other file name in `demo/dashboard.py`.
+1.	Navigate to the `demo`-subfolder and add your custom logo by replacing the active logo file `logo2_nbg.PNG`. Alternatively, you can change the value in the code and use any other file name in `demo/dashboard.py`.
 
 2. Change any other structural or text elements in `demo/dashboard.py`.
 
@@ -92,7 +92,7 @@ For updating purpose after your first deployment, change `$create` to `$FALSE`.
 In order to protect your demo website from external users and to avoid misuse, we recommend you to activate an Azure Active Directory (AAD) authentication. The following steps help you to register your WebApp in the AAD you are working in. Authentication methods like a public Microsoft/Outlook.com-account also work, in case you want to make it useable for a client.
 
 1. Go to your resource group where you have just deployed the demo app and enter the App Service resource. In this case, we click on "_nlp-demo-app_".
-![AAD Setup](../.attachments/demo-aad-app.png)
+![AAD Setup](../.attachments/demo-aad-app.PNG)
 
 2. Click on _"Authentication / Authorization"_ on the left menu.
 
@@ -103,12 +103,12 @@ In order to protect your demo website from external users and to avoid misuse, w
 5. Click on _"Azure Active Directory"_ below to enter the configuration environment.
 
 6. Select _"Express"_ and click on _"Azure AD App"_ to search for your application.
-![AAD Setup](../.attachments/demo-aad-choice.png)
+![AAD Setup](../.attachments/demo-aad-choice.PNG)
 
-7. Search for your app name, choose the respective result and click _"OK"_.![AAD Setup](../.attachments/demo-aad-reg.png)
+7. Search for your app name, choose the respective result and click _"OK"_.![AAD Setup](../.attachments/demo-aad-reg.PNG)
 
 8. Back on the previous page of (6), click _"OK"_ again.
 
-9. You should now be back at the starting point where your configuration should look like the one you see below. Click _"Save"_ to confirm your settings. ![AAD Setup](../.attachments/demo-aad-mainpage.png)
+9. You should now be back at the starting point where your configuration should look like the one you see below. Click _"Save"_ to confirm your settings. ![AAD Setup](../.attachments/demo-aad-mainpage.PNG)
 
-10. After couple of minutes, when accessing your web demo, you should now be redirected to an AAD login page. ![AAD Setup](../.attachments/demo-aad-login.png)
+10. After couple of minutes, when accessing your web demo, you should now be redirected to an AAD login page. ![AAD Setup](../.attachments/demo-aad-login.PNG)

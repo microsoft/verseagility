@@ -10,7 +10,7 @@ This documentation helps you to connect your personal GitHub with the Microsoft 
 4. After successfully linking the accounts, you can join the GitHub organization "microsoft" in the "Available Microsoft GitHub organizations" section.<br>
 ![Available Organizations](.attachments/github-orga.jpg)
 5. Your GitHub profile should now list "microsoft" among your organizations.<br>
-![GitHub Profile](.attachments/github-orga-ms.png)
+![GitHub Profile](.attachments/github-orga-ms.PNG)
 6. You can now access the [Verseagility GitHub-repository](https://github.com/microsoft/verseagility)
 
 ### How to add support for a new languages?

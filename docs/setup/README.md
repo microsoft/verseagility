@@ -12,7 +12,7 @@ This part of the documentation helps you to set up Verseagility in our own subsc
 
 
 # Overview
-![image.png](../.attachments/architecture-verseagility-v1-2.png)
+![image.PNG](../.attachments/architecture-verseagility-v1-2.PNG)
 There are three main components to Verseagility:
 1. Data processing pipeline
 1. Task modeling
@@ -25,7 +25,7 @@ The NLP pipeline will standardize the data into a extenible JSON format, from wh
 PDF, Word Document, .txt, Power Point, ...
 
 ## Task Modeling
-![image.png](../.attachments/mlflow-verseagility-v1.png)
+![image.PNG](../.attachments/mlflow-verseagility-v1.PNG)
 The starting point for each project with Verseagility, is the project configuration (/project/\*.config.json). The configuration defines what tasks need to be addressed using the NLP toolkit.
 
 ### Supported task types

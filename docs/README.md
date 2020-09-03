@@ -1,4 +1,4 @@
-![Verseagility](./.attachments/verseagility.png)
+![Verseagility](./.attachments/verseagility.PNG)
 
 # Verseagility NLP Toolkit
 
@@ -31,7 +31,7 @@ Following technical framework is recommended and will help you to succeed:
 ## Software Architecture
 The toolkit is based on the following architecture. Basically, it is possible to run the toolkit locally, yet we highly recommend you to use the Microsoft Azure ecosystem.
 
-![Architecture diagram](./.attachments/architecture-verseagility-v1-2.png)
+![Architecture diagram](./.attachments/architecture-verseagility-v1-2.PNG)
 
 ## Verseagility-Setup
 The step-by-step approach for getting started with the NLP toolkit can be found [here](docs/Verseagility-Setup.md). It helps you to set up your environment, guides you through the training process and gives you some advice for potential customizations.
