@@ -1,4 +1,4 @@
-![Verseagility](./.attachments/verseagility.PNG)
+![Verseagility](./.attachments/verseagility.png)
 
 # Verseagility NLP Toolkit
 

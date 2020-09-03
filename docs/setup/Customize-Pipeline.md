@@ -29,7 +29,7 @@ The purpose of the pipeline is twofold: 1) It automatically processes supported 
 }
 ```
 
-![Data Container](../.attachments/data_container.PNG)
+![Data Container](../.attachments/data_container.png)
 
 What happens in the background is that the "processor-function" gets triggered. This function takes the newly added blob and parses it based on the content/MIME-type of the blob. To tell the function how a certain document has to be handled, you must write your own parser, parsers are stored in the /parsers directory. By default, three parsers are already implemented (CSV, JSON and default). If you take a look at e.g. csv-parser, you see that the job of the parser is to map content of the CSV file to an object called "OutputSchema". OutputSchema is the document schema that will be used to store the document in Cosmos DB (of course you can also adopt the schema to fit your needs). For example, if your CSV file contains a list of documents and the ID in the first column (index 0), the number of views for this document in the second column and the URI to the document in the third column, the parser iterates over all rows and maps all columns to the right OutputSchema properties:
 
