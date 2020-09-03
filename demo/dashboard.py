@@ -137,10 +137,10 @@ EXAMPLES = {
 HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem; padding: 1rem; margin-bottom: 2.5rem">{}</div>"""
 # Logo loading
 try:
-    logo = Image.open('~/app/logo.PNG')
+    logo = Image.open('~/app/logo.png')
     ms = Image.open('~/app/microsoft.PNG')
 except FileNotFoundError:
-    logo = Image.open('logo.PNG')
+    logo = Image.open('logo.png')
     ms = Image.open('microsoft.PNG') 
 
 # @st.cache(allow_output_mutation=True)
