@@ -103,6 +103,9 @@ The following section contains a list of possible new features or enhancements. 
 ### Tests
 - [ ] unit tests (pytest)
 
+## Please note:
+- For training data corpora larger than 10.000 documents, we recommend to upload them chunk-wise to the BLOB-storage, otherwise it might come to bottlenecks in the document processor function
+
 ## Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
