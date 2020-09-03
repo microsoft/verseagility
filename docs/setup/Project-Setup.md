@@ -22,7 +22,7 @@ This page describes how you get and set the right Azure resource keys to make Ve
     - The main page of Azure Machine Learning has all the information you need, starting with the name of your resource, which you have to insert in the `aml-ws-name`.
     - Secondly, you have to insert your subscription ID as stated in the screenshot below in the second row `aml-ws-sid`.
     - Also, you have to insert the name of your resource group in the line `aml-ws-rg`.
-    - ![Azure Machine Learning Keys](../../.attachments/keys-aml.png)
+    - ![Azure Machine Learning Keys](../.attachments/keys-aml.png)
 
   - __Text Analytics Service__
     - At the main page called _Quick start_, copy the following elements:
@@ -30,12 +30,12 @@ This page describes how you get and set the right Azure resource keys to make Ve
     - Mark and copy the  _Endpoint_ name of the text analytics service as stated in the frame and insert it in the `text-analytics-name` of your file. You do not need the whole URL, the name is sufficient.
     - Please verify with the icon you see below that you are actually using the Text Analytics resource instead of the Computer Vision.
 
-    - ![Text Analytics Keys](../../.attachments/keys-ta.png)
+    - ![Text Analytics Keys](../.attachments/keys-ta.png)
   - __Cosmos DB__
     - After entering your _Cosmos DB_ resource, click on _Keys_ in the left menu.
     - From there, copy the resource name from the _URI_-field, which matches to the name of the resource. Similarly to the _Text Analytics Service_, you do not need the entire URL, the name is sufficient. Insert it in the `cosmos-db-name` of your file.
     - Last but not least, copy the _Primary Key_ and set it in the `cosmos-db-key` row.
-    - ![Cosmos DB Keys](../../.attachments/keys-cdb.png)
+    - ![Cosmos DB Keys](../.attachments/keys-cdb.png)
 
 4. Your file should look similarly to this one (the values below are random):
   ```

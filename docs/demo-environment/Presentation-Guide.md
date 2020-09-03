@@ -1,7 +1,7 @@
 # Demo Guide
 This documentation serves as guideline how to present the Verseagility demo the best way.
 
-[[_TOC_]]
+
 
 The demo/toolkit VERSEAGILITY serves to demonstrate end-to end capabilities for Natural Language Processing use cases. Following features are currently covered in the standard version:
 - Text Classification
@@ -43,4 +43,4 @@ To enable a good demo experience, we recommend you to type some text on the fly 
 | __Body__     | Text: Hallo! Vor einigen jahren habe ich in einem PC- Geschäft meinen PC gekauft. Nach einiger Zeit ist auf dem Monitor unten rechts einen Text erschienen: Windows aktivieren. Im Geschäft wurde das System wieder aktiviert. Das Geschäft ist aber schon zu. Pleite oder so. Keine Ahnung. Wie kann ich nun das System Aktivieren? Ich habe ja meinen PC legal gekauft. Microsoft und Bill Gates ich bitte euch um Hilfe!      | In the pre-Chromium Edge, I had a customize (and, IIRC, pinned) list of quick links in the New Tab page. This the row of 7 icon-decorated boxes. I kept them in a specific order for the purpose of muscle memory. I just got updated to chromium, and while the conversion did maintain my links, it rearranged them in an order that seems to make no sense (not alphabetical, although it may have reverted to most-used). Who moved my cheese? Can I get them back in the order that my muscles remember?  |
 
 ### Visual Documentation
-![Demo Preview](../../.attachments/demo-preview.PNG)
+![Demo Preview](../.attachments/demo-preview.PNG)

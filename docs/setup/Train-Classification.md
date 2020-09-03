@@ -1,7 +1,7 @@
 # Classification / Training
 This part of the documentation serves as guideline for the model training process. The data is automatically going to be pulled from the Cosmos DB. Your project language is the respective search criteria, so all English documents are going to be incorporated into the training process if you choose English as your project language and so on.
 
-[[_TOC_]]
+
 
 ## Initiate the Training
 After setting up your projects in the previous pages, you are now ready to train your models. This training step incorporates the classification, named entity recognition and question/answering models all in one.
@@ -24,13 +24,13 @@ After setting up your projects in the previous pages, you are now ready to train
 ## Access your experiment in Azure Machine Learning
 After running the classification training step, you will find your experiments in Azure Machine Learning.
 
-1. Clicking on "_Experiments_" on the left side, you will find your experiment being registered with the respective name and language shortcut. In case you initiate further training rounds for the same language, they will all be registered under the same experiment. Click on the respective experiments to get insights on running an, failed and finished experiment rounds. <br><br>![Azure ML Experiments](../../.attachments/classification-aml-experiments.PNG) <br><br>
+1. Clicking on "_Experiments_" on the left side, you will find your experiment being registered with the respective name and language shortcut. In case you initiate further training rounds for the same language, they will all be registered under the same experiment. Click on the respective experiments to get insights on running an, failed and finished experiment rounds. <br><br>![Azure ML Experiments](../.attachments/classification-aml-experiments.PNG) <br><br>
 
-2. There, you will get a detailed view on earlier training rounds. <br><br>![Azure ML Experiments](../../.attachments/classification-aml-experiments-en.PNG)
+2. There, you will get a detailed view on earlier training rounds. <br><br>![Azure ML Experiments](../.attachments/classification-aml-experiments-en.PNG)
 
 3. After the training round has successfully been finished, enter the `Models` menu on the left hand side. There you will find models which successfully have been trained.
 
-  ![AML Models](../../.attachments/aml-models.PNG)
+  ![AML Models](../.attachments/aml-models.PNG)
 
 4. For every task like classification, NER etc., a separate model is going to be registered. For example, `msforum_de-model-1` stands for a successfully trained classification model, `msforum_de-model-4` for question/answering. Depending on your pre-defined tasks, you should wait until all your models appear here before you proceed with the model deployment.
 

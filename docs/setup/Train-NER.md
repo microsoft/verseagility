@@ -5,7 +5,7 @@ The toolkit supports and includes different approaches and frameworks for recogn
 - FARM/Transformer Custom NER
 - Basic approaches (like regex and term lists)
 
-[[_TOC_]]
+
 
 The central components can be found in the script `code/ner.py`.
 

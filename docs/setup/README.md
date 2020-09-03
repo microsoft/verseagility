@@ -12,7 +12,7 @@ This part of the documentation helps you to set up Verseagility in our own subsc
 
 
 # Overview
-![image.png](../.attachments/architecture-versagility-v1.png)
+![image.png](../.attachments/architecture-verseagility-v1-2.png)
 There are three main components to Verseagility:
 1. Data processing pipeline
 1. Task modeling

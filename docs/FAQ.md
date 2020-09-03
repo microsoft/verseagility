@@ -1,8 +1,6 @@
 # Frequently Asked Questions
 This section covers frequently asked questions and will grow over time. We appreciate your feedback to continuously improve our toolkit and let it grow over time!
 
-[[_TOC_]]
-
 ### How do I join the Microsoft organization on GitHub?
 This documentation helps you to connect your personal GitHub with the Microsoft organization. You will be able to access Microsoft-internal GitHub repositories after successfully connecting them.
 
@@ -10,9 +8,9 @@ This documentation helps you to connect your personal GitHub with the Microsoft 
 2. Save the reset codes to be able to reset the 2-factor authentication one day.
 3. [Here](https://repos.opensource.microsoft.com/) you can link your GitHub account to the Microsoft organization afterwards. You have to give Microsoft the authorization to access your GitHub (e.g. Microsoft will ask you if your GitHub account uses 2-factor authentication).
 4. After successfully linking the accounts, you can join the GitHub organization "microsoft" in the "Available Microsoft GitHub organizations" section.<br>
-![Available Organizations](../.attachments/github-orga.jpg)
+![Available Organizations](.attachments/github-orga.jpg)
 5. Your GitHub profile should now list "microsoft" among your organizations.<br>
-![GitHub Profile](../.attachments/github-orga-ms.png)
+![GitHub Profile](.attachments/github-orga-ms.png)
 6. You can now access the [Verseagility GitHub-repository](https://github.com/microsoft/verseagility)
 
 ### How to add support for a new languages?

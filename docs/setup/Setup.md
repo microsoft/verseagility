@@ -1,7 +1,7 @@
 # Environment Setup
 This documentation helps you to clone the repository to your local machine, install the environment and deploy all the necessary resources to your Azure subscription using an ARM-template. Therefore, the manual effort is minimized and the integrity is ensured.
 
-[[_TOC_]]
+
 
 ## Repository Setup
 0. Make sure you fulfill all criteria described in the [requirements](../Verseagility-Setup.md) section.
@@ -35,7 +35,7 @@ to
 [![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json)
 
 2. Make sure you wait until all resources have been deployed successfully before you proceed with the next step. You can verify this by checking the notification bell at the top menu whether any errors occurred. The resource group should have the following components:
-![Azure Resources](../../.attachments/azure-resources.png)
+![Azure Resources](../.attachments/azure-resources.png)
       - [Azure Machine Learning](https://azure.microsoft.com/en-us/services/machine-learning/)
         - Accelerator for Machine Learning projects
         - Central component for model training and deployments
@@ -57,7 +57,7 @@ to
         - Central file storage for data input, prepared Azure Machine learning data etc.)
 
 3. After the deployment has finished (approx. 30 minutes) as a workaround for now, you have to add the Function host key as an environment variable manually. Therefore, access your Function App, click on "_App keys_" in the left menu, click on "_default_" and copy the key from the menu which is going to appear on the right hand side. After copying, click on  "_Configuration_" and insert the key in the field named "_FunctionHostKey_" in the function (if the variable is already there, replace the value) and click "_Save_".<br>
-![Get Function Keys](../../.attachments/function-getkeys.png)
+![Get Function Keys](../.attachments/function-getkeys.png)
 
 4. You may now proceed with customizing the pipeline as explained [here](Customize-Pipeline.md).
 
