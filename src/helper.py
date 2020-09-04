@@ -267,7 +267,12 @@ farm_model_lookup = {
         'cn':'bert-base-chinese'
         },
     'roberta' : {
-        'en' : 'roberta-base'
+        'en' : 'roberta-base',
+        'de' : 'roberta-base',
+        'fr' : 'roberta-base',
+        'es' : 'roberta-base',
+        'it' : 'roberta-base'
+        # All languages for roberta because of multi_classificaiton
     },
     'xlm-roberta' : {
         'xx' : 'xlm-roberta-base'

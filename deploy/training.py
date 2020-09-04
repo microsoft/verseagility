@@ -139,6 +139,24 @@ if args.do_train:
                         use_gpu = True)
             run = exp.submit(est)
             print(f'[INFO] Task {task} deployed for training.')
+        elif config.get('type') == 'multi_classification':
+            script_params = {
+                '--task'            : int(task),
+                '--use_cuda'        : '',
+                '--learning_rate'   : config.get('learning_rate'),
+                '--model_type'      : config.get('model_type'),
+                '--max_seq_len'     : config.get('max_seq_len'),
+                '--embeds_dropout'  : config.get('embeds_dropout'),
+                '--register_model'  : ''
+            }
+            est = PyTorch(source_directory = script_folder,
+                        compute_target = compute_target,
+                        script_params = script_params,
+                        entry_script = 'src/multi_classification.py',
+                        pip_packages = pip_packages,
+                        use_gpu = True)
+            run = exp.submit(est)
+            print(f'[INFO] Task {task} deployed for training.')
         elif config.get('type') == 'qa':
             script_params = {
                 '--task'            : int(task),
