@@ -146,7 +146,7 @@
                         "ApplicationInsights"
                     ],
                     "imagePaths": [
-                        "https://globalsmartdetectors.blob.core.windows.net/detectors/FailureAnomaliesDetector/v0.18/FailureAnomaly.png"
+                        "https://globalsmartdetectors.blob.core.windows.net/detectors/FailureAnomaliesDetector/v0.18/FailureAnomaly.PNG"
                     ]
                 },
                 "scope": [

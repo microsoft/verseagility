@@ -36,7 +36,7 @@ except Exception as e:
 ############################################
 
 def get_logger(level='info', location = None, excl_az_storage=True):
-    '''Get runtime logger'''
+    """Get runtime logger"""
     global logger
 
     # Exceptions
@@ -65,7 +65,7 @@ def get_logger(level='info', location = None, excl_az_storage=True):
     return logger
 
 def get_context():
-    '''Get AML Run Context for Logging to AML Services'''
+    """Get AML Run Context for Logging to AML Services"""
     try:
         run = Run.get_context()
     except Exception as e:
@@ -82,9 +82,9 @@ def get_repo_dir():
     root_dir = './'
     if os.path.isdir(Path(__file__).parent.parent / 'code'):
         root_dir = f"{(Path(__file__).parent.parent).resolve()}/"
-    elif os.path.isdir('../code'):
+    elif os.path.isdir('../src'):
         root_dir = '../'
-    elif os.path.isdir('./code'):
+    elif os.path.isdir('./src'):
         root_dir = './'
     else:
         log.warning('Root repository directory not found. This may \
@@ -93,7 +93,7 @@ def get_repo_dir():
 
 def get_project_config(fn):
     _fn1 = f"{get_repo_dir()}/project/{fn}"
-    _fn2 = f"{get_repo_dir()}/code/config.json"
+    _fn2 = f"{get_repo_dir()}/src/config.json"
     if os.path.isfile(_fn1):
         with open(_fn1, encoding='utf-8') as fp:
             params = json.load(fp)
@@ -119,21 +119,36 @@ def get_config(section = None):
 #####   Requirements
 ############################################
 
-def get_requirements(req_type='conda'):
-    """Load pip requirements, for deployment"""
+# def get_requirements(req_type='conda'):
+#     """Load pip requirements, for deployment"""
+#     # Load requirements file
+#     with open(get_repo_dir() + 'environment.yml') as file:
+#         reqs = yaml.load(file, Loader=yaml.FullLoader)
+#     conda = []
+#     for r in reqs.get('dependencies'):
+#         if not isinstance(r, str):
+#             pip = r.get('pip')
+#         else:
+#             conda.append(r)
+#     if req_type == 'conda':
+#         return conda
+#     elif req_type == 'pip':
+#         return pip
+
+def get_requirements(req_type = 'deploy'):
+    """Load pip requirements, for training and deployment"""
     # Load requirements file
-    with open(get_repo_dir() + 'environment.yml') as file:
-        reqs = yaml.load(file, Loader=yaml.FullLoader)
-    conda = []
-    for r in reqs.get('dependencies'):
-        if not isinstance(r, str):
-            pip = r.get('pip')
-        else:
-            conda.append(r)
-    if req_type == 'conda':
-        return conda
-    elif req_type == 'pip':
-        return pip
+    reqs = [line.rstrip('\n') for line in 
+            open(get_repo_dir() + 'requirements.txt', 
+            encoding='utf-8') if line[:2] is not '# ']
+    # Filter only relevant part
+    if req_type == 'deploy':
+        reqs = reqs[:reqs.index('##LOCAL ONLY')]
+    elif req_type == 'train':
+        reqs = reqs[:reqs.index('##DEPLOY ONLY')]
+    elif req_type == 'data':
+        reqs = reqs[:reqs.index('##TRAIN ONLY')]
+    return reqs
 
 ############################################
 #####   Secret Management
@@ -252,7 +267,12 @@ farm_model_lookup = {
         'cn':'bert-base-chinese'
         },
     'roberta' : {
-        'en' : 'roberta-base'
+        'en' : 'roberta-base',
+        'de' : 'roberta-base',
+        'fr' : 'roberta-base',
+        'es' : 'roberta-base',
+        'it' : 'roberta-base'
+        # All languages for roberta because of multi_classificaiton
     },
     'xlm-roberta' : {
         'xx' : 'xlm-roberta-base'
@@ -377,7 +397,7 @@ def append_ner(v, s, e, l, t=''):
 ############################################
 
 # def decrypt(token, dataframe=False):
-#     ''' Decrypt symetric object using Fernet '''
+#     """ Decrypt symetric object using Fernet """
 #     secret = get_secret()
 #     f = Fernet(bytes(secret, encoding='utf-8'))
 #     token = f.decrypt(token)
@@ -395,7 +415,7 @@ def append_ner(v, s, e, l, t=''):
 #     df.to_csv(fn.replace('.enc', '.txt'), sep='\t', encoding='utf-8', index=False) #TODO: match encrypt fn out
 
 # def encrypt(token, dataframe=False):
-#     ''' Encrypt symetric object using Fernet '''
+#     """ Encrypt symetric object using Fernet """
 #     secret = get_secret()
 #     f = Fernet(bytes(secret, encoding='utf-8'))
 #     if dataframe:

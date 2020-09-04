@@ -6,7 +6,7 @@ Before running train, you need to run prepare.py with the respective task.
 Example (in the command line):
 > cd to root dir
 > conda activate nlp
-> python code/multi_classification.py --task 2 --model_type roberta --use_cuda
+> python src/multi_classification.py --task 2 --model_type roberta --use_cuda
 
 """
 import logging
@@ -24,14 +24,14 @@ from farm.modeling.language_model import Roberta
 from farm.modeling.prediction_head import MultiLabelTextClassificationHead
 from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer
-from farm.utils import set_all_seeds, MLFlowLogger, initialize_device_settings
+from farm.utils import set_all_seeds, initialize_device_settings
 from sklearn.metrics import (matthews_corrcoef, recall_score, precision_score,
                          f1_score, mean_squared_error, r2_score)
 from farm.evaluation.metrics import simple_accuracy, register_metrics
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import data as dt
 import custom as cu
@@ -207,7 +207,7 @@ def run():
                     type=float,
                     help='')
     parser.add_argument('--evaluate_every',
-                    default=500,
+                    default=3000,
                     type=int,
                     help='')  
     parser.add_argument('--max_seq_len',

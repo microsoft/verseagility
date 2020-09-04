@@ -1,6 +1,6 @@
 import json
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import infer
 
 infer.init()

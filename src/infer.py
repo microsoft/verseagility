@@ -12,7 +12,7 @@ from farm.infer import Inferencer
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import data as dt
 import prepare as pr
@@ -88,14 +88,18 @@ def run(req):
                     category = _labels,
                     score = [_ref[i] for i in _indices]
                 ))
-        else:
+                _cat = _temp[0].get('category')
+                result = _temp
+        elif tm['params'].get('type') == 'classification':
             for r in result[0]['predictions']:
                 _temp.append(dict(
                     category = r.get('label'),
                     score = f"{r.get('probability'):.3}"
                 ))
-        _cat = _temp[0].get('category')
-        result = _temp
+            _cat = _temp[0].get('category')
+            result = _temp
+        else:
+            logger.warning(f'[INFO] - Not a FARM model -> {tm["params"].get("type")}')
 
         # Prepare output
         res.append({
@@ -110,6 +114,6 @@ if __name__ == '__main__':
     #NOTE: FOR TESTING ONLY
     init()
     print(run(json.dumps([{"subject":"My pc won't start", 
-                        "body":"When I try booting, a red light goes on and then nothing happens",
+                        "body":"When I try booting, a red light goes on and then nothing happens, Bill Gates should help...",
                         "attachment":""
         }])))

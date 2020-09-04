@@ -1,4 +1,10 @@
-''' MICROSOFT FORUM TICKET SCRAPER '''
+""" MICROSOFT FORUM TICKET SCRAPER 
+
+Website: answers.microsoft.com
+Example: 
+> python 2_extract.py --language de-de --product windows
+
+"""
 import re
 import urllib
 import urllib.request
@@ -28,7 +34,6 @@ parser.add_argument('--product',
                 help="['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge','ie','musicandvideo']")  
 args = parser.parse_args()
 
-# Example: python 2_extract.py --language de-de --product windows
 
 # Set params
 lang = args.language
@@ -184,22 +189,22 @@ def scrapeMe(url, product):
         file.write(content+",")
         print(f"[SUCCESS] - File {fileid}\n")
 
-''' LOOP THROUGH THE OUTPUT TEXT FILES AND CREATE JSON '''
-# Check mode
+# LOOP THROUGH THE OUTPUT TEXT FILES AND CREATE JSON
+## Check mode
 if productsel == "list":
     products = ['windows', 'msoffice', 'xbox', 'outlook_com', 'skype', 'surface', 'protect', 'edge', 'musicandvideo', 'msteams', 'microsoftedge']
 else:
     products = [productsel]
-# Loop through product
+## Loop through product
 for product in products:
     try:
-        # Read File
+        ### Read File
         docs = codecs.open(f"output-{product}-{lang}.txt", 'r', encoding='utf-8').read()
-        # Prepare Links
+        ### Prepare Links
         url_temp = re.findall(r'(https?://answers.microsoft.com/' + lang + r'/' + product + r'/forum/[^\s]+)', docs)
         url_temp2 = [s.strip('"') for s in url_temp]
         url_list = [x for x in url_temp2 if not x.endswith('LastReply')]
-        # Drop duplicates
+        ### Drop duplicates
         url_list = list(dict.fromkeys(url_list))
         failed_url = []
         for i, value in enumerate(url_list):

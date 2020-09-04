@@ -6,7 +6,7 @@ import re
 
 # Custom function
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 
 logger = he.get_logger(location=__name__)
@@ -16,7 +16,7 @@ logger = he.get_logger(location=__name__)
 ############################################
 
 # Load parameters from config
-params = he.get_project_config('msforum_de.config.json')
+params = he.get_project_config('msforum_en.config.json')
 tasks = params.get('tasks')
 logger.warning(f'[INFO] *** Project target lang \t-> {params.get("language")} \t***')
 logger.warning(f'[INFO] *** Project target env \t-> {params.get("environment")} \t***')

@@ -37,13 +37,13 @@ func host start
 
 1. Click on the button to start the resource deployment:
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json" target="_blank">
-<img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
+<img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.PNG"/>
 </a>
 
 2. After the deployment has finished (~30min) as a workaround for now, add the function "default" host key as an environment variable
 named "FunctionHostKey" in the function (if the variable is already there, replace the value) and click "Save"
 
-<img src="https://github.com/microsoft/verseagility/blob/master/demo/functionkey.png" width="400">
+<img src="https://github.com/microsoft/verseagility/blob/master/demo/functionkey.PNG" width="400">
 
 ## Usage
 
@@ -55,7 +55,7 @@ The purpose of the pipeline is twofold: 1) It automatically processes supported 
 
 What happens in the background is that the "processor-function" gets triggered. This function takes the newly added blob and parses it based on the content/MIME-type of the blob. To tell the function how a certain document has to be handled, you must write your own parser, parsers are stored in the /parsers directory. By default, three parsers are already implemented (CSV, JSON and default). If you take a look at e.g. csv-parser, you see that the job of the parser is to map content of the CSV file to an object called "OutputSchema". OutputSchema is the document schema that will be used to store the document in Cosmos DB (of course you can also adopt the schema to fit your needs). For example, if your CSV file contains a list of documents and the ID in the first column (index 0), the number of views for this document in the second column and the URI to the document in the third column, the parser iterates over all rows and maps all columns to the right OutputSchema properties:
 
-<img src="https://github.com/microsoft/verseagility/blob/master/demo/mapping.png" width="500">
+<img src="https://github.com/microsoft/verseagility/blob/master/demo/mapping.PNG" width="500">
 
 Note: If you want to link attachments to the documents in the CSV file, create a container in the storage account named after the document ID. The pre-implemented parser will search in the storage for any container that has the same ID as the document. If it finds one, it links all blobs in the container as attachments to the document.
 

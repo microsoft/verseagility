@@ -25,7 +25,7 @@ from azureml.exceptions import WebserviceException
 
 # Custom Functions
 import sys 
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 
 ############################################
@@ -56,12 +56,11 @@ env = params.get('environment')
 ws = he.get_aml_ws()
 
 # Python dependencies
-pip_packages=he.get_requirements(req_type='pip')
-conda_packages=he.get_requirements(req_type='conda')
+pip_packages=he.get_requirements(req_type='deploy')
 
 ## Local Config
 fn_config_infer = 'config.json'
-shutil.copy(f'./project/{args.project_name}.config.json', f'./code/{fn_config_infer}')
+shutil.copy(f'./project/{args.project_name}.config.json', f'./src/{fn_config_infer}')
 
 script_folder = "."
 tasks = params.get("tasks")
@@ -97,12 +96,12 @@ if args.do_deploy:
     
     # Prepare Environment
     environment = Environment('env')
-    conda_packages = ['pytorch', 'torchvision'] +  conda_packages
+    conda_packages = ['pytorch', 'torchvision']
     pip_packages = ['azureml-defaults'] + pip_packages
     environment.python.conda_dependencies = CondaDependencies.create(pip_packages=pip_packages,
                                                                     conda_packages=conda_packages)
 
-    inference_config = InferenceConfig(entry_script='code/infer.py',
+    inference_config = InferenceConfig(entry_script='src/infer.py',
                                    source_directory='.',
                                    environment=environment)
     
@@ -129,4 +128,4 @@ if args.do_deploy:
         logging.warning(f'[ERROR] Service was not deployed as expected. {e}')
 
 #Remove temp config
-os.remove( f'./code/{fn_config_infer}')
+os.remove( f'./src/{fn_config_infer}')

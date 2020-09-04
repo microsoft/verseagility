@@ -6,7 +6,7 @@ Before running train, you need to run prepare.py with the respective task.
 Example (in the command line):
 > cd to root dir
 > conda activate nlp
-> python code/prepare.py --do_format --task 1
+> python src/prepare.py --do_format --task 1
 """
 #NOTE: the following is a workaround for AML to load modules
 import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
@@ -21,7 +21,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 
 # Custom functions
 import sys
-sys.path.append('./code')
+sys.path.append('./src')
 import helper as he
 import data as dt
 import custom as cu
@@ -141,7 +141,7 @@ class Clean():
                         rp_generic=False,
                         rp_custom=False,
                         rp_num=False):
-        '''Replace text with type specfic placeholders'''
+        """Replace text with type specfic placeholders"""
 
 
         # Customer placeholders
@@ -166,7 +166,7 @@ class Clean():
         return line
 
     def tokenize(self, line, lemmatize = False, rm_stopwords = False):
-        '''Tokenizer for non DL tasks'''
+        """Tokenizer for non DL tasks"""
         if not isinstance(line, str):
             line = str(line)
         
@@ -334,7 +334,9 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         del data_red['label']
         data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
-    data_red = data_red.reset_index(drop=True).copy()
+    data_red = data_red.tail(300000).reset_index(drop=True).copy() 
+    #TODO: .tail() temp is for debugging
+    ## There is a memory issue for the EN dataset, due to its size. Needs further investigation.
 
     # Label list
     if cu.tasks.get(str(task)).get('type') == 'multi_classification': # 2 = task for multi-label classification

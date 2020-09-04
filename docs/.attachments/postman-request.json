@@ -1,0 +1,49 @@
+{
+	"info": {
+		"_postman_id": "3bc12d14-436a-412d-9786-d8ede787a9fc",
+		"name": "NLP API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "NLP API",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer Nm8MKM8FT8KshjtPGNfKioMykltg3pGj",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[{\r\n\t\"subject\": \"Subject goes here\",\r\n\t\"body\": \"Body\"\r\n}]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://29efd3ea-2d9d-4c54-99b0-89a099f7aa80.westeurope.azurecontainer.io/score",
+					"protocol": "http",
+					"host": [
+						"29efd3ea-2d9d-4c54-99b0-89a099f7aa80",
+						"westeurope",
+						"azurecontainer",
+						"io"
+					],
+					"path": [
+						"score"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
