@@ -124,6 +124,7 @@ if args.do_train:
             script_params = {
                 '--task'            : int(task),
                 '--use_cuda'        : '',
+                '--n_epochs'        : 3,
                 '--learning_rate'   : config.get('learning_rate'),
                 '--model_type'      : config.get('model_type'),
                 '--max_seq_len'     : config.get('max_seq_len'),
