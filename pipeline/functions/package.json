@@ -16,7 +16,7 @@
     "jsonschema": "^1.2.4",
     "moment": "^2.20.1",
     "ms-rest-azure": "^2.5.9",
-    "node-fetch": "^2.3.0",
+    "node-fetch": "^2.6.1",
     "stream-to-buf": "^1.0.0",
     "csvtojson": "^2.0.10",
     "superagent": "^5.2.2"
