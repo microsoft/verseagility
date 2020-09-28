@@ -43,7 +43,7 @@ except Exception as e:
 def get_repo_dir():
     """Get repository root directory"""
     root_dir = './'
-    if os.path.isdir(Path(__file__).parent.parent / 'code'):
+    if os.path.isdir(Path(__file__).parent.parent / 'src'):
         root_dir = f"{str((Path(__file__).parent.parent).resolve())}/"
     elif os.path.isdir('../src'):
         root_dir = '../'
