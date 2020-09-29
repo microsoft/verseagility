@@ -56,12 +56,11 @@ def load_qa(data):
 
 def filter_qa(data):
     # Filter by marked as answer
-    _temp = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
-    if len(_temp) == 0:
-        _temp = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
-    logger.warning(f'Data Length : {len(_temp)}  \t- after marked as answer ')
+    data = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
+    if len(data) == 0:
+        data = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
+    logger.warning(f'Data Length : {len(data)}  \t- after marked as answer ')
     # Filter by UpVotes
-    _temp = _temp[_temp['label_answer_upvotes'] > 1].reset_index(drop=True).copy() #TODO: evaluate
-    logger.warning(f'Data Length : {len(_temp)}  \t- after min upvotes of 2')
-    return data #_temp #TODO: not used
-
+    data = data[data['label_answer_upvotes'] > 1].reset_index(drop=True).copy() #TODO: evaluate
+    logger.warning(f'Data Length : {len(data)}  \t- after min upvotes of 2')
+    return data
