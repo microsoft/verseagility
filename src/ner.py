@@ -21,8 +21,6 @@ from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer
 from farm.utils import set_all_seeds, initialize_device_settings
 
-from azure.ai.textanalytics import TextAnalyticsClient, TextAnalyticsApiKeyCredential
-
 # Custom functions
 import sys
 sys.path.append('./src')
@@ -53,27 +51,18 @@ class FlairMatcher(object):
 class TextAnalyticsMatcher(object):
     name = "textanalytics"
     def __init__(self):
-        self.key = he.get_secret('text-analytics-key')
-        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/"
-        self.ta_credential = TextAnalyticsApiKeyCredential(self.key)
-        self.text_analytics_client = TextAnalyticsClient(
-                endpoint=self.endpoint, credential=self.ta_credential)
+        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/text/analytics/v3.0/entities/recognition/general"
+        self.headers = {"Ocp-Apim-Subscription-Key": he.get_secret('text-analytics-key')}
         
     def __call__(self, doc):
-        text = doc.text
-        result = self.text_analytics_client.recognize_entities(inputs=[text], language=cu.params.get('language'))[0]
-        for entity in result.entities:
-            if entity.subcategory != 'Number':
-                if entity.subcategory is not None:
-                    label = f"{entity.category} ({entity.subcategory})"
-                else:
-                    label = entity.category
-                span = doc.char_span(entity.grapheme_offset, entity.grapheme_offset + entity.grapheme_length, label=label)
-                # Pass, in case a match already exists
-                try:
-                    doc.ents = list(doc.ents) + [span]
-                except:
-                    pass
+        result = requests.post(self.endpoint, headers=self.headers, json={"documents": [{"id": "0", "language": cu.params.get('language'), "text": doc.text}]}).json()['documents'][0]
+        for entity in result['entities']:
+            span = doc.char_span(entity['offset'], entity['offset'] + entity['length'], label = entity['category'])
+            # Pass, in case a match already exists
+            try:
+                doc.ents = list(doc.ents) + [span]
+            except:
+                pass
         return doc
 
 class CustomNER():

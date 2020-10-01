@@ -61,6 +61,6 @@ def filter_qa(data):
         data = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(data)}  \t- after marked as answer ')
     # Filter by UpVotes
-    data = data[data['label_answer_upvotes'] > 1].reset_index(drop=True).copy() #TODO: evaluate
+    data = data[data['label_answer_upvotes'] > 1].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(data)}  \t- after min upvotes of 2')
     return data
