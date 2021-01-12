@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Simple Demo Dashboard for the NLP Toolkit.
-
 To run dashboard, use:
 - streamlit run dashboard.py
-
 #NOTE: This parameter might have to be changed depending on the system
 allow_output_mutation -> ignore_hash
 """
@@ -23,7 +21,13 @@ import os
 # PARAMS 
 ########################
 
-LANGUAGES = ["en","de","fr","es","it"]
+LANGUAGES = {
+    "English":"en",
+    "German":"de",
+    "French":"fr",
+    "Italian":"it",
+    "Spanish":"es"
+}
 MODEL_ENDPOINTS = {
     'en': os.environ.get('ACI_EN'), #msforum-en-prod
     'de': os.environ.get('ACI_DE'), #msforum-de-prod
@@ -138,10 +142,8 @@ HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; borde
 # Logo loading
 try:
     logo = Image.open('~/app/logo.png')
-    ms = Image.open('~/app/microsoft.PNG')
 except FileNotFoundError:
     logo = Image.open('logo.png')
-    ms = Image.open('microsoft.PNG') 
 
 # @st.cache(allow_output_mutation=True)
 def load_model(name):
@@ -186,21 +188,20 @@ st.sidebar.markdown(
 Text classification, named entity recognition 
 and answer suggestions for 
 support emails and attachments.
-
 \n\n
 """
 )
 
 # Language selection
 st.sidebar.subheader("Language")
-lang = st.sidebar.selectbox("Select language", LANGUAGES)
+lang_select = st.sidebar.selectbox("Select language", [*LANGUAGES])
+lang = LANGUAGES[lang_select]
 
 # Credits
 st.sidebar.subheader("Data Source")
 st.sidebar.markdown(
 """
 https://answers.microsoft.com/
-
 """
 )
 # st.sidebar.image(ms, width=200)

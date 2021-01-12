@@ -1,7 +1,9 @@
 streamlit
-pandas==1.0.0
+pandas==1.0.1
 numpy
 matplotlib
 spacy
 pillow
 requests
+nltk
+#azure-ai-textanalytics==5.1.0b2
