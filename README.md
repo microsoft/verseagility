@@ -1,7 +1,7 @@
 <img src="demo/logo.png" width="500" align="center"><br>
 
 # NLP Toolkit
-Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Services Knowledge Mining offering.
+Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Consulting Services Knowledge Mining offering.
 
 See the [wiki](./docs/README.md) for detailed documentation how to get started with the toolkit.
 
@@ -72,13 +72,13 @@ Verseagility is built in part using the following:
 - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
 - [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
 - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
-- [flair](https://github.com/flairNLP/flair/) by Zalando Research
+- [flair](https://github.com/flairNLP/flair/) by Humboldt-University of Berlin
 - [gensim](https://radimrehurek.com/gensim/)
 
 Maintainers:
 - [Timm Walz](mailto:timm.walz@microsoft.com)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
-- [Martin Kayser](mailto:martin.kayser@microsoft.com)
+- Martin Kayser
 
 ## To-Dos
 The following section contains a list of possible new features or enhancements. Feel free to contribute. 
