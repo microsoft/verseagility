@@ -24,7 +24,7 @@ This documentation helps you to get started with the toolkit from infrastructure
 
 Following technical framework is recommended and will help you to succeed:
 * [x] an [Azure](https://portal.azure.com) subscription (including GPU-quota if you want to train your own models)
-* [x] [Anaconda](https://www.anaconda.com/distribution/)
+* [x] Python >= 3.7 and Virtual Environments
 * [ ] [VSCode](https://code.visualstudio.com/docs/?dv=win) (recommended)
   - alternatively, you can also run the scripts using PowerShell
 
@@ -50,8 +50,8 @@ The code and detailed instructions can be found on the [Verseagility](https://gi
 ## Questions / FAQ / Problems / Contact
 Feel free to create an issue or pull request in GitHub if you find a bug, have a feature request or a questions.
 Alternatively, feel free to reach out to the main contributors to this project:
+- [Timm Walz](mailto:timm.walz@microsoft.com)
 - [Martin Kayser](https://github.com/maknotavailable)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
-- [Timm Walz](mailto:timm.walz@microsoft.com)
 
 Also, see our [FAQ page](docs/FAQ.md) which is going to be continuously extended.
