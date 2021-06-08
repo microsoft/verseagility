@@ -13,21 +13,37 @@ This documentation helps you to clone the repository to your local machine, inst
   git clone https://github.com/microsoft/verseagility
   ```
 
-3. Change directory to the repository, where the `environment.yml` is located. This file will help you to install all necessary packages for your Python environment. For the local install, open the file and uncomment the following line:
-`#- pytorch=1.4.0 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT`
-to
-`- pytorch=1.4.0 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT`
-4. Run the command below. This is going to take a couple of minutes.
+3. `cd` into the root directory of the cloned repository (`cd verseagility/`) and set up a virtual environment. If the virtual environment extension is not installed in your Python version, first run the following command:
+```
+pip install --user virtualenv
+```
+
+4. To create the virtual environment, run the command below. This is going to take a couple of seconds.
   ```
-  conda env create -f environment.yml
+  python -m venv .venv
   ```
 
-5. Comment the following line again, which you have changed in step 3. again and save the file. This is important as the training and deployments in the following steps are going to fail otherwise.
+5. After setting up the virtual environment, activate it using the command below.
+
+  Windows:
   ```
-  #- pytorch=1.4.0 # NOTE: UNCOMMENT THIS FOR LOCAL ENV INSTALL, BUT COMMENT IT AGAIN FOR TRAINING/DEPLOYMENT
+  .venv/Scripts/activate
   ```
 
-6. You can now go ahead with the deployment of the Azure resources. Follow the instructions in [Deploy to Azure](#deploy-to-azure). Alternatively, go to [Local development (optional)](#local-development-optional)
+  Linux:
+  ```
+  source .venv/bin/activate
+  ```
+
+
+6. To deactivate the `venv`, just type `deactivate` in your command line. Make sure other environments, such as Conda, are deactivated before going ahead. You may recognize eventually activated Conda environments in the beginning of the line, stating `(base)`. In that case, type `conda deactivate`.
+
+7. Next, we install the requirements with help of the `requirements.txt` file. This may take a couple of minutes.
+```
+pip install -r requirements.txt
+```
+
+8. You can now go ahead with the deployment of the Azure resources. Follow the instructions in [Deploy to Azure](#deploy-to-azure). Alternatively, go to [Local development (optional)](#local-development-optional)
 
 ## Deploy to Azure
 
