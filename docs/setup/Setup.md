@@ -48,7 +48,7 @@ pip install -r requirements.txt
 ## Deploy to Azure
 
 1. Basically, you can choose an arbitrary Azure region where the resources should be deployed. The end-to-end deployments have successfully been tested for _South Central US_, _West Europe_ and _North Europe_, which is why we would recommend you to choose among these. Click on the button below to start the resource deployment:<br>
-[![Deploy to Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.PNG)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchristian-vorhemus%2Ffunction-app%2Fmaster%2Fazuredeploy.json)
 
 2. Make sure you wait until all resources have been deployed successfully before you proceed with the next step. You can verify this by checking the notification bell at the top menu whether any errors occurred. The resource group should have the following components:
 ![Azure Resources](../.attachments/azure-resources.PNG)
