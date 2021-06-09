@@ -1,8 +1,6 @@
 # Environment Setup
 This documentation helps you to clone the repository to your local machine, install the environment and deploy all the necessary resources to your Azure subscription using an ARM-template. Therefore, the manual effort is minimized and the integrity is ensured.
 
-
-
 ## Repository Setup
 0. Make sure you fulfill all criteria described in the [requirements](../Verseagility-Setup.md) section.
 
@@ -110,6 +108,6 @@ Instead of working in an Azure subscription with help of the resources deployed 
 
 6) Start the function host
   ```
-  func host start
+  func start
   ```
 [Next Page >>](Customize-Pipeline.md)
