@@ -1,17 +1,26 @@
 # Webservice Deployment Guide
 In the following documentation, you will find a step-by-step guide on how to bring your trained models into production.
 
-
-
 ## Deployment Steps
-After finishing the training rounds, your models are ready to be deployed as an endpoint. During this process, a new Azure _Azure Container Instance_ is going to be created in your resource group and it will also be registered in your Azure Machine Learning workspace. They are configured with 2GB of RAM and 1 CPU (minimum performance), but you can scale this up by changing the values in `service.py`. For demo purpose, these values are sufficient. You will initiate the deployment from the root directory of the repository using the command line. <br>
-```python
-(nlp) python deploy/service.py --do_deploy --project_name [YOUR PROJECT NAME]
+After finishing the training rounds, your models are ready to be deployed as an endpoint. During this process, a new Azure _Azure Container Instance_ is going to be created in your resource group and it will also be registered in your Azure Machine Learning workspace. They are configured with 2GB of RAM and 1 CPU (minimum performance), but you can scale this up by changing the values in your project config file, which you find in the `project` subfolder. Please adjust the following part respectively.
+```json
+"deploy": {
+        "type": "ACI",
+        "memory": 2,
+        "cpu": 1
+    }
 ```
 
-The placeholder for `--project` has to be replaced with your project name as stated in your project file, such as `msforum_en`:<br>
+For demo purpose, these values are sufficient. You will initiate the deployment from the root directory of the repository using the command line. <br>
 ```python
-(nlp) python deploy/service.py --do_deploy --project_name msforum_en
+python deploy/service.py --do_deploy --project_name [YOUR PROJECT NAME]
+```
+
+> For enterprise scale, you should consider using [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/services/kubernetes-service/#:~:text=Azure%20Kubernetes%20Service%20(AKS)%20offers,and%20scale%20applications%20with%20confidence.), which may also be deployed out of Azure Machine Learning. The wrapper for creating an AKS is also provided by Verseagility.
+
+The placeholder for `--project_name` has to be replaced with your project name as stated in your project file, such as `msforum_en`:<br>
+```python
+python deploy/service.py --do_deploy --project_name msforum_en
 ```
 
 The deployment may take a while. You will find the deployed models in your Azure Machine Learning workspace in the _Endpoints_-section. We recommend you to submit a test request before using the endpoints in deployments. You can do this with help of [Postman](https://www.postman.com/downloads/).

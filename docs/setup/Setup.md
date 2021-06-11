@@ -38,7 +38,7 @@ pip install --user virtualenv
 
 7. Next, we install the requirements with help of the `requirements.txt` file. This may take a couple of minutes.
 ```
-pip install -r requirements.txt
+pip install -r requirements.txt --find-links https://download.pytorch.org/whl/torch_stable.html
 ```
 
 8. You can now go ahead with the deployment of the Azure resources. Follow the instructions in [Deploy to Azure](#deploy-to-azure). Alternatively, go to [Local development (optional)](#local-development-optional)

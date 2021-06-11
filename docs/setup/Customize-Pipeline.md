@@ -1,7 +1,7 @@
 # Data Preparation Pipeline
 This documentation helps you to understand the data preparation pipeline, how to bring your own data into the system and describes the required file structure.
 
-
+## Data Processing
 
 The purpose of the pipeline is twofold: 1) It automatically processes supported documents that are put into the "data" container of the created Azure Storage. 2) It creates a REST endpoint that can be used to convert documents (like images, PDFs) into text.
 
@@ -67,5 +67,17 @@ The HTTP request body may look like this
 ```
 
 The function will parse sample.pdf and add the content of the PDF as well as the other properties (subject and body in this case) to the Cosmos DB collection.
+
+## Delete Container
+In case you would like to delete old data from the CosmosDB, we recommend you to remove the entire container. Open your CosmosDB-resource in the Azure Portal and follow the steps below.
+
+1. Select the container `documents` to be deleted by clicking the `...` next to the container name. Next, smash _Delete Container_. Caution: all data will be gone from the CosmosDB after removing the container!<br>
+![Delete Container](../.attachments/cosmosdb-container-delete.PNG)
+
+1. Next, choose the dropdown menu as shown in the image below and click _New Container_.<br>
+![Delete Container](../.attachments/cosmosdb-container-new.PNG)
+
+1. Fill in the information as shown in the screenshot. It is important that you take over these values, as the document processing pipeline might no longer work if the values differ. You may define the container throughput as needed, depending on your desired level of scale. Click _OK_ to create the new container.<br>
+![Delete Container](../.attachments/cosmosdb-container-new-create.PNG)
 
 [<< Previous Page](Setup.md) --- [Next Page >>](Project-Setup.md)
