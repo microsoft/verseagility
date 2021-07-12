@@ -14,6 +14,7 @@
         "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]",
         "repoURL": "https://github.com/christian-vorhemus/function-app.git",
         "ocrName": "[toLower(concat('versocr', uniqueString(resourceGroup().id) ) )]",
+        "textAnalyticsName": "[toLower(concat('verstextanalytics', uniqueString(resourceGroup().id) ) )]",
         "branch": "master"
     },
     "outputs": {
@@ -27,7 +28,7 @@
             "type": "Microsoft.DocumentDB/databaseAccounts",
             "apiVersion": "2019-12-12",
             "name": "[variables('databaseName')]",
-            "location": "West Europe",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "defaultExperience": "Core (SQL)",
                 "hidden-cosmos-mmspecial": ""
@@ -47,7 +48,7 @@
                 },
                 "locations": [
                     {
-                        "locationName": "West Europe",
+                        "locationName": "[resourceGroup().location]",
                         "provisioningState": "Succeeded",
                         "failoverPriority": 0,
                         "isZoneRedundant": false
@@ -60,7 +61,7 @@
             "type": "microsoft.insights/components",
             "apiVersion": "2015-05-01",
             "name": "[variables('insightsComponent')]",
-            "location": "westeurope",
+            "location": "[resourceGroup().location]",
             "kind": "web",
             "properties": {
                 "Application_Type": "web",
@@ -71,7 +72,7 @@
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "name": "[variables('storageName')]",
-            "location": "westeurope",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Standard_RAGRS",
                 "tier": "Standard"
@@ -105,7 +106,7 @@
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2018-02-01",
             "name": "[variables('servicePlan')]",
-            "location": "West Europe",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Y1",
                 "tier": "Dynamic",
@@ -146,7 +147,7 @@
                         "ApplicationInsights"
                     ],
                     "imagePaths": [
-                        "https://globalsmartdetectors.blob.core.windows.net/detectors/FailureAnomaliesDetector/v0.18/FailureAnomaly.PNG"
+                        "https://globalsmartdetectors.blob.core.windows.net/detectors/FailureAnomaliesDetector/v0.18/FailureAnomaly.png"
                     ]
                 },
                 "scope": [
@@ -212,7 +213,7 @@
             "type": "Microsoft.Web/sites",
             "apiVersion": "2018-11-01",
             "name": "[variables('functionName')]",
-            "location": "West Europe",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/serverfarms', variables('servicePlan'))]"
             ],
@@ -279,6 +280,7 @@
                         "[resourceId('Microsoft.Web/Sites', variables('functionName'))]",
                         "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
                         "[resourceId('Microsoft.CognitiveServices/accounts', variables('ocrName'))]",
+                        "[resourceId('Microsoft.CognitiveServices/accounts', variables('textAnalyticsName'))]",
                         "[resourceId('Microsoft.Web/sites/host/functionKeys', variables('functionName'), 'default', 'internal')]"
                     ],
                     "tags": {
@@ -294,7 +296,9 @@
                         "WEBSITE_NODE_DEFAULT_VERSION": "~10",
                         "FunctionHostKey": "[listkeys(concat(resourceId('Microsoft.Web/Sites', variables('functionName')), '/host/default/'),'2019-08-01').functionKeys.default]",
                         "CognitiveServiceKey": "[listkeys(concat(resourceId('Microsoft.CognitiveServices/accounts', variables('ocrName'))),'2017-04-18').key1]",
-                        "CognitiveServiceName": "[variables('ocrName')]"
+                        "CognitiveServiceName": "[variables('ocrName')]",
+                        "TextAnalyticsKey": "[listkeys(concat(resourceId('Microsoft.CognitiveServices/accounts', variables('textAnalyticsName'))),'2017-04-18').key1]",
+                        "TextAnalyticsName": "[variables('textAnalyticsName')]"
                     }
                 }
             ]
@@ -303,7 +307,7 @@
             "type": "Microsoft.CognitiveServices/accounts",
             "apiVersion": "2017-04-18",
             "name": "[variables('ocrName')]",
-            "location": "westeurope",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "S1"
             },
@@ -313,10 +317,23 @@
             }
         },
         {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[variables('textAnalyticsName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "S"
+            },
+            "kind": "TextAnalytics",
+            "properties": {
+                "customSubDomainName": "[variables('textAnalyticsName')]"
+            }
+        },
+        {
             "type": "Microsoft.Web/sites/config",
             "apiVersion": "2018-11-01",
             "name": "[concat(variables('functionName'), '/web')]",
-            "location": "West Europe",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('functionName'))]",
                 "[resourceId('Microsoft.Web/sites/config/', variables('functionName'), 'appsettings')]"
@@ -396,7 +413,7 @@
             "type": "Microsoft.Web/sites/hostNameBindings",
             "apiVersion": "2018-11-01",
             "name": "[concat(variables('functionName'), '/', variables('functionName'), '.azurewebsites.net')]",
-            "location": "West Europe",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Web/sites', variables('functionName'))]"
             ],
@@ -496,7 +513,7 @@
             "type": "Microsoft.KeyVault/vaults",
             "apiVersion": "2015-06-01",
             "name": "[variables('keyvaultName')]",
-            "location": "westeurope",
+            "location": "[resourceGroup().location]",
             "properties": {
                 "accessPolicies": [],
                 "enabledForDeployment": true,
@@ -518,7 +535,7 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
                 "[resourceId('microsoft.insights/components', variables('insightsComponent'))]"
             ],
-            "location": "westeurope",
+            "location": "[resourceGroup().location]",
             "sku": {
                 "name": "Basic",
                 "tier": "Basic"
@@ -530,7 +547,7 @@
                 "storageAccount": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
                 "keyVault": "[resourceId('Microsoft.KeyVault/vaults', variables('keyvaultName'))]",
                 "applicationInsights": "[resourceId('microsoft.insights/components', variables('insightsComponent'))]",
-                "discoveryUrl": "https://westeurope.experiments.azureml.net/discovery"
+                "discoveryUrl": "[concat('https://', resourceGroup().location, '.experiments.azureml.net/discovery')]"
             }
         }
     ]
