@@ -1,14 +1,14 @@
 # Verseagility Setup
 This part of the documentation helps you to set up Verseagility in our own subscription and with your data. Each of the points below will lead you to the respective documentation page. At the bottom of each page you will find a link to the previous and next page.
 
-1. [Setup](Verseagility-Setup/Setup.md)
-2. [Pipeline Customization](Verseagility-Setup/Customize-Pipeline.md)
-2. [Project Setup](Verseagility-Setup/Project-Setup.md)
-3. [Data Preparation](Verseagility-Setup/Prepare-Data.md)
-4. [Training - Classification](Verseagility-Setup/Train-Classification.md)
-5. [Training - Named Entity Recognition](Verseagility-Setup/Train-NER.md)
-6. [Training - Question/Answering](Verseagility-Setup/Train-QA.md)
-7. [Deployment](Verseagility-Setup/Deploy-Service.md)
+1. [Setup](01%20-%20Verseagility%20Setup.md)
+2. [Data Preparation Pipeline](02%20-%20Data%20Preparation%20Pipeline.md)
+2. [Project Setup](03%20-%20Project%20Setup.md)
+3. [Data Preparation](04%20-%20Data%20Cleaning%20Steps.md)
+4. [Training - Classification](05%20-%20Training%20-%20Classification.md)
+5. [Training - Named Entity Recognition](06%20-%20Training%20-%20Named%20Entity%20Recognition.md)
+6. [Training - Question/Answering](07%20-%20Training%20-%20-QA.md)
+7. [Deployment](08%20-%20Deployment.md)
 
 
 # Overview
@@ -22,7 +22,7 @@ There are three main components to Verseagility:
 The NLP pipeline will standardize the data into a extenible JSON format, from which data preparation and training steps are initiated. These result in custom models for the pre-defined tasks, which can be deployed in a single container instance on ACI or AKS.
 
 ### Supported document types
-PDF, Word Document, .txt, Power Point, ...
+PDF, Word Document, .txt, PowerPoint, ...
 
 ## Task Modeling
 ![image.PNG](../.attachments/mlflow-verseagility-v1.PNG)
@@ -50,4 +50,4 @@ Validated languages include:
 |es|Spanish|
 |it|Italian|
 
-Further languages are supported with multi-language pre-trained models or required minor additions to the pre-processing and pre-trained model loading. See the [FAQ](/docs/FAQ.md) for details.
+Further languages are supported with multi-language pre-trained models or required minor additions to the pre-processing and pre-trained model loading. See the [FAQ](FAQ.md) for details.

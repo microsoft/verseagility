@@ -3,7 +3,7 @@
 # Verseagility - NLP Toolkit
 Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Data Science Toolkit.
 
-See the [documentation page](./docs/README.md) for detailed instructions how to get started with the toolkit.
+See the [documentation section](./docs/README.md) for detailed instructions how to get started with the toolkit.
 
 ## Supported Use Cases
 - Binary, multi-class & multi-label classification
@@ -12,7 +12,7 @@ See the [documentation page](./docs/README.md) for detailed instructions how to 
 - Text summarization
 
 ## Live Demo
-The live demo of models resulting from Verseagility is hosted at MTC Germany:
+The live demo of models resulting from Verseagility is hosted at Microsoft Technology Center Germany (MTC):
 > https://verseagility.azurewebsites.net
 
 Repository Structure

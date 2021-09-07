@@ -24,7 +24,7 @@ opencensus-ext-azure==1
 fsspec
 ##DEPLOY ONLY
 azure-keyvault==1.1.0
-azure-identity==1.3.1
+azure-identity<1.3.1
 azure-keyvault-secrets==4.1.0
 ##LOCAL ONLY
 pylint>=2.4.4
