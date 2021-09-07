@@ -110,4 +110,3 @@ Instead of working in an Azure subscription with help of the resources deployed 
   ```
   func start
   ```
-[Next Page >>](Customize-Pipeline.md)

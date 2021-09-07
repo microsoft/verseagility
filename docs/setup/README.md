@@ -4,10 +4,10 @@ This part of the documentation helps you to set up Verseagility in our own subsc
 1. [Setup](01%20-%20Verseagility%20Setup.md)
 2. [Data Preparation Pipeline](02%20-%20Data%20Preparation%20Pipeline.md)
 2. [Project Setup](03%20-%20Project%20Setup.md)
-3. [Data Preparation](04%20-%20Data%20Cleaning%20Steps.md)
+3. [Data Cleaning Steps](04%20-%20Data%20Cleaning%20Steps.md)
 4. [Training - Classification](05%20-%20Training%20-%20Classification.md)
 5. [Training - Named Entity Recognition](06%20-%20Training%20-%20Named%20Entity%20Recognition.md)
-6. [Training - Question/Answering](07%20-%20Training%20-%20-QA.md)
+6. [Training - Question/Answering](07%20-%20Training%20-%20-Question-Answering.md)
 7. [Deployment](08%20-%20Deployment.md)
 
 

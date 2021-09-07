@@ -79,5 +79,3 @@ In case you would like to delete old data from the CosmosDB, we recommend you to
 
 1. Fill in the information as shown in the screenshot. It is important that you take over these values, as the document processing pipeline might no longer work if the values differ. You may define the container throughput as needed, depending on your desired level of scale. Click _OK_ to create the new container.<br>
 ![Delete Container](../.attachments/cosmosdb-container-new-create.PNG)
-
-[<< Previous Page](Setup.md) --- [Next Page >>](Project-Setup.md)

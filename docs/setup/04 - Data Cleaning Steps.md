@@ -9,5 +9,3 @@
 - Stopword removal
 - Lemmatization
 - Regex removal
-
-[<< Previous Page](Project-Setup.md) --- [Next Page >>](Train-Classification.md)

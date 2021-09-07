@@ -8,5 +8,3 @@ The current version of Verseagility supports the Okapi BM25 information retrieva
 
 ## Potential Extensions
 Due to the modular setup, this section can be extended to support the QNAMaker from Microsoft, or custom question answering algorithms using Transformers and FARM. Support for these may be added in coming versions of Verseagility.
-
-[<< Previous Page](Train-NER.md) --- [Next Page >>](Deploy-Service.md)
