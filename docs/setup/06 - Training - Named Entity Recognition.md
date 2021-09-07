@@ -30,5 +30,3 @@ The most basic approach of Named Entity Recognition in text files is to take use
 3. Open them in a text editor of your choice and add further value-key pairs to `ner.txt` or continue to extend the list of stop words in `names.txt`. Stop words are words which are filtered out before or after processing as they are too common and frequent for bringing value to the analysis.
 
 4. Make sure the values are all lower-case, but the keys should be properly formatted
-
-[<< Previous Page](Train-Classification.md) --- [Next Page >>](Train-QA.md)

@@ -1,9 +1,9 @@
 <img src="demo/logo.png" width="500" align="center"><br>
 
-# NLP Toolkit
-Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Consulting Services Knowledge Mining offering.
+# Verseagility - NLP Toolkit
+Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Data Science Toolkit.
 
-See the [wiki](./docs/README.md) for detailed documentation how to get started with the toolkit.
+See the [documentation section](./docs/README.md) for detailed instructions how to get started with the toolkit.
 
 ## Supported Use Cases
 - Binary, multi-class & multi-label classification
@@ -12,8 +12,8 @@ See the [wiki](./docs/README.md) for detailed documentation how to get started w
 - Text summarization
 
 ## Live Demo
-The live demo of models resulting from Verseagility is hosted at MTC Germany:
-> https://aka.ms/nlp-demo
+The live demo of models resulting from Verseagility is hosted at Microsoft Technology Center Germany (MTC):
+> https://verseagility.azurewebsites.net
 
 Repository Structure
 ------------
@@ -63,12 +63,12 @@ Repository Structure
 
 ## Naming
 ### Assets
-> \<project name\>(-\<task\>)-\<step\>(-\<environment\>)
+`\<project name\>(-\<task\>)-\<step\>(-\<environment\>)`
 - where step in [source, train, deploy], for data assets.
 - where task is an int, referring to the parameters, for models.
 
 ## Acknowledgements
-Verseagility is built in part using the following:
+Verseagility is built in part using the following frameworks:
 - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
 - [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
 - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
@@ -78,12 +78,11 @@ Verseagility is built in part using the following:
 Maintainers:
 - [Timm Walz](mailto:timm.walz@microsoft.com)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
-- Martin Kayser
+- [Martin Kayser](https://www.linkedin.com/in/mkayser/)
 
-## To-Dos
+## Current updates
 The following section contains a list of possible new features or enhancements. Feel free to contribute. 
 ### Classification
-- [x] multi label support
 - [ ] integrate handling for larger documents vs short documents
 - [ ] integrate explicit handling for unbalanced datasets
 - [ ] ONNX support

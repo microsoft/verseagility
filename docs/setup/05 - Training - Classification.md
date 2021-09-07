@@ -36,5 +36,3 @@ After running the classification training step, you will find your experiments i
 
 TODO:
 - limitations: max characters, etc.. focus is on paragraph, not document classification
-
-[<< Previous Page](Prepare-Data.md) --- [Next Page >>](Train-NER.md)

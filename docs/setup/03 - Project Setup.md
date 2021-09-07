@@ -103,5 +103,3 @@ You see that there are multiple task levels. If you only want to go for classifi
   ```
 
 Your project is now set up!
-
-[<< Previous Page](Customize-Pipeline.md) --- [Next Page >>](Prepare-Data.md)
