@@ -1,22 +1,26 @@
 <img src="demo/logo.png" width="500" align="center"><br>
 
 # Verseagility - NLP Toolkit
-Verseagility is a Python-based toolkit for your custom natural language processing task, allowing you to bring your own data. It is a central component of the Microsoft Data Science Toolkit.
+Verseagility is a Python-based toolkit to ramp up your custom natural language processing (NLP) task, allowing you to bring your own data and bring models into production. It is a central component of the Microsoft Data Science Toolkit.
+
+## Why Verseagility?
+Building NLP solutions which cover all components from text classification, named entity recognition to answer suggestion, require testing and integration effort. For this purpose, we developed this toolkit, which serves to minimize the setup time of an end-to-end solution and maximizes the time for use case-specific enhancements and adjustments. On this way, first results should be made available in an accelerated way when bringing individual, pre-labeled text document data and allow more time for iterative improvements. 
 
 See the [documentation section](./docs/README.md) for detailed instructions how to get started with the toolkit.
 
 ## Supported Use Cases
+Verseagility is a modular toolkit that can be extended by further use-cases as needed. Following use-cases are already implemented and ready to be used:
 - Binary, multi-class & multi-label classification
 - Named entity recognition
 - Question answering
-- Text summarization
 
 ## Live Demo
-The live demo of models resulting from Verseagility is hosted at Microsoft Technology Center Germany (MTC):
-> https://verseagility.azurewebsites.net
+The toolkit paves the way to build consumeable REST APIs, for example in Azure Container Instances. These APIs may be used by the application of your choice: a website, a business process or just for testing purposes.
+A web-based live demo of models resulting from Verseagility is hosted at the Microsoft Technology Center Germany (MTC):
+> [Verseagility Demo](https://verseagility.azurewebsites.net)
 
-Repository Structure
-------------
+## Repository Structure
+The repository is built in the following structure:
 
     ├── /assets            <- Version controlled assets, such as stopword lists. Max size 
     │                         per file: 10 MB. Training data should
@@ -70,7 +74,7 @@ Verseagility is built in part using the following frameworks:
 - [flairNLP](https://github.com/flairNLP/flair/) by Humboldt-University of Berlin
 - [gensim](https://radimrehurek.com/gensim/)
 
-Maintainers:
+## Maintainers:
 - [Timm Walz](mailto:timm.walz@microsoft.com)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
 - [Martin Kayser](https://www.linkedin.com/in/mkayser/)
