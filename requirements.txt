@@ -24,7 +24,6 @@ spacy==2.3.2
 transformers==3.0.2 
 farm==0.4.7
 flair==0.6
-flake8==3.8.3
 fsspec==0.8.0
 selenium==3.141.0
 bs4==0.0.1
@@ -37,7 +36,6 @@ PyJWT==1.7.1
 pyyml==0.0.2
 opencensus==0.7
 opencensus-ext-azure==1
-fsspec
 ##DEPLOY ONLY
 azure-keyvault==1.1.0
 azure-identity==1.2.0
@@ -45,7 +43,7 @@ azure-keyvault-secrets==4.1.0
 ##LOCAL ONLY
 pylint==2.6.0
 pytest==6.0.1
-flake8>=3.7.9
+flake8==3.8.3
 ipykernel==5.3.4
 streamlit==0.65
 tqdm==4.48.2

@@ -47,4 +47,4 @@ Get [Postman](https://www.postman.com/downloads/) and install it on your local m
 ![Postman - Edit Keys](../.attachments/postman-result.PNG).
 
 ## Batch Scoring
-If you have multiple files or a whole dataset to be scored, you can find a batch scoring Jupyter notebook in the GitHub repository, located in the subfolder `notebook` as `Score - Batch Scoring of Model Endpoint.ipynb`. With that, you will be able to export your predictions as comma-separated values. Further, classification report and confusion matrix based on ScikitLearn are integrated.
+If you have multiple files or a whole dataset to be scored, you can find a batch scoring Jupyter notebook in the GitHub repository, located in the subfolder `notebook` as [`Score - Batch Scoring of Model Endpoint.ipynb`](../../notebook/). With that, you will be able to export your predictions as comma-separated values. Further, classification report and confusion matrix based on ScikitLearn are integrated.

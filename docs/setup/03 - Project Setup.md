@@ -49,7 +49,54 @@ This page describes how you get and set the right Azure resource keys to make Ve
   cosmos-db-key=XH0mse9II5wYaXJMFb5sycyDcaAWwATwJTAdvVhBD18QdQaYsZe23mupgD378VZW751yHP6v4YbOZitgxSXSg==
   ```
 
-## Project file
+## Tasks
+As described before, currently the following tasks are supported:
+- Text/Document classification
+- Named Entity Recognition
+- Question Answering
+The section below covers briefly what they consist of, which dependencies they have and how you can customize them further.
+
+### **Named Entity Recognition**
+The toolkit supports and includes different approaches and frameworks for recognizing relevant entities in text paragraphs, called _Named Entity Recognition_, short _NER_:
+- [Azure Text Analytics API](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3)
+- Flair Pre-Trained NER
+- FARM/Transformer Custom NER
+- Basic approaches (like regex and term lists)
+
+The central components can be found in the script `code/ner.py`.
+
+#### **Azure Text Analytics API**
+Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You will find a description how to set your keys in [Project Setup](Project Setup.md)
+
+#### **Flair Pre-trained NER**
+
+#### **FARM / Transformer Custom NER**
+
+#### Basic approaches
+The most basic approach of Named Entity Recognition in text files is to take use of lists or regular expressions (regex). You can add your own terms to the toolkit scope by following these steps:
+
+1. Go to the subfolder `assets/` of the repository folder
+
+2. You find two relevant files in there:
+  - `names.txt`
+    - stop word list
+  - `ner.txt`
+    - value-key-pairs of terms and their category, tab-delimited file
+
+3. Open them in a text editor of your choice and add further value-key pairs to `ner.txt` or continue to extend the list of stop words in `names.txt`. Stop words are words which are filtered out before or after processing as they are too common and frequent for bringing value to the analysis.
+
+4. Make sure the values are all lower-case, but the keys should be properly formatted
+
+### **Question Answering**
+This page is devoted to the question-answering component of the NLP toolkit and describes how the answer suggestions are being ranked during runtime. Please keep in mind that this component of the toolkit requires a large amount of potential answers for each text that has been trained along with the input texts in order to
+
+#### **Ranking Algorithm**
+The current version of Verseagility supports the Okapi BM25 information retrieval algorithm to sort historical question answer pairs by relevance. BM25 is a ranking approach used by search engines to estimate the relevance of a document to a given search query, such as a text or document. This is implemented using the [gensim library](https://radimrehurek.com/gensim/summarization/bm25.html). The ranking framework is accessed by the file `code/rank.py`.
+
+#### **Potential Extensions**
+Due to the modular setup, this section can be extended to support the QNAMaker from Microsoft, or custom question answering algorithms using Transformers and FARM. Support for these may be added in coming versions of Verseagility.
+
+## Project File
 
 1. Create a config file for your end-to-end Verseagility-project in the subfolder _project/_ (located in the root folder of the repository). We recommend you to follow this naming convention:
 `[name of your project]\_[language code, two letters].config.json` -> `msforum_en.config.json` <br>
