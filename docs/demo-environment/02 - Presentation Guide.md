@@ -22,7 +22,7 @@ Supported include:
 |it|Italian |Windows, Office, Xbox, Outlook, Surface, Protect|Products, Organizations, People, Locations|Yes|
 
 ### Step-by-Step Guide
-1. Open your browser and go to [aka.ms/nlp-demo](https://verseagility.azurewebsites.net/) (or your custom link which you have created in the [demo setup guide](Demo-Setup-Guide.md)).
+1. Open your browser and go to [the web demo](https://verseagility.azurewebsites.net/) (or your custom link which you have created in the [demo setup guide](01%20-%20Demo%20Environment%20Setup.md)).
 
 2. By default, the English model is loaded upon startup and can be changed by the dropdown menu _Select language_ (1) on the left. Afterwards, the other selected model is being loaded and might take a few seconds.
 

@@ -42,7 +42,7 @@ A demo resulting from the toolkit deployment can be found here:
 
 The intended purpose is illustrated using [Microsoft Forum](https://answers.microsoft.com) data in English, German, Italian, Spanish and French. More languages might follow over time.
 
-Verseagility also allows you to set up your own personal demo WebApp on Azure. This can be done with your logo/that of your customer or end-to-end with your own data. The different approaches are described [here](docs/01 - Demo Environment Setup.md).
+Verseagility also allows you to set up your own personal demo WebApp on Azure. This can be done with your logo/that of your customer or end-to-end with your own data. The different approaches are described [here](demo-environment/README.md).
 
 ## Code Repository
 The code and detailed instructions can be found on the [Verseagility](https://github.com/microsoft/verseagility) GitHub repository. In case you cannot access the repository, you first have to join the Microsoft GitHub organization. You will find instructions on the [FAQ page](FAQ.md). See the repository for latest features, work in progress and open todo's. **Feel free to contribute!**

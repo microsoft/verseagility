@@ -2,7 +2,7 @@
 This documentation helps you to clone the repository to your local machine, install the environment and deploy all the necessary resources to your Azure subscription using an ARM-template. Therefore, the manual effort is minimized and the integrity is ensured.
 
 ## Repository Setup
-0. Make sure you fulfill all criteria described in the [requirements](../Verseagility-Setup.md) section.
+0. Make sure you fulfill all criteria described in the [requirements](../README.md#requirements) section.
 
 1. Start a command line of your choice (we recommend you to use PowerShell or VSCode) and navigate to the local folder where you would like to clone the repository into.
 
@@ -44,7 +44,6 @@ pip install -r requirements.txt --find-links https://download.pytorch.org/whl/to
 8. You can now go ahead with the deployment of the Azure resources. Follow the instructions in [Deploy to Azure](#deploy-to-azure). Alternatively, go to [Local development (optional)](#local-development-optional)
 
 ## Deploy to Azure
-
 1. Basically, you can choose an arbitrary Azure region where the resources should be deployed. The end-to-end deployments have successfully been tested for _South Central US_, _West Europe_ and _North Europe_, which is why we would recommend you to choose among these. Click on the button below to start the resource deployment:<br>
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fverseagility%2Fmain%2Fpipeline%2Finfrastructure%2Fazuredeploy.json)
 
@@ -73,12 +72,12 @@ pip install -r requirements.txt --find-links https://download.pytorch.org/whl/to
 3. After the deployment has finished (approx. 30 minutes) as a workaround for now, you have to add the Function host key as an environment variable manually. Therefore, access your Function App, click on "_App keys_" in the left menu, click on "_default_" and copy the key from the menu which is going to appear on the right hand side. After copying, click on  "_Configuration_" and insert the key in the field named "_FunctionHostKey_" in the function (if the variable is already there, replace the value) and click "_Save_".<br>
 ![Get Function Keys](../.attachments/function-getkeys.PNG)
 
-4. You may now proceed with customizing the pipeline as explained [here](Customize-Pipeline.md).
+4. You may now proceed with the data preparation pipeline [here](02%20-%20Data%20Preparation%20Pipeline.md).
 
 ## Local development (optional)
 Instead of working in an Azure subscription with help of the resources deployed in the step before, you can also work locally. Yet, we recommend you to use the cloud infrastructure to get the best experience possible.
 
-0) Make sure you fulfill all the requirements as stated [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-function-vs-code?pivots=programming-language-csharp) and in the [readme-document](../../Custom-NLP-Toolkit.md#requirements).
+0) Make sure you fulfill all the requirements as stated [here](https://docs.microsoft.com/en-us/azure/azure-functions/functions-create-first-function-vs-code?pivots=programming-language-csharp) and in the [README-document](../README.md#requirements).
 
 2) Change directory of your local repository to `pipeline/functions`.
 
