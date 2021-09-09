@@ -1,37 +1,53 @@
 # NOTE: in order to install the requirements, please use the following command
-# pip install -r requirements.txt
+# pip install --find-links https://download.pytorch.org/whl/torch_stable.html -r requirements.txt
 numpy>=1.18.1
 pandas==1.0.5
 azure-cosmos==3.1.2
+azure-common==1.1.25
+azure-mgmt-authorization==0.61.0
+azure-mgmt-resource==10.2.0
+azure-mgmt-containerregistry==2.8.0
+azure-mgmt-authorization==0.61.0
+azure-graphrbac==0.61.1
+azure-mgmt-keyvault==2.2.0
+azure-core==1.8.0
 azureml-sdk>=1.1.5
 azureml-dataprep[pandas,fuse]==2.0.7
-#azure-ai-textanalytics==1.0.0b3 # TO BE UPGRADED -> 5.0.0
+azureml-core==1.13.0
+astroid==2.4.2
+atomicwrites==1.4.0
+adal==1.2.4
+attrs==20.1.0
+azure-ai-textanalytics==1.0.0b3 #TO BE UPGRADED -> 5.0.0
 gensim==3.8.0
-spacy==2.3.2 #UPGRADED
-transformers==3.0.2 #UPGRADED
-farm==0.4.7 #UPGRADED
-flair==0.6 #UPGRADED
+spacy==2.3.2 
+transformers==3.0.2 
+farm==0.4.7
+flair==0.6
+flake8==3.8.3
+fsspec==0.8.0
 selenium==3.141.0
-bs4
-boto3
+bs4==0.0.1
+boto3==1.14.54
 scipy>=1.3.2
 sklearn
-seqeval
+seqeval==0.0.12
 dotmap==1.3.0
-pyyml
+PyJWT==1.7.1
+pyyml==0.0.2
 opencensus==0.7
 opencensus-ext-azure==1
 fsspec
 ##DEPLOY ONLY
 azure-keyvault==1.1.0
-azure-identity<1.3.1
+azure-identity==1.2.0
 azure-keyvault-secrets==4.1.0
 ##LOCAL ONLY
-pylint>=2.4.4
-pytest>=5.3.5
+pylint==2.6.0
+pytest==6.0.1
 flake8>=3.7.9
-ipykernel>=5.1.4
+ipykernel==5.3.4
 streamlit==0.65
-tqdm
-torch==1.5.1+cpu --find-links https://download.pytorch.org/whl/torch_stable.html
-torchvision==0.6.1+cpu --find-links https://download.pytorch.org/whl/torch_stable.html
+tqdm==4.48.2
+torch==1.5.1+cpu 
+torchvision==0.6.1+cpu
