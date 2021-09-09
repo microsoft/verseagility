@@ -6,7 +6,7 @@ The naming of the experiments in Azure Machine Learning is structures as below:
 - `\<project name\>(-\<task\>)-\<step\>(-\<environment\>)`
   - Where step in [source, train, deploy], for data assets.
   - Where task is an int, referring to the parameters, for models.
-  - Example: `msforum_
+  - Example: `msforum_en_train_1`
 
 ## Initiation of the Training Process
 After setting up your projects in the previous pages, you are now ready to train your models. This training step incorporates the classification, named entity recognition and question/answering models all in one.
