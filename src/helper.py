@@ -115,26 +115,6 @@ def get_config(section = None):
         run_config = run_config[section]
     return run_config
 
-############################################
-#####   Requirements
-############################################
-
-# def get_requirements(req_type='conda'):
-#     """Load pip requirements, for deployment"""
-#     # Load requirements file
-#     with open(get_repo_dir() + 'environment.yml') as file:
-#         reqs = yaml.load(file, Loader=yaml.FullLoader)
-#     conda = []
-#     for r in reqs.get('dependencies'):
-#         if not isinstance(r, str):
-#             pip = r.get('pip')
-#         else:
-#             conda.append(r)
-#     if req_type == 'conda':
-#         return conda
-#     elif req_type == 'pip':
-#         return pip
-
 def get_requirements(req_type = 'deploy'):
     """Load pip requirements, for training and deployment"""
     # Load requirements file
