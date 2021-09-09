@@ -2,7 +2,7 @@
 
 # Verseagility NLP Toolkit
 
-[**Verseagility**](https://github.com/microsoft/verseagility) is a Python-based toolkit for your custom Natural Language Processing (NLP) projects, covering following tasks:
+**Verseagility** is a Python-based toolkit for your custom Natural Language Processing (NLP) projects, covering following tasks:
 - Classification
 - Named Entity Recognition (NER)
 - Question-Answering (QA, suggestion of possible answers for the input text)
@@ -39,8 +39,8 @@ The toolkit is based on the following architecture. Basically, it is possible to
 The step-by-step approach for getting started with the NLP toolkit can be found [here](setup/). It helps you to set up your environment, guides you through the training process and gives you some advice for potential customizations.
 
 ## Demo-Setup
-A demo resulting from the toolkit deployment can be found here:
-> https://verseagility.azurewebsites.net
+A demo resulting from the toolkit deployment running at Microsoft Technology Center (MTC) can be found here:
+> [Verseagility Demo](https://verseagility.azurewebsites.net)
 
 The intended purpose is illustrated using [Microsoft Forum](https://answers.microsoft.com) data in English, German, Italian, Spanish and French. More languages might follow over time.
 
@@ -50,9 +50,9 @@ Verseagility also allows you to set up your own personal demo WebApp on Azure. T
 Feel free to create an issue or pull request in GitHub if you find a bug, have a feature request or a questions.
 Alternatively, feel free to reach out to the main contributors to this project:
 - [Timm Walz](mailto:timm.walz@microsoft.com)
-- [Martin Kayser](https://github.com/maknotavailable)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
+- [Martin Kayser](https://www.linkedin.com/in/mkayser/)
 
-Also, see our [FAQ page](FAQ.md) which is going to be continuously extended.
+Also, see our [FAQ page](FAQ.md) which is going to be continuously extended as needed.
 
 **Feel free to contribute!**
