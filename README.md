@@ -61,12 +61,6 @@ Repository Structure
                               Secrets in production should be stored in the Azure KeyVault
 --------
 
-## Naming
-### Assets
-`\<project name\>(-\<task\>)-\<step\>(-\<environment\>)`
-- where step in [source, train, deploy], for data assets.
-- where task is an int, referring to the parameters, for models.
-
 ## Acknowledgements
 Verseagility is built in part using the following frameworks:
 - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace

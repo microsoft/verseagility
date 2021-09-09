@@ -56,6 +56,45 @@ As described before, currently the following tasks are supported:
 - Question Answering
 The section below covers briefly what they consist of, which dependencies they have and how you can customize them further.
 
+### **Classification**
+This section describes which models are used to train classification models. Both multi-class and multi-label approaches are supported and facilitated by the [FARM](https://github.com/deepset-ai/FARM) framework. We primarily use so-called Transformer models to train classification assets.
+
+#### **Transformers**
+- Transformers provides thousands of pretrained models to perform tasks on texts such as classification, information extraction, question answering, summarization, translation, text generation, etc in 100+ languages. Its aim is to make cutting-edge NLP easier to use for everyone.
+- Transformers provides APIs to quickly download and use those pretrained models on a given text, fine-tune them on your own datasets then share them with the community on our model hub. At the same time, each Python module defining an architecture can be used as a standalone and modified to enable quick research experiments.
+- Transformers is backed by the two most popular deep learning libraries, PyTorch and TensorFlow, with a seamless integration between them, allowing you to train your models with one then load it for inference with the other. In this setup, we use PyTorch.
+
+The models used are defined in `src/helper.py` and the dictionary below can be extended by other model names and languages. The list of pretrained models for many purposes can be found on [HuggingFace](https://huggingface.co/transformers/pretrained_models.html).
+```python
+farm_model_lookup = {
+    'bert': {
+        'xx':'bert-base-multilingual-cased',
+        'en':'bert-base-cased',
+        'de':'bert-base-german-cased',
+        'fr':'camembert-base',
+        'cn':'bert-base-chinese'
+        },
+    'roberta' : {
+        'en' : 'roberta-base',
+        'de' : 'roberta-base',
+        'fr' : 'roberta-base',
+        'es' : 'roberta-base',
+        'it' : 'roberta-base'
+        # All languages for roberta because of multi_classificaiton
+    },
+    'xlm-roberta' : {
+        'xx' : 'xlm-roberta-base'
+    },
+    'albert' : {
+        'en' : 'albert-base-v2'
+    },
+    'distilbert' : {
+        'xx' : 'distilbert-base-multilingual-cased',
+        'de' : 'distilbert-base-german-cased'
+    }
+}
+```
+
 ### **Named Entity Recognition**
 The toolkit supports and includes different approaches and frameworks for recognizing relevant entities in text paragraphs, called _Named Entity Recognition_, short _NER_:
 - [Azure Text Analytics API](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3)
@@ -88,7 +127,7 @@ The most basic approach of Named Entity Recognition in text files is to take use
 4. Make sure the values are all lower-case, but the keys should be properly formatted
 
 ### **Question Answering**
-This page is devoted to the question-answering component of the NLP toolkit and describes how the answer suggestions are being ranked during runtime. Please keep in mind that this component of the toolkit requires a large amount of potential answers for each text that has been trained along with the input texts in order to
+This section is devoted to the question-answering component of the NLP toolkit and describes how the answer suggestions are being ranked during runtime. Please keep in mind that this component of the toolkit requires a large amount of potential answers for each text that has been trained along with the input texts in order to
 
 #### **Ranking Algorithm**
 The current version of Verseagility supports the Okapi BM25 information retrieval algorithm to sort historical question answer pairs by relevance. BM25 is a ranking approach used by search engines to estimate the relevance of a document to a given search query, such as a text or document. This is implemented using the [gensim library](https://radimrehurek.com/gensim/summarization/bm25.html). The ranking framework is accessed by the file `code/rank.py`.

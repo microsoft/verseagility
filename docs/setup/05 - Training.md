@@ -1,6 +1,13 @@
 # Training
 This part of the documentation serves as guideline for the model training process. The tasks being submitted for training depend on which tasks you have defined in your config files.
 
+## Naming
+The naming of the experiments in Azure Machine Learning is structures as below:
+- `\<project name\>(-\<task\>)-\<step\>(-\<environment\>)`
+  - Where step in [source, train, deploy], for data assets.
+  - Where task is an int, referring to the parameters, for models.
+  - Example: `msforum_
+
 ## Initiation of the Training Process
 After setting up your projects in the previous pages, you are now ready to train your models. This training step incorporates the classification, named entity recognition and question/answering models all in one.
   1. Open your command line in VSCode, PowerShell or bash.
