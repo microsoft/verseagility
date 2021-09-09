@@ -63,10 +63,11 @@ Repository Structure
 
 ## Acknowledgements
 Verseagility is built in part using the following frameworks:
+- [PyTorch](https://pytorch.org/)
 - [Transformers](https://github.com/huggingface/pytorch-transformers) by HuggingFace
 - [FARM](https://github.com/deepset-ai/FARM/) by deepset ai
 - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
-- [flair](https://github.com/flairNLP/flair/) by Humboldt-University of Berlin
+- [flairNLP](https://github.com/flairNLP/flair/) by Humboldt-University of Berlin
 - [gensim](https://radimrehurek.com/gensim/)
 
 Maintainers:
