@@ -6,3 +6,5 @@ pipeline/
 run/
 .git/
 env/
+venv/
+.venv/
