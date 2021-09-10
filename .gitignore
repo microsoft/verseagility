@@ -108,6 +108,7 @@ data
 temp
 config.ini
 demo/appsettings.json
+demo/deploy.ps1
 .vscode
 saved_models
 mlruns
