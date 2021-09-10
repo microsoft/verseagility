@@ -107,6 +107,7 @@ venv.bak/
 data
 temp
 config.ini
+demo/appsettings.json
 .vscode
 saved_models
 mlruns
