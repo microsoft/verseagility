@@ -13,8 +13,8 @@ def get_languages():
 def get_endpoints(LANGUAGES):
     '''Load endpoints with dictionary of languages from Azure AppSettings'''
     '''format {"English":"en"}, dict comprehension to read from environment variables'''
-    MODEL_ENDPOINTS = {value:os.environ.get(f'ACI_{key.upper()}') for key, value in LANGUAGES.items()}
-    ENDPOINT_KEY = {value:os.environ.get(f'ACI_{key.upper()}_KEY') for key, value in LANGUAGES.items()}
+    MODEL_ENDPOINTS = {value:os.environ.get(f'ACI_{value.upper()}') for key, value in LANGUAGES.items()}
+    ENDPOINT_KEY = {value:os.environ.get(f'ACI_{value.upper()}_KEY') for key, value in LANGUAGES.items()}
     return MODEL_ENDPOINTS, ENDPOINT_KEY
 
 def get_examples():

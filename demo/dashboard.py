@@ -93,13 +93,18 @@ lang_select = st.sidebar.selectbox("Select language", [*LANGUAGES])
 lang = LANGUAGES[lang_select]
 
 # Credits
-st.sidebar.subheader("Data Source")
+st.sidebar.subheader("Example based on forum posts")
 st.sidebar.markdown(
 """
 https://answers.microsoft.com/
 """
 )
-# st.sidebar.image(ms, width=200)
+st.sidebar.subheader("Build your own NLP solution and demo")
+st.sidebar.markdown(
+"""
+https://github.com/microsoft/verseagility
+"""
+)
 
 # Submit text
 selection = st.selectbox("EXAMPLES", [*EXAMPLES[lang]])
@@ -130,7 +135,7 @@ for r in res:
 
 # Classification Output 
 if res_cat is not None:
-    st.header(f"CATEGORY")
+    st.header(f"CLASSIFICATION")
     res_cat = res_cat.get('result')[0]
     st.subheader(f"> {res_cat.get('category').capitalize()} ({res[0].get('result')[0].get('score')})")
 
@@ -192,14 +197,8 @@ if res_qa is not None and len(res_qa.get('result')) > 0:
         st.table(pd.DataFrame({'score':[s],'applies to':[t]}, index=[i + 1]))
         st.write('')
 
-st.header("----------------------------END-----------------------------")
-
 # Display raw JSON
+st.subheader("JSON Result")
 with st.expander("Show raw result"):
-    try:
-        st.table(df_ner)
-        st.table(def_qa)
-    except:
-        pass
     st.json(res)
     

@@ -9,9 +9,7 @@ To run locally, use:
 
 """
 import os
-import json
 import shutil
-import math
 import logging
 import argparse
 

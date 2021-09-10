@@ -6,6 +6,8 @@ Verseagility is a Python-based toolkit to ramp up your custom natural language p
 ## Why Verseagility?
 Building NLP solutions which cover all components from text classification, named entity recognition to answer suggestion, require testing and integration effort. For this purpose, we developed this toolkit, which serves to minimize the setup time of an end-to-end solution and maximizes the time for use case-specific enhancements and adjustments. On this way, first results should be made available in an accelerated way when bringing individual, pre-labeled text document data and allow more time for iterative improvements. 
 
+![Verseagility Process](./docs/.attachments/modular-toolkit.png)
+
 See the [documentation section](./docs/README.md) for detailed instructions how to get started with the toolkit.
 
 ## Supported Use Cases
