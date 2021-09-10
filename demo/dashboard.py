@@ -17,6 +17,7 @@ import json
 import requests
 from PIL import Image
 import load_examples as loader
+from io import StringIO
 
 # Streamlit config
 st.set_page_config(
@@ -168,11 +169,6 @@ if res_ner is not None and len(res_ner.get('result')) > 0:
                     pass
     options = {"ents": entities}
 
-    # # Custom colors
-    # colors = {"ORG": "linear-gradient(90deg, #aa9cfc, #fc9ce7)"}
-    # options = {"ents": ["ORG"], "colors": colors}
-    # displacy.serve(doc, style="ent", options=options)
-
     # Render marked sentences
     html = displacy.render(doc, style='ent')
 
@@ -189,7 +185,7 @@ if res_ner is not None and len(res_ner.get('result')) > 0:
 # Similar Questions Output
 if res_qa is not None and len(res_qa.get('result')) > 0:
     st.header("ANSWER SUGGESTIONS")
-    def_qa = pd.read_json(json.dumps(res_qa.get('result')))[['answer_text_clean','score','label_classification_multi']]
+    def_qa = pd.read_json(StringIO(json.dumps(res_qa.get('result'))))[['answer_text_clean','score','label_classification_multi']]
     for i, (a, s, t) in enumerate(zip(def_qa.answer_text_clean, def_qa.score, def_qa.label_classification_multi)):
         st.subheader(f'> Suggestion {i + 1}')
         st.write(a)
