@@ -83,6 +83,9 @@ st.sidebar.markdown(
 Text classification, named entity recognition 
 and answer suggestions for 
 support emails and attachments.
+
+**Example based on forum posts**
+https://answers.microsoft.com/
 \n\n
 """
 )
@@ -93,12 +96,6 @@ lang_select = st.sidebar.selectbox("Select language", [*LANGUAGES])
 lang = LANGUAGES[lang_select]
 
 # Credits
-st.sidebar.subheader("Example based on forum posts")
-st.sidebar.markdown(
-"""
-https://answers.microsoft.com/
-"""
-)
 st.sidebar.subheader("Build your own NLP solution and demo")
 st.sidebar.markdown(
 """
