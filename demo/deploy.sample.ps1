@@ -1,8 +1,10 @@
 """
-Deploy demo to web app.
+Deploy Streamlit Demo to Azure App Service
 
 To start:
 > cd to root (/demo in repo)
+> az login # if needed
+> az account set -s [subscription name] # if needed
 > .\deploy.ps1
 > ..update app settings in portal
 Note that this is not meant for automate deployment (yet).
@@ -11,16 +13,15 @@ SOURCE: https://towardsdatascience.com/deploying-a-streamlit-web-app-with-azure-
 """
 
 # Params
-$location = 'southcentralus'
-$rg = 'rg_verseagility_services'
-$acr = 'verseagility'
-$image =  'nlp-demo-mtc'
-$sp = 'verseagility-sp'
-$app = 'verseagility'
+$location = 'insert your region'
+$rg = 'insert your resource group'
+$acr = 'insert your acr name'
+$image =  'nlp-demo'
+$sp = 'insert your service plan name'
+$app = 'insert your app name'
 $url = $acr + '.azurecr.io/' + $image + ':latest'
-$create = $FALSE # create or update app
+$create = $TRUE # create or update app
 
-# az login # if needed
 if ($create) {
     # Create Demo App
     az group create -l $location -n $rg
@@ -28,7 +29,6 @@ if ($create) {
     az acr build --registry $acr --resource-group $rg --image $image .
     az appservice plan create -g $rg -n $sp -l $location --is-linux --sku B1
     az webapp create -g $rg -p $sp -n $app -i $url
-    # NOTE: the last step requires manual configuration in the Portal. Container settings need to point to ACR.
 } Else {
     # Update
     ## Create new image
