@@ -76,6 +76,9 @@ Verseagility is built in part using the following frameworks:
 - [flairNLP](https://github.com/flairNLP/flair/) by Humboldt-University of Berlin
 - [gensim](https://radimrehurek.com/gensim/)
 
+See the illustration of our current tech stack below:
+![Verseagility Process](./docs/.attachments/techstack.png)
+
 ## Maintainers:
 - [Timm Walz](mailto:timm.walz@microsoft.com)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
