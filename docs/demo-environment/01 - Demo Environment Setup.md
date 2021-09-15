@@ -39,26 +39,32 @@ There are different approaches of possible demo environment setups.
 
 ## Dashboard Customization
 This section is only required if you follow the _Dashboard - Basic_ or _Dashboard - Premium_ track. If you follow the _Dashboard - Advanced_ track, you can skip it.
-1.	Navigate to the `demo`-subfolder and add your custom logo by replacing the active logo file `logo2_nbg.PNG`. Alternatively, you can change the value in the code and use any other file name in `demo/dashboard.py`.
+1.	Navigate to the `demo`-subfolder and add your custom logo by replacing the active logo file `logo.PNG`. Alternatively, you can change the value in the code and use any other file name in `demo/dashboard.py`.
 
-2. Change any other structural or text elements in `demo/dashboard.py`.
+2. Change any other structural or text elements in `demo/dashboard.py`. If you want to go deep into the customization, we recommend you the official documentation platform of [Streamlit](https://docs.streamlit.io/en/stable/api.html). Your ideas and contributions to our demo are highly appreciated!
 
-3. If you want to go deep into the customization, we recommend you the official documentation platform of [Streamlit](https://www.streamlit.io/). Your ideas and contributions to our demo are highly appreciated!
+## Set Languages and Endpoint Keys
+This section is only required if you follow the _Dashboard - Advanced_ or _Dashboard - Premium_ track. For an end-to-end custom solution based on your own data, first follow the instructions which you find on this part of the documentation: [Verseagility Setup](../setup).
 
-## Set the Endpoint Keys
-This section is only required if you follow the _Dashboard - Advanced_ or _Dashboard - Premium_ track. For an end-to-end custom solution based on your own data, first follow the instructions which you find on this page: [Verseagility Setup](../Verseagility-Setup.md).
+Next, open the script `demo/load_examples.py` and adjust the following parts as needed (depending on whether you build a multi-language demo):
+- `get_languages()`
+  - dictionary of languages in the structure of `"language": "language-code"`, e.g. `"German": "de"`
+- `get_endpoints()` 
+  - load endpoints from App Settings
+  - ```python
+    MODEL_ENDPOINTS = {
+        'en': 'http://[YOUR URL GOES HERE].azurecontainer.io/score'
+    }
 
-Once these are completed, [take the endpoints with the respective keys](../Verseagility-Setup/Deploy-Service.md) and substitute the existing ones in `demo/dashboard.py`.
+    ENDPOINT_KEY = {
+        'en': '[YOUR ENDPOINT KEY GOES HERE]'
+    }
+    ```
+- `get_examples()`
+  - definition of a few examples as needed, consisting of `DEFAULT_SUBJECT`, `DEFAULT_TEXT`
+Once these are completed, [take the endpoints with the respective keys](../setup/06%20-%20Deployment.md) 
 
-```python
-MODEL_ENDPOINTS = {
-    'en': 'http://[YOUR URL GOES HERE].azurecontainer.io/score'
-}
 
-ENDPOINT_KEY = {
-    'en': '[YOUR ENDPOINT KEY GOES HERE]'
-}
-```
 
 Save your changes and continue with the next section of this page for dashboard deployment.
 

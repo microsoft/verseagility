@@ -1,6 +1,8 @@
+'''Module with language and example definition of Verseagility Dashboard'''
 import os
 
 def get_languages():
+    '''Define and load languages for dashboard'''
     LANGUAGES = {
         "English":  "en",
         "German":   "de",
@@ -12,29 +14,34 @@ def get_languages():
 
 def get_endpoints(LANGUAGES):
     '''Load endpoints with dictionary of languages from Azure AppSettings'''
-    '''format {"English":"en"}, dict comprehension to read from environment variables'''
+    # Format {"English":"en"}, dict comprehension to read from environment variables
+    # Define URL, full qualified
     MODEL_ENDPOINTS = {value:os.environ.get(f'ACI_{value.upper()}') for key, value in LANGUAGES.items()}
+    # Define key for respective URL
     ENDPOINT_KEY = {value:os.environ.get(f'ACI_{value.upper()}_KEY') for key, value in LANGUAGES.items()}
     return MODEL_ENDPOINTS, ENDPOINT_KEY
 
 def get_examples():
     '''Loads example texts'''
+    # For every language defined in get_languages(), bring a default subject
     DEFAULT_SUBJECT = {
-        'en': "Windows defender shutting everything down",
+        'en': "I am running Windows and it does not work so well any more",
         'de': "Win 7 ohne Updates",
         'fr': "Erreur lié à l abonnement",
         'es': "Error de actualizacion",
         'it': "Fotocamera schermata nera"
     }
 
+    # For every language defined in get_languages(), bring a default text belonging to the subject above
     DEFAULT_TEXT = {
-        'en': "I am running Windows 7 - I thought it couldn't get a virus. Can I have Bill Gates number, need help?! Microsoft should know better...",
+        'en': "Maybe I have a virus? Can you recommend an AntiVirus? I am using Windows Defender. Can I have Bill Gates number, need help?! Microsoft should know better...",
         'de': "Hallo freunde. Mein Windows 7 Rechner will keine Updates mehr laden - mit folgendem fehlercode 0xa00f4289. Normalerweise funktionieren die Microsoft produkte doch so gut! Kann Bill Gates mir nicht helfen?",
         'fr': "J'ai renouvelé mon abonnement office et j'obtiens toujous le message d'erreur 'Nous avons rencontré un problème lié à votre abonnement...' J'ai fait tout ce qui est proposé y compris désinstaller et ré-installer et j'obtiens toujours le message d'erreur. Merci de me dire comment régler le tout.",
         'es': "Cuándo actualizo mi laptop Windows 7 no se actualiza y se queda en 27% y 30% Se reinicia y no la actualiza necesito ayuda.",
         'it': "Buonasera, se apro la fotocamera, la schermata resta nera e ogni tanto compare il messaggio Non è possibile trovare la fotocamera... codice errore fotocamera 0xa00f4289 Acitve Camera Unplugged. Ho fatto varie verifiche nelle impostazioni del pc (win 10), provato ad aggiornare il driver, disinstallare e riavviare, ho aggiunto la fotocamera nelle eccezioni dell'antivirus... Cosa potrei fare ancora? Grazie!"
     }
 
+    # Define multiple examples for the languages defined in get_languages()
     EXAMPLES = {
         'en': {'Default': 
                 {'Subject': DEFAULT_SUBJECT['en'], 
