@@ -1,7 +1,7 @@
 <img src="demo/logo.png" width="500" align="center"><br>
 
 # Verseagility - NLP Toolkit
-Verseagility is a Python-based toolkit to ramp up your custom natural language processing (NLP) task, allowing you to bring your own data and bring models into production. It is a central component of the Microsoft Data Science Toolkit.
+Verseagility is a Python-based toolkit to ramp up your custom natural language processing (NLP) task, allowing you to bring your own data, use your preferred frameworks and bring models into production. It is a central component of the Microsoft Data Science Toolkit.
 
 ## Why Verseagility?
 Building NLP solutions which cover all components from text classification, named entity recognition to answer suggestion, require testing and integration effort. For this purpose, we developed this toolkit, which serves to minimize the setup time of an end-to-end solution and maximizes the time for use case-specific enhancements and adjustments. On this way, first results should be made available in an accelerated way when bringing individual, pre-labeled text document data and allow more time for iterative improvements. 
@@ -86,25 +86,34 @@ See the illustration of our current tech stack below:
 
 ## Current updates
 The following section contains a list of possible new features or enhancements. Feel free to contribute. 
+### Infrastructure
+- [ ] Verseagility Lite template (ARM)
+- [ ] Python Version >= 3.7 support (Transformers dependencies)
+- [ ] Upgrade to newer AzureML SDK
+### Datasets
+- [ ] Support if tabular data sets in AML
 ### Classification
-- [ ] integrate handling for larger documents vs short documents
-- [ ] integrate explicit handling for unbalanced datasets
+- [ ] Integrate handling for larger documents vs short documents
+- [ ] Integrate explicit handling for unbalanced datasets
 - [ ] ONNX support
 ### NER
-- [ ] improve duplicate handling
+- [ ] Improve duplicate handling
+- [ ] Opinion Mining API
+- [ ] New Text Analytics API version
 ### Question Answering
-- [ ] apply advanced IR methods
+- [ ] Apply advanced IR methods
 ### Summarization
 - [ ] **(IP)** full test of integration
 ### Deployment
-- [ ] deploy service to Azure Function (without AzureML)
-- [ ] setup GitHub actions
+- [ ] Deploy service to Azure Function (without AzureML)
+- [ ] Setup GitHub actions
+- [ ] AKS testing
 ### Notebooks Templates
 - [ ] **(IP)** review model results (auto generate after each training step)
-- [ ] review model bias (auto generate after each training step)
+- [ ] Review model bias (auto generate after each training step)
 - [ ] **(IP)** available models benchmark (incl AutoML)
 ### Tests
-- [ ] unit tests (pytest)
+- [ ] Unit tests (pytest)
 
 ## Contributing
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
