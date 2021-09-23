@@ -11,6 +11,7 @@ import configparser
 from pathlib import Path
 import pandas as pd
 import json
+import spacy
 
 try:
     from azure.common.credentials import ServicePrincipalCredentials
@@ -273,6 +274,26 @@ flair_model_file_lookup = {
     'de' : 'ner-multi-fast.pt',
     'xx' : 'ner-multi-fast.pt'
 }
+
+spacy_model_lookup = {
+    'en':'en_core_web_sm',
+    'de':'de_core_news_sm',
+    'fr':'fr_core_news_sm',
+    'es':'es_core_news_sm',
+    'it':'it_core_news_sm',
+    'xx':'xx_ent_wiki_sm'
+}
+
+def load_spacy_model(language='xx', disable=[]):
+    """Load spacy models depending on language"""
+    try:
+        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
+    except OSError:
+        logging.warning(f'[INFO] Downloading spacy language model for {language}')
+        from spacy.cli import download
+        download(spacy_model_lookup[language])
+        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
+    return nlp
 
 def get_flair_model(language, object_type):
     if object_type == 'model':
