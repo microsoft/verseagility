@@ -30,27 +30,6 @@ import custom as cu
 import data as dt
 import helper as he
 
-
-spacy_model_lookup = {
-    'en':'en_core_web_sm',
-    'de':'de_core_news_sm',
-    'fr':'fr_core_news_sm',
-    'es':'es_core_news_sm',
-    'it':'it_core_news_sm',
-    'xx':'xx_ent_wiki_sm'
-}
-
-def load_spacy_model(language='xx', disable=[]):
-    """Load spacy models depending on language"""
-    try:
-        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
-    except OSError:
-        logging.warning(f'[INFO] Downloading spacy language model for {language}')
-        from spacy.cli import download
-        download(spacy_model_lookup[language])
-        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
-    return nlp
-
 def load_flair_model(path=None, language='xx', task='ner'):
     """Load flair models depending on language"""
     if task == 'ner':
