@@ -10,11 +10,7 @@ import platform
 import configparser
 from pathlib import Path
 import pandas as pd
-import re
 import json
-import yaml
-import spacy
-from flair.models import SequenceTagger
 
 try:
     from azure.common.credentials import ServicePrincipalCredentials
@@ -92,6 +88,7 @@ def get_repo_dir():
     return root_dir
 
 def get_project_config(fn):
+    """Load project configration from repository directory and parse it"""
     _fn1 = f"{get_repo_dir()}/project/{fn}"
     _fn2 = f"{get_repo_dir()}/src/config.json"
     if os.path.isfile(_fn1):
@@ -266,36 +263,6 @@ farm_model_lookup = {
     }
 }
 
-def get_farm_model(model_type, language):
-    ml = None
-    mt = farm_model_lookup.get(model_type)
-    if mt is not None:
-        ml = mt.get(language)
-    if ml is None:
-        ml = mt.get('xx')
-    if ml is None:
-        raise Exception(f'No Transformer/FARM model found. model = {model_type}, lang = {language}')
-    return ml
-
-spacy_model_lookup = {
-    'en':'en_core_web_sm',
-    'de':'de_core_news_sm',
-    'fr':'fr_core_news_sm',
-    'es':'es_core_news_sm',
-    'it':'it_core_news_sm',
-    'xx':'xx_ent_wiki_sm'
-}
-
-def load_spacy_model(language='xx', disable=[]):
-    try:
-        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
-    except OSError:
-        logging.warning(f'[INFO] Downloading spacy language model for {language}')
-        from spacy.cli import download
-        download(spacy_model_lookup[language])
-        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
-    return nlp
-
 flair_model_lookup = {
     'en' : 'ner-ontonotes-fast', 
     'de' : 'ner-multi-fast',
@@ -317,16 +284,17 @@ def get_flair_model(language, object_type):
         m = lookup.get('xx')
     return m
 
-def load_flair_model(path=None, language='xx', task='ner'):
-    if task == 'ner':
-        # if path is None:
-        model = SequenceTagger.load(get_flair_model(language, 'model'))
-        # else:
-            # model = SequenceTagger.load(path)
-    else:
-        logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
-        model = None
-    return model
+def get_farm_model(model_type, language):
+    ml = None
+    mt = farm_model_lookup.get(model_type)
+    if mt is not None:
+        ml = mt.get(language)
+    if ml is None:
+        ml = mt.get('xx')
+    if ml is None:
+        raise Exception(f'No Transformer/FARM model found. model = {model_type}, lang = {language}')
+    return ml
+
 
 ############################################
 #####   Dataframe
