@@ -13,18 +13,11 @@ import shutil
 import logging
 import argparse
 
-from azureml.core import Workspace, Experiment, Model
+from azureml.core import Experiment
 from azureml.train.dnn import PyTorch
 from azureml.train.estimator import Estimator
 from azureml.core.compute import ComputeTarget, AmlCompute
 from azureml.core.compute_target import ComputeTargetException
-from azureml.train.hyperdrive import  (BayesianParameterSampling, RandomParameterSampling,
-                                        HyperDriveConfig, PrimaryMetricGoal,
-                                        choice, uniform, loguniform)
-
-from azureml.core.authentication import InteractiveLoginAuthentication
-from azureml.core.model import InferenceConfig
-from azureml.exceptions import WebserviceException
 
 # Custom Functions
 import sys 
@@ -73,7 +66,7 @@ except ComputeTargetException:
     compute_target.wait_for_completion(show_output=True)
 
 # Python dependencies
-pip_packages=he.get_requirements(req_type='train')
+pip_packages = he.get_requirements(req_type='train')
 
 ## Local Config
 fn_config_infer = 'config.json'
@@ -177,5 +170,5 @@ if args.do_train:
 #####  CLEANUP
 ############################################
 
-#Remove temp config
+# Remove temp config
 os.remove(f'./src/{fn_config_infer}')
