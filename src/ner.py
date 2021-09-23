@@ -5,10 +5,12 @@ import logging
 import requests
 import os
 
+import spacy
 from spacy.matcher import PhraseMatcher
 from spacy.tokens import Span
 
 from flair.data import Sentence
+from flair.models import SequenceTagger
 
 from farm.data_handler.data_silo import DataSilo
 from farm.data_handler.processor import NERProcessor
@@ -28,6 +30,38 @@ import custom as cu
 import data as dt
 import helper as he
 
+
+spacy_model_lookup = {
+    'en':'en_core_web_sm',
+    'de':'de_core_news_sm',
+    'fr':'fr_core_news_sm',
+    'es':'es_core_news_sm',
+    'it':'it_core_news_sm',
+    'xx':'xx_ent_wiki_sm'
+}
+
+def load_spacy_model(language='xx', disable=[]):
+    """Load spacy models depending on language"""
+    try:
+        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
+    except OSError:
+        logging.warning(f'[INFO] Downloading spacy language model for {language}')
+        from spacy.cli import download
+        download(spacy_model_lookup[language])
+        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
+    return nlp
+
+def load_flair_model(path=None, language='xx', task='ner'):
+    """Load flair models depending on language"""
+    if task == 'ner':
+        # if path is None:
+        model = SequenceTagger.load(he.get_flair_model(language, 'model'))
+        # else:
+            # model = SequenceTagger.load(path)
+    else:
+        logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
+        model = None
+    return model
 
 # Custom FLAIR element for spacy pipeline
 class FlairMatcher(object):
