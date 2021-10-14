@@ -35,13 +35,25 @@ import helper as he
 
 log = logging.getLogger(__name__)
 
+def load_flair_model(path=None, language='xx', task='ner'):
+    """Load flair models depending on language"""
+    if task == 'ner':
+        # if path is None:
+        model = SequenceTagger.load(he.get_flair_model(language, 'model'))
+        # else:
+            # model = SequenceTagger.load(path)
+    else:
+        logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
+        model = None
+    return model
+
 
 # Custom FLAIR element for spacy pipeline
 class FlairMatcher(object):
     name = "flair"
     ##TODO: run on stored headless models
     def __init__(self, path):
-        self.tagger = he.load_flair_model(path=path)
+        self.tagger = load_flair_model(path=path)
 
     def __call__(self, doc):
         sent = Sentence(doc.text)
