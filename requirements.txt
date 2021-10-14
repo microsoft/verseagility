@@ -33,7 +33,7 @@ opencensus-ext-azure==1
 selenium==3.141.0
 bs4==0.0.
 ##OPTIONAL LOCAL
-azure-ai-textanalytics==1.0.0b3 #TO BE UPGRADED -> 5.0.0 -> TA
+azure-ai-textanalytics==5.1.0
 gensim==3.8.0
 spacy==2.3.2 
 farm==0.4.7

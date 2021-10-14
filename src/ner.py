@@ -23,6 +23,9 @@ from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer
 from farm.utils import set_all_seeds, initialize_device_settings
 
+from azure.ai.textanalytics import TextAnalyticsClient
+from azure.core.credentials import AzureKeyCredential
+
 # Custom functions
 import sys
 sys.path.append('./src')
@@ -62,15 +65,16 @@ class FlairMatcher(object):
         return doc
 
 class TextAnalyticsMatcher(object):
-    name = "textanalytics"
     def __init__(self):
-        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/text/analytics/v3.0/entities/recognition/general"
-        self.headers = {"Ocp-Apim-Subscription-Key": he.get_secret('text-analytics-key')}
+        key = he.get_secret('text-analytics-key')
+        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/"
+        self.key = AzureKeyCredential(key)
+        self.client = TextAnalyticsClient(endpoint = self.endpoint, credential = self.key)
         
     def __call__(self, doc):
-        result = requests.post(self.endpoint, headers=self.headers, json={"documents": [{"id": "0", "language": cu.params.get('language'), "text": doc.text}]}).json()['documents'][0]
-        for entity in result['entities']:
-            span = doc.char_span(entity['offset'], entity['offset'] + entity['length'], label = entity['category'])
+        result = self.client.recognize_entities(documents = [{"id": "0", "language": cu.params.get('language'), "text": doc.text}])[0]
+        for entity in result.entities:
+            span = doc.char_span(entity.offset, entity.offset + entity.length, label = entity.category)
             # Pass, in case a match already exists
             try:
                 doc.ents = list(doc.ents) + [span]
