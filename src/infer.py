@@ -33,8 +33,6 @@ def score(task):
         return Inferencer.load(_dt.get_path('model_dir'))   
     elif task_type == 'ner':
         return ner.NER(task=task, inference=True)
-    elif task_type == 'om':
-        return om.OM(task=task, inference=True)
     elif task_type == 'qa':
         return rank.Rank(task=task, inference=True)
     else:
