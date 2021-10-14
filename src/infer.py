@@ -6,7 +6,6 @@ INFERENCE: Orchestration service for serving the model.
 import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import os
 import json
-import shutil
 # import threading
 from farm.infer import Inferencer
 
@@ -19,6 +18,7 @@ import prepare as pr
 import custom as cu
 import rank
 import ner
+import om
 
 # Load configs & logger 
 logger = he.get_logger(location=__name__)
