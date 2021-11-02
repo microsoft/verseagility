@@ -2,12 +2,8 @@ import pandas as pd
 import re
 from pathlib import Path
 import logging
-import requests
-import os
 
-import spacy
 from spacy.matcher import PhraseMatcher
-from spacy.tokens import Span
 
 from flair.data import Sentence
 from flair.models import SequenceTagger
@@ -15,7 +11,6 @@ from flair.models import SequenceTagger
 from farm.data_handler.data_silo import DataSilo
 from farm.data_handler.processor import NERProcessor
 from farm.modeling.optimization import initialize_optimizer
-from farm.infer import Inferencer
 from farm.modeling.adaptive_model import AdaptiveModel
 from farm.modeling.language_model import LanguageModel
 from farm.modeling.prediction_head import TokenClassificationHead
