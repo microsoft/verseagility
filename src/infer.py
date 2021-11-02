@@ -35,6 +35,8 @@ def score(task):
         return ner.NER(task=task, inference=True)
     elif task_type == 'qa':
         return rank.Rank(task=task, inference=True)
+    elif task_type == 'om':
+        return om.OM(task=task, inference=True)
     else:
         logger.warning('TASK TYPE NOT SUPPORTED')
         return None

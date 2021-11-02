@@ -78,9 +78,9 @@ if args.do_deploy:
     # Fetch Models
     models = []
     for task in tasks:
-        model_name = f'{args.project_name}-model-{task}' ####
-        if tasks.get(task)['type'] == 'ner': # int(task) == 3: 
-            # NOTE: task 3 does not have a model
+        model_name = f'{args.project_name}-model-{task}'
+        if tasks.get(task)['type'] in ['ner', 'om']: 
+            # NOTE: tasks 3 and 5 do not have a model
             continue
         model = Model(ws, model_name)
         models.append(
