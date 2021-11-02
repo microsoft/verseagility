@@ -32,6 +32,10 @@
             "type": "qa",
             "model_type": "historical",
             "prepare": true
+        },
+        "5": {
+            "type": "om",
+            "prepare": false
         }
     },
     "deploy": {
