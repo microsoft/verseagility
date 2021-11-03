@@ -1,7 +1,7 @@
 # Project Setup
 This page describes how you get and set the right Azure resource keys to make Verseagility work end-to-end.
 
-## Grab your Keys
+## Grab Your Keys
 1. In the root directory of the Verseagility repository, you will find a file named `config.sample.ini`, which has the following content:
 
   ```
@@ -105,7 +105,7 @@ The toolkit supports and includes different approaches and frameworks for recogn
 The central components can be found in the script `code/ner.py`.
 
 #### **NER using Azure Text Analytics API**
-Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You will find a description how to set your keys in [Project Setup](03%20-%20Project%20Setup.md)
+Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You can find a description how to set your keys if you scroll up to the top of the page.
 
 #### **Flair Pre-trained NER**
 
@@ -186,7 +186,7 @@ See the following json-snippet as an example:
         }
 }
 ```
-You see that there are multiple task levels. If you only want to go for classification, keep task level 1 in mind. In case you do not want to integrate Named Entity Recognition and Question/Answering, simply remove it from your JSON.
+You see that there are multiple task levels. If you only want to go for classification, keep task level 1 in the config. In case you do not want to integrate Multi Label Classification, Named Entity Recognition, Question/Answering, Opinion Mining..., simply remove it from your JSON.
 
 2. After creating the json file, you need to do a slight change in the `custom.py` script:
   - Look for this line within the script: <br>
