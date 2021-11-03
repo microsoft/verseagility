@@ -98,14 +98,14 @@ farm_model_lookup = {
 ### **Named Entity Recognition**
 The toolkit supports and includes different approaches and frameworks for recognizing relevant entities in text paragraphs, called _Named Entity Recognition_, short _NER_:
 - [Azure Text Analytics API](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3)
-- Flair Pre-Trained NER
+- flairNER Pre-Trained NER
 - FARM/Transformer Custom NER
 - Basic approaches (like regex and term lists)
 
 The central components can be found in the script `code/ner.py`.
 
-#### **Azure Text Analytics API**
-Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You will find a description how to set your keys in [Project Setup](Project Setup.md)
+#### **NER using Azure Text Analytics API**
+Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You will find a description how to set your keys in [Project Setup](03%20-%20Project%20Setup.md)
 
 #### **Flair Pre-trained NER**
 
@@ -134,6 +134,12 @@ The current version of Verseagility supports the Okapi BM25 information retrieva
 
 #### **Potential Extensions**
 Due to the modular setup, this section can be extended to support the QNAMaker from Microsoft, or custom question answering algorithms using Transformers and FARM. Support for these may be added in coming versions of Verseagility.
+
+### **Opinion Mining**
+The section below describes how you can enrich your Verseagility API with an opinion mining feature. Opinion mining is a feature of sentiment analysis. Also known as aspect-based sentiment analysis in Natural Language Processing (NLP), this feature provides more granular information about the opinions related to words (such as the attributes of products or services) in text.
+
+#### **OM using Azure Text Analytics API**
+Verseagility now supports the [Opinion Mining](https://docs.microsoft.com/en-us/azure/cognitive-services/language-service/sentiment-opinion-mining/overview) feature of Azure Cognitive Services. All you need to bring is an API key from an Azure Text Analytics resource. Please see the [Language Support page](https://docs.microsoft.com/en-us/azure/cognitive-services/language-service/sentiment-opinion-mining/language-support) for information, whether your desired language is supported.
 
 ## Project File
 
@@ -167,6 +173,10 @@ See the following json-snippet as an example:
             "type": "qa",
             "model_type": "historical",
             "prepare": true
+        },
+        "5": {
+            "type": "om",
+            "prepare": false
         }
     },
         "deploy": {
