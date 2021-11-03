@@ -101,8 +101,6 @@ The following section contains a list of possible new features or enhancements. 
 - [ ] ONNX support
 ### NER
 - [ ] Improve duplicate handling
-- [x] Opinion Mining API
-- [ ] New Text Analytics API version
 ### Question Answering
 - [ ] Apply advanced IR methods
 ### Summarization
