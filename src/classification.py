@@ -11,22 +11,18 @@ Example (in the command line):
 """
 import os
 from pathlib import Path
-import json
 import argparse
 
 from farm.data_handler.data_silo import DataSilo
 from farm.data_handler.processor import TextClassificationProcessor
 from farm.modeling.optimization import initialize_optimizer
-from farm.infer import Inferencer
 from farm.modeling.adaptive_model import AdaptiveModel
-from farm.modeling.language_model import LanguageModel, Roberta, Albert, DistilBert
-from farm.modeling.prediction_head import TextClassificationHead, MultiLabelTextClassificationHead
-from farm.modeling.tokenization import Tokenizer, RobertaTokenizer, AlbertTokenizer
+from farm.modeling.language_model import LanguageModel
+from farm.modeling.prediction_head import TextClassificationHead
+from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer, EarlyStopping
 from farm.utils import set_all_seeds, initialize_device_settings
-from farm.eval import Evaluator
-from sklearn.metrics import (matthews_corrcoef, recall_score, precision_score,
-                         f1_score, mean_squared_error, r2_score)
+from sklearn.metrics import f1_score
 from farm.evaluation.metrics import simple_accuracy, register_metrics
 
 # Custom functions

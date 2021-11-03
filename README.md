@@ -15,6 +15,7 @@ Verseagility is a modular toolkit that can be extended by further use-cases as n
 - Binary, multi-class & multi-label classification
 - Named entity recognition
 - Question answering
+- Opinion mining
 
 ## Live Demo
 The toolkit paves the way to build consumeable REST APIs, for example in Azure Container Instances. These APIs may be used by the application of your choice: a website, a business process or just for testing purposes.
@@ -75,6 +76,8 @@ Verseagility is built in part using the following frameworks:
 - [spaCy](https://github.com/explosion/spaCy/) by Explosion ai
 - [flairNLP](https://github.com/flairNLP/flair/) by Humboldt-University of Berlin
 - [gensim](https://radimrehurek.com/gensim/)
+Azure
+- [Text Analytics](https://azure.microsoft.com/en-us/services/cognitive-services/text-analytics/)
 
 See the illustration of our current tech stack below:
 ![Verseagility Process](./docs/.attachments/techstack.png)
@@ -98,8 +101,6 @@ The following section contains a list of possible new features or enhancements. 
 - [ ] ONNX support
 ### NER
 - [ ] Improve duplicate handling
-- [ ] Opinion Mining API
-- [ ] New Text Analytics API version
 ### Question Answering
 - [ ] Apply advanced IR methods
 ### Summarization

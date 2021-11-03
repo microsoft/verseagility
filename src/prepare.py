@@ -10,8 +10,6 @@ Example (in the command line):
 """
 #NOTE: the following is a workaround for AML to load modules
 import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
-import os
-import spacy
 import pandas as pd
 import numpy as np
 import string
@@ -66,7 +64,7 @@ class Clean():
             self.dt.download('data_dir', dir = 'data_dir', source = 'datastore')
 
         # Load spacy model
-        self.nlp = he.load_spacy_model(language=self.language, disable=['ner','parser','tagger'])
+        self.nlp = he.load_spacy_model(language=self.language, disable = ['ner','parser','tagger'])
         
         # Create stopword list
         stopwords_active = []
@@ -118,6 +116,11 @@ class Clean():
             #EN
             if self.language == 'en':
                 line = re.sub(r'\bkind regards.*', '', line, flags=re.I)
+                line = re.sub(r'\bbest regards.*', '', line, flags=re.I)
+                line = re.sub(r'\bsincerely yours.*', '', line, flags=re.I)
+                line = re.sub(r'\byours sincerely.*', '', line, flags=re.I)
+                line = re.sub(r'\bsent from my mobile.*', '', line, flags=re.I)
+                line = re.sub(r'\bsent via iphone.*', '', line, flags=re.I)
             #DE
             if self.language == 'de':
                 line = re.sub(r'\b(mit )?(beste|viele|liebe|freundlich\w+)? (gr[u,ü][ß,ss].*)', '', line, flags=re.I)
