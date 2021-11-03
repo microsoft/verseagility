@@ -162,9 +162,9 @@ if args.do_train:
                         use_gpu = False
                         )
             run = exp.submit(est)
-            print(f'[INFO] Task {task} deployed for training.')
+            logging.info(f'[INFO] Task {task} deployed for training.')
         else:
-            print(f'[INFO] Task {task} does not have a train step.')
+            logging.info(f'[INFO] Task {task} does not have a train step.')
 
 ############################################
 #####  CLEANUP
