@@ -32,7 +32,7 @@ def score(task):
         _dt = dt.Data(task=task, inference=True)
         return Inferencer.load(_dt.get_path('model_dir'))   
     elif task_type == 'ner':
-        return ner.NER(task=task, inference=True)
+        return ner.NER(task=task, inference=True, models=cu.tasks.get(str(task)).get('models'))
     elif task_type == 'qa':
         return rank.Rank(task=task, inference=True)
     elif task_type == 'om':
