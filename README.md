@@ -83,9 +83,10 @@ See the illustration of our current tech stack below:
 ![Verseagility Process](./docs/.attachments/techstack.png)
 
 ## Maintainers:
-- [Timm Walz](mailto:timm.walz@microsoft.com)
+- [Timm Walz](mailto:snkrgks-timm@outlook.de)
 - [Christian Vorhemus](mailto:christian.vorhemus@microsoft.com)
 - [Martin Kayser](https://www.linkedin.com/in/mkayser/)
+- [Timo Acquistapace](mailto:timo.acquistapace@microsoft.com)
 
 ## Current updates
 The following section contains a list of possible new features or enhancements. Feel free to contribute. 
