@@ -1,73 +1,21 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-    "parameters": {
-        "functionName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "insightsComponent": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "servicePlan": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "databaseName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "ruleName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "keyvaultName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "storageName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "amlWorkspaceName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "ruleScope": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "repoURL": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "ocrName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "textAnalyticsName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "branch": {
-            "type": "string",
-            "defaultValue": ""
-        }
-    },
+    "parameters": {},
     "variables": {
-        "functionName": "[if(equals(parameters('functionName'), ''), toLower(concat('versfunction', uniqueString(resourceGroup().id) ) ), parameters('functionName'))]","insightsComponent": "[if(equals(parameters('insightsComponent'), ''), toLower(concat('versinsights', uniqueString(resourceGroup().id) ) ), parameters('insightsComponent'))]",
-        "servicePlan": "[if(equals(parameters('servicePlan'), ''), toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) ), parameters('servicePlan'))]",
-        "databaseName": "[if(equals(parameters('databaseName'), ''), toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) ), parameters('databaseName'))]",
-        "ruleName": "[if(equals(parameters('ruleName'), ''), 'failure anomalies - versinsights', parameters('ruleName'))]",
-        "keyvaultName": "[if(equals(parameters('keyvaultName'), ''), toLower(concat('verskeys', uniqueString(resourceGroup().id) ) ), parameters('keyvaultName'))]",
-        "storageName": "[if(equals(parameters('storageName'), ''), toLower(concat('ver', uniqueString(resourceGroup().id) ) ), parameters('storageName'))]",
-        "amlWorkspaceName": "[if(equals(parameters('amlWorkspaceName'), ''), toLower(concat('vers-aml-workspace-', uniqueString(resourceGroup().id) ) ), parameters('amlWorkspaceName'))]",
-        "ruleScope": "[if(equals(parameters('ruleScope'), ''), concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection'), parameters('ruleScope'))]",
-        "repoURL": "[if(equals(parameters('repoURL'), ''), 'https://github.com/christian-vorhemus/function-app.git', parameters('repoURL'))]",
-        "ocrName": "[if(equals(parameters('ocrName'), ''), toLower(concat('versocr', uniqueString(resourceGroup().id) ) ), parameters('ocrName'))]",
-        "textAnalyticsName": "[if(equals(parameters('textAnalyticsName'), ''), toLower(concat('verstextanalytics', uniqueString(resourceGroup().id) ) ), parameters('textAnalyticsName'))]",
-        "branch": "[if(equals(parameters('branch'), ''), 'master', parameters('branch'))]"
+        "functionName": "[toLower(concat('versfunction', uniqueString(resourceGroup().id) ) )]",
+        "insightsComponent": "[toLower(concat('versinsights', uniqueString(resourceGroup().id) ) )]",
+        "servicePlan": "[toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) )]",
+        "databaseName": "[toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) )]",
+        "ruleName": "failure anomalies - versinsights",
+        "keyvaultName": "[toLower(concat('verskeys', uniqueString(resourceGroup().id) ) )]",
+        "storageName": "[toLower(concat('ver', uniqueString(resourceGroup().id) ) )]",
+        "amlWorkspaceName": "[toLower(concat('vers-aml-workspace-', uniqueString(resourceGroup().id) ) )]",
+        "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]",
+        "repoURL": "https://github.com/christian-vorhemus/function-app.git",
+        "ocrName": "[toLower(concat('versocr', uniqueString(resourceGroup().id) ) )]",
+        "textAnalyticsName": "[toLower(concat('verstextanalytics', uniqueString(resourceGroup().id) ) )]",
+        "branch": "master"
     },
     "outputs": {
         "functionKeys": {
