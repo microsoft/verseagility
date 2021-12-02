@@ -47,6 +47,8 @@ pip install -r requirements.txt --find-links https://download.pytorch.org/whl/to
 1. Basically, you can choose an arbitrary Azure region where the resources should be deployed. The end-to-end deployments have successfully been tested for _South Central US_, _West Europe_ and _North Europe_, which is why we would recommend you to choose among these. Click on the button below to start the resource deployment:<br>
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2Fverseagility%2Fmain%2Fpipeline%2Finfrastructure%2Fazuredeploy.json)
 
+   In the "Instance Details" section, you might want to enter predefined names for the resources that will be created. If you do not enter a value, the resources will get assigned a name that is composed of the resource type and a unique string calculated with the help of your resource group id.
+
 2. Make sure you wait until all resources have been deployed successfully before you proceed with the next step. You can verify this by checking the notification bell at the top menu whether any errors occurred. The resource group should have the following components:
 ![Azure Resources](../.attachments/azure-resources.PNG)
       - [Azure Machine Learning](https://azure.microsoft.com/en-us/services/machine-learning/)
