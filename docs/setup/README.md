@@ -1,16 +1,16 @@
-# Verseagility Setup
-This part of the documentation helps you to set up Verseagility in our own subscription and with your data. Each of the points below will lead you to the respective documentation page. At the bottom of each page you will find a link to the previous and next page.
+# Getting Started with Verseagility
+This part of the documentation helps you to set up Verseagility in our own subscription and with your data, step by step. Each of the points below will lead you to the respective documentation page. At the bottom of each page you will find a link to the previous and next page.
 
-1. [Setup](01%20-%20Verseagility%20Setup.md)
+1. [Setup of Code and Infrastructure](01%20-%20Verseagility%20Setup.md)
 2. [Data Preparation Pipeline](02%20-%20Data%20Preparation%20Pipeline.md)
 2. [Project Setup](03%20-%20Project%20Setup.md)
 3. [Data Cleaning Steps](04%20-%20Data%20Cleaning%20Steps.md)
-4. [Training](05%20-%20Training.md)
-5. [Deployment](06%20-%20Deployment.md)
+4. [Model Training](05%20-%20Training.md)
+5. [Deployment (Inferencing)](06%20-%20Deployment.md)
 
 # Overview
 ![image.PNG](../.attachments/architecture-verseagility-v1-2.PNG)
-There are three main components to Verseagility:
+There are three main components within Verseagility:
 1. Data processing pipeline
 1. Task modeling
 1. Deployment

@@ -108,6 +108,7 @@ The central components can be found in the script `code/ner.py`.
 Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You can find a description how to set your keys if you scroll up to the top of the page.
 
 #### **Flair Pre-trained NER**
+Flair is a "a powerful NLP library. Flair allows you to apply our state-of-the-art natural language processing (NLP) models to your text, such as named entity recognition (NER), part-of-speech tagging (PoS), special support for biomedical data, sense disambiguation and classification, with support for a rapidly growing number of languages."
 
 #### **FARM / Transformer Custom NER**
 
@@ -165,9 +166,18 @@ See the following json-snippet as an example:
             "learning_rate":3e-5,
             "prepare": true
         },
+        "2": {
+            "type": "multi_classification",
+            "model_type": "roberta",
+            "max_seq_len": 256,
+            "embeds_dropout":0.3,
+            "learning_rate":2e-5,
+            "prepare": true
+        },
         "3": {
             "type": "ner",
-            "prepare": false
+            "prepare": false,
+            "models": ["textanalytics", "flair", "custom", "regex", "nerlist"]
         },
         "4": {
             "type": "qa",
@@ -186,7 +196,11 @@ See the following json-snippet as an example:
         }
 }
 ```
-You see that there are multiple task levels. If you only want to go for classification, keep task level 1 in the config. In case you do not want to integrate Multi Label Classification, Named Entity Recognition, Question/Answering, Opinion Mining..., simply remove it from your JSON.
+You see that there are multiple task levels. To give you a bit of help here, use following examples:
+- If you only want to go for classification, keep task level 1 in the config
+- You would like to use a different, pre-trained BERT model in task 1 or 2? Adjust this one respectively `"model_type": "roberta"`
+- In case you do not want to integrate Multi Label Classification, Named Entity Recognition, Question/Answering, Opinion Mining..., simply remove it from your JSON
+- If you only want specific NER models to be considered when scoring a model, adjust the array of models `["textanalytics", "flair", "custom", "regex", "nerlist"]` and only keep the ones you would like to use in the array.
 
 2. After creating the json file, you need to do a slight change in the `custom.py` script:
   - Look for this line within the script: <br>
