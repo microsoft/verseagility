@@ -26,7 +26,8 @@
         },
         "3": {
             "type": "ner",
-            "prepare": false
+            "prepare": false,
+            "models": ["textanalytics", "flair", "custom", "regex", "nerlist"]
         },
         "4": {
             "type": "qa",

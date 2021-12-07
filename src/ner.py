@@ -28,6 +28,8 @@ import custom as cu
 import data as dt
 import helper as he
 
+log = logging.getLogger(__name__)
+
 def load_flair_model(path=None, language='xx', task='ner'):
     """Load flair models depending on language"""
     if task == 'ner':
@@ -40,24 +42,27 @@ def load_flair_model(path=None, language='xx', task='ner'):
         model = None
     return model
 
+
 # Custom FLAIR element for spacy pipeline
 class FlairMatcher(object):
     name = "flair"
     ##TODO: run on stored headless models
     def __init__(self, path):
-        self.tagger = he.load_flair_model(path=path)
+        self.tagger = load_flair_model(path=path)
 
     def __call__(self, doc):
-        matches = self.tagger.predict(Sentence(doc.text))
-        for match in matches[0].get_spans('ner'):
+        sent = Sentence(doc.text)
+        self.tagger.predict(sent)
+        for match in sent.get_spans('ner'):
             _match = match.to_dict()
-            span = doc.char_span(_match.get('start_pos'), _match.get('end_pos'), label=_match.get('type'))
+            span = doc.char_span(_match.get('start_pos'), _match.get('end_pos'), label=_match.get('labels')[0].value)
             # Pass, in case a match already exists
             try:
                 doc.ents = list(doc.ents) + [span]
             except:
                 pass
         return doc
+
 
 class TextAnalyticsMatcher(object):
     def __init__(self):
@@ -173,26 +178,35 @@ class CustomNER():
 
 
 class NER():
-    def __init__(self, task, inference=False):
+    def __init__(self, task, inference=False, models=['Flair', 'TextAnalytics', 'nerList', 'regEx']):
+        if len(models) < 1:
+            log.warning('Specify at least one model to use for NER.')
+            return None
+
+        self.models = models
+
         dt_ner = dt.Data(task=task, inference=inference)
         # Load default model
         self.nlp = he.load_spacy_model(language=cu.params.get('language'), disable=['ner','parser','tagger'])
         
         # Add flair pipeline #TODO: excluding FALIR for now, to be compared with text analytics
-        # flair_matcher = FlairMatcher(dt_ner.get_path('fn_ner_flair'))
-        # self.nlp.add_pipe(flair_matcher)
+        if 'Flair' in self.models:
+            flair_matcher = FlairMatcher(dt_ner.get_path('fn_ner_flair'))
+            self.nlp.add_pipe(flair_matcher)
         
         # Text Analytics
-        ta_matcher = TextAnalyticsMatcher()
-        self.nlp.add_pipe(ta_matcher)
+        if 'TextAnalytics' in self.models:
+            ta_matcher = TextAnalyticsMatcher()
+            self.nlp.add_pipe(ta_matcher)
 
         # Load phrase matcher
-        self.matcher = PhraseMatcher(self.nlp.vocab, attr="LOWER")
-        matcher_items = pd.read_csv(dt_ner.get_path('fn_ner_list', dir='asset_dir'), encoding='utf-8', sep = '\t')
-        for product in matcher_items['key'].drop_duplicates():
-            _values = matcher_items[matcher_items['key'] == product]
-            patterns = [self.nlp.make_doc(v) for v in _values.value]
-            self.matcher.add(product, None, *patterns)
+        if 'nerList' in self.models:
+            self.matcher = PhraseMatcher(self.nlp.vocab, attr="LOWER")
+            matcher_items = pd.read_csv(dt_ner.get_path('fn_ner_list', dir='asset_dir'), encoding='utf-8', sep = '\t')
+            for product in matcher_items['key'].drop_duplicates():
+                _values = matcher_items[matcher_items['key'] == product]
+                patterns = [self.nlp.make_doc(v) for v in _values.value]
+                self.matcher.add(product, None, *patterns)
 
     def get_doc(self, text):
         return self.nlp(text)
@@ -221,10 +235,13 @@ class NER():
     def get_list(self, doc):
         mats = []
         for match_id, start, end in self.matcher(doc):
+            #Convert Start Stop from token level to char level
+            charStart = doc[start].idx
+            charEnd = charStart + len(str(doc[start:end]))
             mats.append(he.append_ner(
                 doc[start:end],
-                start,
-                end,
+                charStart,
+                charEnd,
                 self.nlp.vocab.strings[match_id],
                 'list'
             ))
@@ -234,14 +251,19 @@ class NER():
         # Text to document object
         doc = self.get_doc(text)
         # Process
-        mats = self.get_list(doc)
-        rules = self.get_rules(text)
-        ents = self.get_spacy(doc)
+        entity_list = list()
+        if 'nerList' in self.models:
+            mats = self.get_list(doc)
+            entity_list += list(mats)
+        if 'regEx' in self.models:
+            rules = self.get_rules(text)
+            entity_list += list(rules)
+        if ('Flair' in self.models) or ('TextAnalytics' in self.models):
+            ents = self.get_spacy(doc)
+            entity_list += list(ents)
 
         # Handle duplicates, keep first
         #TODO: improve to consider any overlaps 
-        #TODO: BUG: unify positions
-        entity_list = list(mats) + list(rules) + list(ents)
         entity_list_clean = []
         for ent in entity_list:
             if ''.join(ent['value'].lower().split()) not in [''.join(x['value'].lower().split()) for x in entity_list_clean]:
@@ -255,5 +277,5 @@ class NER():
         return self.run(dicts[0]['text'])
 
 if __name__ == '__main__':
-    res = NER(task=3, inference=True).run('Microsoft Surface Laptop with Windows 7 by Bill Gates. I loved win 7. My surface laptop is great, however I lost my typecover.')
+    res = NER(task=3, inference=True, models=['Flair', 'nerList']).run('Microsoft Surface Laptop with Windows 7 by Bill Gates. I loved win 7. My surface laptop is great, however I lost my typecover .')
     print(res)
