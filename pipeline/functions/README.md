@@ -40,6 +40,8 @@ func host start
 <img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.PNG"/>
 </a>
 
+   In the "Instance Details" section, you might want to enter predefined names for the resources that will be created. If you do not enter a value, the resources will get assigned a name that is composed of the resource type and a unique string calculated with the help of your resource group id.
+
 2. After the deployment has finished (~30min) as a workaround for now, add the function "default" host key as an environment variable
 named "FunctionHostKey" in the function (if the variable is already there, replace the value) and click "Save"
 
