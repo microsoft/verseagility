@@ -10,11 +10,15 @@ import platform
 import configparser
 from pathlib import Path
 import pandas as pd
+import re
 import json
+import yaml
 import spacy
+from flair.models import SequenceTagger
 
 try:
     from azure.common.credentials import ServicePrincipalCredentials
+    from azureml.core.experiment import Experiment # TODO REMOVE
     from azure.keyvault import KeyVaultClient
 except Exception as e:
     log.warning(f'Azure KeyVault is not installed, \
@@ -89,7 +93,6 @@ def get_repo_dir():
     return root_dir
 
 def get_project_config(fn):
-    """Load project configration from repository directory and parse it"""
     _fn1 = f"{get_repo_dir()}/project/{fn}"
     _fn2 = f"{get_repo_dir()}/src/config.json"
     if os.path.isfile(_fn1):
@@ -112,6 +115,26 @@ def get_config(section = None):
     elif section is not None:
         run_config = run_config[section]
     return run_config
+
+############################################
+#####   Requirements
+############################################
+
+# def get_requirements(req_type='conda'):
+#     """Load pip requirements, for deployment"""
+#     # Load requirements file
+#     with open(get_repo_dir() + 'environment.yml') as file:
+#         reqs = yaml.load(file, Loader=yaml.FullLoader)
+#     conda = []
+#     for r in reqs.get('dependencies'):
+#         if not isinstance(r, str):
+#             pip = r.get('pip')
+#         else:
+#             conda.append(r)
+#     if req_type == 'conda':
+#         return conda
+#     elif req_type == 'pip':
+#         return pip
 
 def get_requirements(req_type = 'deploy'):
     """Load pip requirements, for training and deployment"""
@@ -216,15 +239,8 @@ def get_aml_ws():
     else:
         # Fetch via SP
         try:
-            # Authenticate via SP
-            sp = ServicePrincipalAuthentication(tenant_id           = get_secret('sp-tenant-id'),
-                                        service_principal_id        = get_secret('sp-client-id'),
-                                        service_principal_password  = get_secret('sp-secret'))
-            # Get workspace
-            ws = Workspace.get(name = get_secret('aml-ws-name'),
-                    resource_group  = get_secret('aml-ws-rg'),
-                    auth            = sp,
-                    subscription_id = get_secret('aml-ws-sid'))
+            # TODO INSERT SP INFO HERE
+            log.warning(f'[INFO] - Getting AML WS via SP')
         except Exception as e:
             log.warning(f'[WARNING] Unable to get AML workspace via Service Principal. {e}')
 
@@ -264,47 +280,6 @@ farm_model_lookup = {
     }
 }
 
-flair_model_lookup = {
-    'en' : 'ner-ontonotes-fast', 
-    'de' : 'ner-multi-fast',
-    'xx' : 'ner-multi-fast'
-}
-flair_model_file_lookup = {
-    'en' : 'en-ner-ontonotes-fast-v0.4.pt', 
-    'de' : 'ner-multi-fast.pt',
-    'xx' : 'ner-multi-fast.pt'
-}
-
-spacy_model_lookup = {
-    'en':'en_core_web_sm',
-    'de':'de_core_news_sm',
-    'fr':'fr_core_news_sm',
-    'es':'es_core_news_sm',
-    'it':'it_core_news_sm',
-    'xx':'xx_ent_wiki_sm'
-}
-
-def load_spacy_model(language='xx', disable=[]):
-    """Load spacy models depending on language"""
-    try:
-        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
-    except OSError:
-        logging.warning(f'[INFO] Downloading spacy language model for {language}')
-        from spacy.cli import download
-        download(spacy_model_lookup[language])
-        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
-    return nlp
-
-def get_flair_model(language, object_type):
-    if object_type == 'model':
-        lookup = flair_model_lookup
-    elif object_type == 'fn':
-        lookup = flair_model_file_lookup
-    m = lookup.get(language)
-    if m is None:
-        m = lookup.get('xx')
-    return m
-
 def get_farm_model(model_type, language):
     ml = None
     mt = farm_model_lookup.get(model_type)
@@ -316,6 +291,56 @@ def get_farm_model(model_type, language):
         raise Exception(f'No Transformer/FARM model found. model = {model_type}, lang = {language}')
     return ml
 
+spacy_model_lookup = {
+    'en':'en_core_web_sm',
+    'de':'de_core_news_sm',
+    'fr':'fr_core_news_sm',
+    'es':'es_core_news_sm',
+    'it':'it_core_news_sm',
+    'xx':'xx_ent_wiki_sm'
+}
+
+def load_spacy_model(language='xx', disable=[]):
+    try:
+        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
+    except OSError:
+        logging.warning(f'[INFO] Downloading spacy language model for {language}')
+        from spacy.cli import download
+        download(spacy_model_lookup[language])
+        nlp = spacy.load(spacy_model_lookup[language], disable=disable)
+    return nlp
+
+flair_model_lookup = {
+    'en' : 'ner-ontonotes-fast', 
+    'de' : 'ner-multi-fast',
+    'xx' : 'ner-multi-fast'
+}
+flair_model_file_lookup = {
+    'en' : 'en-ner-ontonotes-fast-v0.4.pt', 
+    'de' : 'ner-multi-fast.pt',
+    'xx' : 'ner-multi-fast.pt'
+}
+
+def get_flair_model(language, object_type):
+    if object_type == 'model':
+        lookup = flair_model_lookup
+    elif object_type == 'fn':
+        lookup = flair_model_file_lookup
+    m = lookup.get(language)
+    if m is None:
+        m = lookup.get('xx')
+    return m
+
+def load_flair_model(path=None, language='xx', task='ner'):
+    if task == 'ner':
+        # if path is None:
+        model = SequenceTagger.load(get_flair_model(language, 'model'))
+        # else:
+            # model = SequenceTagger.load(path)
+    else:
+        logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
+        model = None
+    return model
 
 ############################################
 #####   Dataframe

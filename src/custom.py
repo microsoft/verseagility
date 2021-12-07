@@ -16,7 +16,7 @@ logger = he.get_logger(location=__name__)
 ############################################
 
 # Load parameters from config
-params = he.get_project_config('msforum_en.config.json')
+params = he.get_project_config('mbio_en.config.json')
 tasks = params.get('tasks')
 logger.warning(f'[INFO] *** Project target lang \t-> {params.get("language")} \t***')
 logger.warning(f'[INFO] *** Project target env \t-> {params.get("environment")} \t***')
@@ -45,7 +45,8 @@ def load_text(data):
 
 def load_label(data, task):
     if task == 1:
-        label = data.label_classification_simple
+        #label = data.label_classification_simple # TODO: changed load label
+        label = data.label
     elif task == 2:
         label = data.label_classification_multi
     return label
@@ -64,3 +65,4 @@ def filter_qa(data):
     data = data[data['label_answer_upvotes'] > 1].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(data)}  \t- after min upvotes of 2')
     return data
+

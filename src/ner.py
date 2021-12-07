@@ -2,24 +2,24 @@ import pandas as pd
 import re
 from pathlib import Path
 import logging
+import requests
+import os
 
 from spacy.matcher import PhraseMatcher
+from spacy.tokens import Span
 
 from flair.data import Sentence
-from flair.models import SequenceTagger
 
 from farm.data_handler.data_silo import DataSilo
 from farm.data_handler.processor import NERProcessor
 from farm.modeling.optimization import initialize_optimizer
+from farm.infer import Inferencer
 from farm.modeling.adaptive_model import AdaptiveModel
 from farm.modeling.language_model import LanguageModel
 from farm.modeling.prediction_head import TokenClassificationHead
 from farm.modeling.tokenization import Tokenizer
 from farm.train import Trainer
 from farm.utils import set_all_seeds, initialize_device_settings
-
-from azure.ai.textanalytics import TextAnalyticsClient
-from azure.core.credentials import AzureKeyCredential
 
 # Custom functions
 import sys
@@ -28,17 +28,6 @@ import custom as cu
 import data as dt
 import helper as he
 
-def load_flair_model(path=None, language='xx', task='ner'):
-    """Load flair models depending on language"""
-    if task == 'ner':
-        # if path is None:
-        model = SequenceTagger.load(he.get_flair_model(language, 'model'))
-        # else:
-            # model = SequenceTagger.load(path)
-    else:
-        logging.warning(f'FLAIR MODEL TASK NOT SUPPORTED --> {task}')
-        model = None
-    return model
 
 # Custom FLAIR element for spacy pipeline
 class FlairMatcher(object):
@@ -60,16 +49,15 @@ class FlairMatcher(object):
         return doc
 
 class TextAnalyticsMatcher(object):
+    name = "textanalytics"
     def __init__(self):
-        key = he.get_secret('text-analytics-key')
-        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/"
-        self.key = AzureKeyCredential(key)
-        self.client = TextAnalyticsClient(endpoint = self.endpoint, credential = self.key)
+        self.endpoint = f"https://{he.get_secret('text-analytics-name')}.cognitiveservices.azure.com/text/analytics/v3.0/entities/recognition/general"
+        self.headers = {"Ocp-Apim-Subscription-Key": he.get_secret('text-analytics-key')}
         
     def __call__(self, doc):
-        result = self.client.recognize_entities(documents = [{"id": "0", "language": cu.params.get('language'), "text": doc.text}])[0]
-        for entity in result.entities:
-            span = doc.char_span(entity.offset, entity.offset + entity.length, label = entity.category)
+        result = requests.post(self.endpoint, headers=self.headers, json={"documents": [{"id": "0", "language": cu.params.get('language'), "text": doc.text}]}).json()['documents'][0]
+        for entity in result['entities']:
+            span = doc.char_span(entity['offset'], entity['offset'] + entity['length'], label = entity['category'])
             # Pass, in case a match already exists
             try:
                 doc.ents = list(doc.ents) + [span]

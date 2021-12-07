@@ -10,6 +10,8 @@ Example (in the command line):
 """
 #NOTE: the following is a workaround for AML to load modules
 import os, sys; sys.path.append(os.path.dirname(os.path.realpath(__file__)))
+import os
+import spacy
 import pandas as pd
 import numpy as np
 import string
@@ -64,7 +66,7 @@ class Clean():
             self.dt.download('data_dir', dir = 'data_dir', source = 'datastore')
 
         # Load spacy model
-        self.nlp = he.load_spacy_model(language=self.language, disable = ['ner','parser','tagger'])
+        self.nlp = he.load_spacy_model(language=self.language, disable=['ner','parser','tagger'])
         
         # Create stopword list
         stopwords_active = []
@@ -116,11 +118,6 @@ class Clean():
             #EN
             if self.language == 'en':
                 line = re.sub(r'\bkind regards.*', '', line, flags=re.I)
-                line = re.sub(r'\bbest regards.*', '', line, flags=re.I)
-                line = re.sub(r'\bsincerely yours.*', '', line, flags=re.I)
-                line = re.sub(r'\byours sincerely.*', '', line, flags=re.I)
-                line = re.sub(r'\bsent from my mobile.*', '', line, flags=re.I)
-                line = re.sub(r'\bsent via iphone.*', '', line, flags=re.I)
             #DE
             if self.language == 'de':
                 line = re.sub(r'\b(mit )?(beste|viele|liebe|freundlich\w+)? (gr[u,ü][ß,ss].*)', '', line, flags=re.I)
@@ -281,20 +278,26 @@ class Clean():
             return text[0]
 
 def prepare_classification(task, do_format, train_split, min_cat_occurance, 
-                            min_char_length, register_data):
+                            min_char_length, register_data, dataset_name=None):
 
     # Get clean object
     cl = Clean(task=task, download_source=True)
     # Load data
     if not os.path.isfile(cl.dt.get_path('fn_prep', dir = 'data_dir')) or do_format:
-        data = dt.get_dataset(cl, source="cdb")
+        data = dt.get_dataset(cl, source="tabular", dataset_name=dataset_name)
     else:
         data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
 
+    # Lowercase all cols and change name
+    data.columns = [x.lower() for x in data.columns]
+    data['subject'] = "x "
+    data.columns = ['body', 'label', 'subject']
+
     # Load text & label field
-    text_raw = cu.load_text(data)
-    data['label'] = cu.load_label(data, task)
+    text_raw = cu.load_text(data) # TODO: changed load text
+    #text_raw = list(data['text'])
+    data['label'] = cu.load_label(data, task) # TODO: changed load label
     if cu.tasks.get(str(task)).get('type') == 'multi_classification':
         data['label'] = data['label'].str.replace(', ', '_').str.replace(' ', '_')
         flat_labels = [row['label'].split(',') for index, row in data.iterrows()] 
@@ -337,7 +340,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         del data_red['label']
         data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
-    data_red = data_red.tail(300000).reset_index(drop=True).copy() 
+    #data_red = data_red.tail(300000).reset_index(drop=True).copy() 
     #TODO: .tail() temp is for debugging
     ## There is a memory issue for the EN dataset, due to its size. Needs further investigation.
 
@@ -359,12 +362,12 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     strf_split = StratifiedShuffleSplit(n_splits = 1, test_size=(1-train_split), random_state=200)
     if cu.tasks.get(str(task)).get('type') == 'classification':
         for train_index, test_index in strf_split.split(data_red, data_red['label']):
-            df_cat_train = data_red.loc[train_index]
-            df_cat_test = data_red.loc[test_index]
+            df_cat_train = data_red.iloc[train_index]
+            df_cat_test = data_red.iloc[test_index]
     elif cu.tasks.get(str(task)).get('type') == 'multi_classification':
         for train_index, test_index in strf_split.split(data_red, pd.DataFrame({'label':[l.split(',')[0] for l in data_red['label']]})['label']):
-            df_cat_train = data_red.loc[train_index]
-            df_cat_test = data_red.loc[test_index]
+            df_cat_train = data_red.iloc[train_index]
+            df_cat_test = data_red.iloc[test_index]
     
     # Save data
     cl.dt.save(data_red, fn = 'fn_clean', dir = 'data_dir')
@@ -449,11 +452,12 @@ def main(task=1,
             split=0.9, 
             min_cat_occurance=300, 
             min_char_length=20,
-            register_data=False):
+            register_data=False,
+            dataset_name=None):
     logger.warning(f'Running <PREPARE> for task {task}')
     task_type = cu.tasks.get(str(task)).get('type')
     if 'classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, dataset_name)
     elif 'multi_classification' == task_type:
         prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
     elif 'ner' == task_type:
@@ -482,7 +486,7 @@ def run():
                     type=float,
                     help="Train test split. Dev split is taken from train set.")    
     parser.add_argument("--min_cat_occurance", 
-                    default=300,
+                    default=5,
                     type=int,
                     help="Min occurance required by category.")      
     parser.add_argument("--min_char_length", 
@@ -492,9 +496,12 @@ def run():
     parser.add_argument('--register_data',
                     action='store_true',
                     help="")
+    parser.add_argument('--dataset_name', # TODO pipe through scripts
+                    type=str,
+                    default='sample')
     args = parser.parse_args()
     main(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
-                    min_char_length=args.min_char_length, register_data=args.register_data)
+                    min_char_length=args.min_char_length, register_data=args.register_data, dataset_name=args.dataset_name)
         
 if __name__ == '__main__':
     run()
