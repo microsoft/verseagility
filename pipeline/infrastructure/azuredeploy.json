@@ -6,11 +6,19 @@
             "type": "string",
             "defaultValue": ""
         },
-        "insightsComponent": {
+		"functionRepoURL": {
             "type": "string",
             "defaultValue": ""
         },
-        "servicePlan": {
+        "functionRepoBranch": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "insightsComponentName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "servicePlanName": {
             "type": "string",
             "defaultValue": ""
         },
@@ -18,7 +26,7 @@
             "type": "string",
             "defaultValue": ""
         },
-        "ruleName": {
+        "failureAbnormaliesDetectorRuleName": {
             "type": "string",
             "defaultValue": ""
         },
@@ -34,14 +42,6 @@
             "type": "string",
             "defaultValue": ""
         },
-        "ruleScope": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "repoURL": {
-            "type": "string",
-            "defaultValue": ""
-        },
         "ocrName": {
             "type": "string",
             "defaultValue": ""
@@ -49,21 +49,18 @@
         "textAnalyticsName": {
             "type": "string",
             "defaultValue": ""
-        },
-        "branch": {
-            "type": "string",
-            "defaultValue": ""
         }
     },
     "variables": {
-        "functionName": "[if(equals(parameters('functionName'), ''), toLower(concat('versfunction', uniqueString(resourceGroup().id) ) ), parameters('functionName'))]","insightsComponent": "[if(equals(parameters('insightsComponent'), ''), toLower(concat('versinsights', uniqueString(resourceGroup().id) ) ), parameters('insightsComponent'))]",
+        "functionName": "[if(equals(parameters('functionName'), ''), toLower(concat('versfunction', uniqueString(resourceGroup().id) ) ), parameters('functionName'))]",
+        "insightsComponent": "[if(equals(parameters('insightsComponent'), ''), toLower(concat('versinsights', uniqueString(resourceGroup().id) ) ), parameters('insightsComponent'))]",
         "servicePlan": "[if(equals(parameters('servicePlan'), ''), toLower(concat('ASP-Serviceplan-', uniqueString(resourceGroup().id) ) ), parameters('servicePlan'))]",
         "databaseName": "[if(equals(parameters('databaseName'), ''), toLower(concat('verscosmos', uniqueString(resourceGroup().id) ) ), parameters('databaseName'))]",
         "ruleName": "[if(equals(parameters('ruleName'), ''), 'failure anomalies - versinsights', parameters('ruleName'))]",
         "keyvaultName": "[if(equals(parameters('keyvaultName'), ''), toLower(concat('verskeys', uniqueString(resourceGroup().id) ) ), parameters('keyvaultName'))]",
         "storageName": "[if(equals(parameters('storageName'), ''), toLower(concat('ver', uniqueString(resourceGroup().id) ) ), parameters('storageName'))]",
         "amlWorkspaceName": "[if(equals(parameters('amlWorkspaceName'), ''), toLower(concat('vers-aml-workspace-', uniqueString(resourceGroup().id) ) ), parameters('amlWorkspaceName'))]",
-        "ruleScope": "[if(equals(parameters('ruleScope'), ''), concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection'), parameters('ruleScope'))]",
+        "ruleScope": "[concat(resourceGroup().id, '/providers/microsoft.insights/actiongroups/application%20insights%20smart%20detection')]",
         "repoURL": "[if(equals(parameters('repoURL'), ''), 'https://github.com/christian-vorhemus/function-app.git', parameters('repoURL'))]",
         "ocrName": "[if(equals(parameters('ocrName'), ''), toLower(concat('versocr', uniqueString(resourceGroup().id) ) ), parameters('ocrName'))]",
         "textAnalyticsName": "[if(equals(parameters('textAnalyticsName'), ''), toLower(concat('verstextanalytics', uniqueString(resourceGroup().id) ) ), parameters('textAnalyticsName'))]",
