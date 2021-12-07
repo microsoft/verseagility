@@ -47,9 +47,6 @@ The repository is built in the following structure:
     │
     ├── /project           <- Project configuration files, detailing the tasks to be completed.
     │
-    ├── /scraper           <- Website scraper used to fetch sample data. 
-    │                         Can be reused for similarly structured forum websites.
-    │
     ├── /src               <- Source code for use in this project.
     │   ├── infer.py       <- Inference file, for scoring the model
     │   │   
