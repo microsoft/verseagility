@@ -8,13 +8,13 @@ The purpose of the pipeline is twofold:
 2. It creates a REST endpoint that can be used to convert documents (such as images, PDFs) into text.
 
 Follow the steps below to bring your documents to the right place:
-1. If you put files in the storage account "data" container, the files are processed and put in Cosmos DB following the standardized output format. For testing purpose you may use this tab-delimited [Sample CSV-file](../.attachments/sample.csv) or a [Sample JSON-file](../.attachments/sample.json). 
+1. If you put files in the storage account `data` container, the files are processed and put in Cosmos DB following the standardized output format. For testing purpose you may use this tab-delimited [Sample CSV-file](../.attachments/sample.csv) or a [Sample JSON-file](../.attachments/sample.json). 
 
   ---
   **NOTE**
 
   - In case you want to transform your data, e.g. from a pandas data frame into a structured JSON, the [data preparation notebook](../../notebook/Data%20-%20Transform%20Dataframe%20to%20JSON.ipynb) might be helpful for you. Have a look at the standard JSON structure supported by Verseagility.
-  - For training data corpora larger than 10.000 documents, we recommend to upload them chunk-wise to the BLOB-storage, otherwise it might come to bottlenecks in the document processor function. This [data preparation notebook](../../notebook/Data%20-%20Transform%20Dataframe%20to%20JSON.ipynb) might be helpful in that case as well.
+  - For training data corpora larger than 10,000 documents, we recommend to upload them chunk-wise to the BLOB-storage, otherwise it might come to bottlenecks in the document processor function. This [data preparation notebook](../../notebook/Data%20-%20Transform%20Dataframe%20to%20JSON.ipynb) might be helpful in that case as well.
 
   ---
 

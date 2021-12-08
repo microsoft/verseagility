@@ -1,7 +1,7 @@
 # Getting Started with Verseagility
 This part of the documentation helps you to set up Verseagility in our own subscription and with your data, step by step. Each of the points below will lead you to the respective documentation page. At the bottom of each page you will find a link to the previous and next page.
 
-1. [Setup of Code and Infrastructure](01%20-%20Verseagility%20Setup.md)
+1. [Setup of Code and Infrastructure](01%20-%Setup%20of%20Code%20and%20Infrastructure.md)
 2. [Data Preparation Pipeline](02%20-%20Data%20Preparation%20Pipeline.md)
 2. [Project Setup](03%20-%20Project%20Setup.md)
 3. [Data Cleaning Steps](04%20-%20Data%20Cleaning%20Steps.md)
