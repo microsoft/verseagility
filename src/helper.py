@@ -227,7 +227,6 @@ def get_aml_ws():
                     subscription_id = get_secret('aml-ws-sid'))
         except Exception as e:
             log.warning(f'[WARNING] Unable to get AML workspace via Service Principal. {e}')
-
     return ws
 
 ############################################
