@@ -1,4 +1,4 @@
-# Data Preparation Pipeline
+# Bring your Data
 This documentation helps you to understand the data preparation pipeline, how to bring your own data into the system and describes the required file structure.
 
 ## Data Processing

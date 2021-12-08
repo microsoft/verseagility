@@ -1,4 +1,4 @@
-# Training
+# Training of Models
 This part of the documentation serves as guideline for the model training process. The tasks being submitted for training depend on which tasks you have defined in your config files and whether they require a training step.
 
 Following steps **do** require a training step:
