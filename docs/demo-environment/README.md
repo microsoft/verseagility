@@ -6,4 +6,4 @@ The [Demo Setup Guide](01%20-%20Demo%20Environment%20Setup.md) helps you to buil
 Further, we give you a hand how to present the existing demo in the most convincing and understanding way for your audience or customers in the [Presentation Guide](02%20-%20Presentation%20Guide.md).
 
 1. [Demo Setup Guide](01%20-%20Demo%20Environment%20Setup.md)
-1. [Presentation Guide]('02%20-%20Presentation%20Guide.md')
+1. [Presentation Guide](02%20-%20Presentation%20Guide.md)
