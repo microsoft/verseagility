@@ -1,4 +1,4 @@
-# Environment Setup
+# Setup of Code and Infrastructure
 This documentation helps you to clone the repository to your local machine, install the environment and deploy all the necessary resources to your Azure subscription using an ARM-template. Therefore, the manual effort is minimized and the integrity is ensured.
 
 ## Repository Setup
