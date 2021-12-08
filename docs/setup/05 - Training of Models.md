@@ -48,3 +48,5 @@ After running the classification training step, you will find your experiments i
 
 TODO:
 - limitations: max characters, etc.. focus is on paragraph, not document classification
+
+As you now trained your models, we can go ahead and explore how to do the [Deployment (Inferencing)](06%20-%20Deployment.md).

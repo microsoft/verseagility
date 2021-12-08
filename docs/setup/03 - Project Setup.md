@@ -251,4 +251,4 @@ See following example file below, only covering classification (task 1) and NER 
   params = he.get_project_config('msforum_en.config.json')
   ```
 
-Your project is now set up!
+Your project is now set up! Next, we will explain the [Data Cleaning Steps](04%20-%20Data%20Cleaning%20Steps.md).

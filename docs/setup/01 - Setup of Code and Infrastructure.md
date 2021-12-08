@@ -111,3 +111,5 @@ Instead of working in an Azure subscription with help of the resources deployed 
   ```
   func start
   ```
+
+In the next step, we will explain how you can [Bring your Data](02%20-%20Bring%20your%20Data.md).
