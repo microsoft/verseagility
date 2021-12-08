@@ -45,9 +45,19 @@ def load_text(data):
 
 def load_label(data, task):
     if task == 1:
-        label = data.label_classification_simple
+        # Check for label name: if from CosmosDB, it will be label_classification_simple
+        if 'label_classification_simple' in data.columns:
+            label = data.label_classification_simple
+        # If from data store, it should be label
+        else:
+            label = data.label
     elif task == 2:
-        label = data.label_classification_multi
+        # Check for label name: if from CosmosDB, it will be label_classification_multi
+        if 'label_classification_multi':
+            label = data.label_classification_multi
+        # If from data store, it should be label_multi
+        else:
+            label = data.label_multi
     return label
 
 ## QA
@@ -60,7 +70,7 @@ def filter_qa(data):
     if len(data) == 0:
         data = data[data.label_answer_markedAsAnswer == 'true'].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(data)}  \t- after marked as answer ')
-    # Filter by UpVotes
+    # Filter by upvotes
     data = data[data['label_answer_upvotes'] > 1].reset_index(drop=True).copy()
     logger.warning(f'Data Length : {len(data)}  \t- after min upvotes of 2')
     return data

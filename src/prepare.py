@@ -281,16 +281,22 @@ class Clean():
             return text[0]
 
 def prepare_classification(task, do_format, train_split, min_cat_occurance, 
-                            min_char_length, register_data):
+                            min_char_length, register_data, dataset_name=None):
 
     # Get clean object
     cl = Clean(task=task, download_source=True)
     # Load data
     if not os.path.isfile(cl.dt.get_path('fn_prep', dir = 'data_dir')) or do_format:
-        data = dt.get_dataset(cl, source="cdb")
+        data = dt.get_dataset(cl, source="cdb", dataset_name=dataset_name)
     else:
         data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
+
+    # TODO : Temporary workaround, need to make it possible to handle missing column "subject"
+    # Lowercase all cols and change name
+    data.columns = [x.lower() for x in data.columns]
+    data['subject'] = "x "
+    data.columns = ['body', 'label', 'subject']
 
     # Load text & label field
     text_raw = cu.load_text(data)
@@ -337,8 +343,8 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         del data_red['label']
         data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
-    data_red = data_red.tail(300000).reset_index(drop=True).copy() 
-    #TODO: .tail() temp is for debugging
+    # data_red = data_red.tail(300000).reset_index(drop=True).copy() 
+    # TODO: .tail() temp is for debugging
     ## There is a memory issue for the EN dataset, due to its size. Needs further investigation.
 
     # Label list
@@ -359,12 +365,12 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     strf_split = StratifiedShuffleSplit(n_splits = 1, test_size=(1-train_split), random_state=200)
     if cu.tasks.get(str(task)).get('type') == 'classification':
         for train_index, test_index in strf_split.split(data_red, data_red['label']):
-            df_cat_train = data_red.loc[train_index]
-            df_cat_test = data_red.loc[test_index]
+            df_cat_train = data_red.iloc[train_index]
+            df_cat_test = data_red.iloc[test_index]
     elif cu.tasks.get(str(task)).get('type') == 'multi_classification':
         for train_index, test_index in strf_split.split(data_red, pd.DataFrame({'label':[l.split(',')[0] for l in data_red['label']]})['label']):
-            df_cat_train = data_red.loc[train_index]
-            df_cat_test = data_red.loc[test_index]
+            df_cat_train = data_red.iloc[train_index]
+            df_cat_test = data_red.iloc[test_index]
     
     # Save data
     cl.dt.save(data_red, fn = 'fn_clean', dir = 'data_dir')
@@ -444,18 +450,19 @@ def prepare_qa(task, do_format, min_char_length, register_data):
     if register_data:
         cl.dt.upload('data_dir', destination='dataset')
 
-def main(task=1, 
-            do_format=False, 
-            split=0.9, 
-            min_cat_occurance=300, 
-            min_char_length=20,
-            register_data=False):
+def main(  task = 1, 
+            do_format = False, 
+            split = 0.9, 
+            min_cat_occurance = 300, 
+            min_char_length = 20,
+            register_data = False,
+            dataset_name=None):
     logger.warning(f'Running <PREPARE> for task {task}')
     task_type = cu.tasks.get(str(task)).get('type')
     if 'classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, dataset_name)
     elif 'multi_classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, dataset_name)
     elif 'ner' == task_type:
         prepare_ner(task, do_format, register_data)
     elif 'qa' == task_type:
@@ -492,9 +499,12 @@ def run():
     parser.add_argument('--register_data',
                     action='store_true',
                     help="")
+    parser.add_argument("--dataset_name", # TODO pipe through scripts
+                    type=str,
+                    default="sample")
     args = parser.parse_args()
     main(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
-                    min_char_length=args.min_char_length, register_data=args.register_data)
+                    min_char_length=args.min_char_length, register_data=args.register_data, dataset_name=args.dataset_name)
         
 if __name__ == '__main__':
     run()

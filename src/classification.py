@@ -10,7 +10,6 @@ Example (in the command line):
 
 """
 import os
-from pathlib import Path
 import argparse
 
 from farm.data_handler.data_silo import DataSilo
@@ -42,9 +41,9 @@ def doc_classification(task, model_type, n_epochs, batch_size, embeds_dropout, e
     
     language = cu.params.get('language')
 
-    # Check task
+    # Check task # TODO
     if cu.tasks.get(str(task)).get('type') != 'classification':
-        raise Exception('NOT A CLASSIFICATION TASK') 
+        raise Exception('NOT A CLASSIFICATION TASK!') 
     
     # Data
     dt_task = dt.Data(task=task)

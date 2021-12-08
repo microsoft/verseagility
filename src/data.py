@@ -18,6 +18,7 @@ import json
 import os
 from pathlib import Path
 from azure.cosmos import cosmos_client
+from azureml.core import Workspace, Dataset
 
 # Custom functions
 import sys
@@ -388,26 +389,33 @@ class Data():
 #####   Fetch from CosmosDB
 ############################################
 
-def get_data():
-    # Query for CosmosDB
-    CONFIG = {
-        "ENDPOINT": f"https://{he.get_secret('cosmos-db-name')}.documents.azure.com:443/",
-        "PRIMARYKEY": he.get_secret('cosmos-db-key'),
-        "DATABASE": "data", 
-        "CONTAINER": "documents"
-    }
-    CONTAINER_LINK = f"dbs/{CONFIG['DATABASE']}/colls/{CONFIG['CONTAINER']}"
-    FEEDOPTIONS = {}
-    FEEDOPTIONS["enableCrossPartitionQuery"] = True
-    QUERY = {
-        "query": f"SELECT * from c where c.status = 'train' and CONTAINS(c.language, '{cu.params.get('language')}')"
-    }
-    # Initialize the Cosmos client
-    client = cosmos_client.CosmosClient(
-        url_connection=CONFIG["ENDPOINT"], auth={"masterKey": CONFIG["PRIMARYKEY"]}
-    )
-    # Query for some data
-    results = client.QueryItems(CONTAINER_LINK, QUERY, FEEDOPTIONS)
+def get_data(src="cdb", dataset_name=None):
+    if src == "cdb":
+        # Query for CosmosDB
+        CONFIG = {
+            "ENDPOINT": f"https://{he.get_secret('cosmos-db-name')}.documents.azure.com:443/",
+            "PRIMARYKEY": he.get_secret('cosmos-db-key'),
+            "DATABASE": "data", 
+            "CONTAINER": "documents"
+        }
+        CONTAINER_LINK = f"dbs/{CONFIG['DATABASE']}/colls/{CONFIG['CONTAINER']}"
+        FEEDOPTIONS = {}
+        FEEDOPTIONS["enableCrossPartitionQuery"] = True
+        QUERY = {
+            "query": f"SELECT * from c where c.status = 'train' and CONTAINS(c.language, '{cu.params.get('language')}')"
+        }
+        # Initialize the Cosmos client
+        client = cosmos_client.CosmosClient(
+            url_connection=CONFIG["ENDPOINT"], auth={"masterKey": CONFIG["PRIMARYKEY"]}
+        )
+        # Query for some data
+        results = client.QueryItems(CONTAINER_LINK, QUERY, FEEDOPTIONS)
+    elif src == "tabular" and dataset_name is not None:
+        workspace = he.get_aml_ws()
+        results = Dataset.get_by_name(workspace, name=dataset_name).to_pandas_dataframe()
+        log.warning(f'[INFO] - Collected {dataset_name} dataset from AML.')
+    else:
+        log.warning('[WARNING] - Could not load data set, please verify source and data set name.')
     return results
 
 def get_label(obj, task):
@@ -424,10 +432,10 @@ def get_label(obj, task):
                 out[_key] = _value
     return out
 
-def get_dataset(cl, source="cdb"):
+def get_dataset(cl, source="cdb", dataset_name=None):
     # Transform request result
     if source == "cdb":
-        results = get_data()
+        results = get_data("cdb")
         data = cu.prepare_source(results)
         if 'label_classification' in data.columns:
             lbl_class = data.label_classification.apply(lambda x: get_label(x, 'label_classification')).to_list()
@@ -446,5 +454,7 @@ def get_dataset(cl, source="cdb"):
         if not os.path.isfile(cl.dt.get_path('fn_source')):
             cl.dt.download('fn_source', dir = 'root_dir', source = 'datastore')
         data = cl.dt.process(data_type=cu.params.get('prepare').get('data_type'))
+    elif source == "tabular":
+        data = get_data("tabular", dataset_name)
     cl.dt.save(data, 'fn_prep', dir = 'data_dir')
     return data
