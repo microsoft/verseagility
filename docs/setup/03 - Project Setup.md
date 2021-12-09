@@ -201,7 +201,7 @@ See the following json-snippet as an example:
 }
 ```
 You see that there are multiple tasks in the project file. To help you understand how potential changes could look like, use following examples:
-- If you only want to go for classification, keep task level 1 in the config
+- If you only want to go for classification, keep task 1 in the config
 - You would like to use a different, pre-trained BERT model in task 1 or 2? Adjust this one respectively `"model_type": "roberta"`
 - In case you do not want to integrate Multi Label Classification, Named Entity Recognition, Question/Answering, Opinion Mining..., simply remove it from your JSON
 - If you only want specific NER models to be considered when scoring a model, adjust the array of models `["textanalytics", "flair", "custom", "regex", "nerlist"]` and only keep the ones you would like to use in the array.
