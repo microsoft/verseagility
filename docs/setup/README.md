@@ -1,6 +1,7 @@
-# Getting Started with Verseagility
-This part of the documentation helps you to set up Verseagility in our own subscription and with your data, step by step. Each of the points below will lead you to the respective documentation page. At the bottom of each page you will find a link to the previous and next page.
+# README - Getting Started with Verseagility
+This part of the documentation helps you to set up Verseagility in our own subscription and with your data, step by step. Each of the points below will lead you to the respective documentation page. At the bottom of each page you will find a link to the next page.
 
+**Follow these steps to ramp up with Verseagility:**
 1. [Setup of Code and Infrastructure](01%20-%20Setup%20of%20Code%20and%20Infrastructure.md)
 2. [Bring your Data](02%20-%20Bring%20your%20Data.md)
 3. [Project Setup](03%20-%20Project%20Setup.md)
@@ -47,3 +48,5 @@ Validated languages include:
 |it|Italian|
 
 Further languages are supported with multi-language pre-trained models or required minor additions to the pre-processing and pre-trained model loading. See the [FAQ](FAQ.md) for details.
+
+How you get started is described in the first page of the documentation, [Setup of Code and Infrastructure](01%20-%20Setup%20of%20Code%20and%20Infrastructure.md)
