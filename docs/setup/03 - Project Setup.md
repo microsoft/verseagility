@@ -98,7 +98,8 @@ farm_model_lookup = {
 ### **Named Entity Recognition**
 The toolkit supports and includes different approaches and frameworks for recognizing relevant entities in text paragraphs, called _Named Entity Recognition_, short _NER_:
 - [Azure Text Analytics API](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3)
-- flairNER Pre-Trained NER
+- [spaCy](https://spacy.io/) Pre-trained NER
+- [flairNLP](https://github.com/flairNLP/flair) Pre-Trained NER
 - FARM/Transformer Custom NER
 - Basic approaches (like regex and term lists)
 
@@ -107,7 +108,11 @@ The central components can be found in the script `code/ner.py`.
 #### **NER using Azure Text Analytics API**
 Azure Text Analytics is a Cognitive Service providing an API-based extraction of relevant entities from texts. You can find the documentation for Azure Text Analytics API [here](https://docs.microsoft.com/en-us/azure/cognitive-services/text-analytics/how-tos/text-analytics-how-to-entity-linking?tabs=version-3). In order to use it within the NLP toolkit, you need to [set up a Cognitive Service](https://docs.microsoft.com/en-us/azure/cognitive-services/cognitive-services-apis-create-account?tabs=multiservice%2Cwindows) in your personal Azure subscription and insert the relevant subscription keys. A basic service is free, yet it has request limitations. You can find a description how to set your keys if you scroll up to the top of the page.
 
-#### **Flair Pre-trained NER**
+#### **spaCy Pre-trained NER**
+We leverage the pre-trained models from spaCy, which is an open source framework to speed up your NER tasks. There is a language specific model referenced in `src/helper.py`. Besides the models, we leverage language pipelines by spaCy, also to be able to process multiple models.
+
+#### **flairNLP Pre-trained NER**
+Flair is a framework for state-of-the-art NLP tasks, especially NER. You can leverage powerful, pre-trained models and deploy them to your endpoint. Depending on your use case, you can choose different models and reference it in the lookup file in the `src/helper.py`.
 
 #### **FARM / Transformer Custom NER**
 
@@ -165,9 +170,18 @@ See the following json-snippet as an example:
             "learning_rate":3e-5,
             "prepare": true
         },
+        "2": {
+            "type": "multi_classification",
+            "model_type": "roberta",
+            "max_seq_len": 256,
+            "embeds_dropout":0.3,
+            "learning_rate":2e-5,
+            "prepare": true
+        },
         "3": {
             "type": "ner",
-            "prepare": false
+            "prepare": false,
+            "models": ["textanalytics", "flair", "custom", "regex", "nerlist"]
         },
         "4": {
             "type": "qa",
@@ -186,7 +200,46 @@ See the following json-snippet as an example:
         }
 }
 ```
-You see that there are multiple task levels. If you only want to go for classification, keep task level 1 in the config. In case you do not want to integrate Multi Label Classification, Named Entity Recognition, Question/Answering, Opinion Mining..., simply remove it from your JSON.
+You see that there are multiple tasks in the project file. To help you understand how potential changes could look like, use following examples:
+- If you only want to go for classification, keep task 1 in the config
+- You would like to use a different, pre-trained BERT model in task 1 or 2? Adjust this one respectively `"model_type": "roberta"`
+- In case you do not want to integrate Multi Label Classification, Named Entity Recognition, Question/Answering, Opinion Mining..., simply remove it from your JSON
+- If you only want specific NER models to be considered when scoring a model, adjust the array of models `["textanalytics", "flair", "custom", "regex", "nerlist"]` and only keep the ones you would like to use in the array.
+
+See following example file below, only covering classification (task 1) and NER (task 3), only with Flair and RegEx.
+
+```json
+{
+    "name":"msforum_en",
+    "language": "en",
+    "environment" : "dev",
+    "data_dir" : "./run/",
+    "prepare" : {
+        "data_type" : "json"
+    },
+    "tasks": {
+        "1": {
+            "label": "subcat",
+            "type": "classification",
+            "model_type": "roberta",
+            "max_seq_len": 256,
+            "embeds_dropout":0.3,
+            "learning_rate":3e-5,
+            "prepare": true
+        },
+        "3": {
+            "type": "ner",
+            "prepare": false,
+            "models": ["flair", "regex"]
+        }
+    },
+        "deploy": {
+            "type": "ACI",
+            "memory": 2,
+            "cpu": 1
+        }
+}
+```
 
 2. After creating the json file, you need to do a slight change in the `custom.py` script:
   - Look for this line within the script: <br>
@@ -198,4 +251,4 @@ You see that there are multiple task levels. If you only want to go for classifi
   params = he.get_project_config('msforum_en.config.json')
   ```
 
-Your project is now set up!
+Your project is now set up! Next, we will explain the [Data Cleaning Steps](04%20-%20Data%20Cleaning%20Steps.md).

@@ -1,4 +1,4 @@
-# Training
+# Training of Models
 This part of the documentation serves as guideline for the model training process. The tasks being submitted for training depend on which tasks you have defined in your config files and whether they require a training step.
 
 Following steps **do** require a training step:
@@ -48,3 +48,5 @@ After running the classification training step, you will find your experiments i
 
 TODO:
 - limitations: max characters, etc.. focus is on paragraph, not document classification
+
+As you now trained your models, we can go ahead and explore how to do the [Deployment (Inferencing)](06%20-%20Deployment.md).

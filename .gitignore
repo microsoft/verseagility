@@ -113,8 +113,5 @@ demo/deploy.ps1
 saved_models
 mlruns
 cache
-scraper/*.txt
-scraper/*.json
-scraper/old
 /run
 .azureml

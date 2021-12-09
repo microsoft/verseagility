@@ -1,4 +1,4 @@
-# Data Preparation Pipeline
+# Bring your Data
 This documentation helps you to understand the data preparation pipeline, how to bring your own data into the system and describes the required file structure.
 
 ## Data Processing
@@ -8,13 +8,13 @@ The purpose of the pipeline is twofold:
 2. It creates a REST endpoint that can be used to convert documents (such as images, PDFs) into text.
 
 Follow the steps below to bring your documents to the right place:
-1. If you put files in the storage account "data" container, the files are processed and put in Cosmos DB following the standardized output format. For testing purpose you may use this tab-delimited [Sample CSV-file](../.attachments/sample.csv) or a [Sample JSON-file](../.attachments/sample.json). 
+1. If you put files in the storage account `data` container, the files are processed and put in Cosmos DB following the standardized output format. For testing purpose you may use this tab-delimited [Sample CSV-file](../.attachments/sample.csv) or a [Sample JSON-file](../.attachments/sample.json). 
 
   ---
   **NOTE**
 
   - In case you want to transform your data, e.g. from a pandas data frame into a structured JSON, the [data preparation notebook](../../notebook/Data%20-%20Transform%20Dataframe%20to%20JSON.ipynb) might be helpful for you. Have a look at the standard JSON structure supported by Verseagility.
-  - For training data corpora larger than 10.000 documents, we recommend to upload them chunk-wise to the BLOB-storage, otherwise it might come to bottlenecks in the document processor function. This [data preparation notebook](../../notebook/Data%20-%20Transform%20Dataframe%20to%20JSON.ipynb) might be helpful in that case as well.
+  - For training data corpora larger than 10,000 documents, we recommend to upload them chunk-wise to the BLOB-storage, otherwise it might come to bottlenecks in the document processor function. This [data preparation notebook](../../notebook/Data%20-%20Transform%20Dataframe%20to%20JSON.ipynb) might be helpful in that case as well.
 
   ---
 
@@ -99,3 +99,5 @@ In case you would like to delete old data from the CosmosDB, we recommend you to
 
 1. Fill in the information as shown in the screenshot. It is important that you take over these values, as the document processing pipeline might no longer work if the values differ. You may define the container throughput as needed, depending on your desired level of scale. Click _OK_ to create the new container.<br>
 ![Create new Container](../.attachments/cosmosdb-container-new-create.PNG)
+
+In the next step, we will deal with the [Project Setup](03%20-%20Project%20Setup.md).
