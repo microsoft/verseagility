@@ -1,7 +1,7 @@
 // A sample project file covering all supported use cases for reference
 {
-    "name":"msforum_xx",
-    "language": "xx",
+    "name":"msforum_sample",
+    "language": "[two-character language code, e.g. en]",
     "environment" : "dev",
     "data_dir" : "./run/",
     "prepare" : {

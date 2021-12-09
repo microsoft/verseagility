@@ -17,7 +17,8 @@
         },
         "3": {
             "type": "ner",
-            "prepare": false
+            "prepare": false,
+            "models": ["regex", "nerlist"]
         },
         "4": {
             "type": "qa",
