@@ -189,17 +189,17 @@ class NER():
         # Load default model
         self.nlp = he.load_spacy_model(language=cu.params.get('language'), disable=['ner','parser','tagger'])
         
-        # Add flair pipeline #TODO: excluding FALIR for now, to be compared with text analytics
+        # Add flairNER to pipeline
         if 'Flair' in self.models:
             flair_matcher = FlairMatcher(dt_ner.get_path('fn_ner_flair'))
             self.nlp.add_pipe(flair_matcher)
         
-        # Text Analytics
+        # Add Azure Text Analytics to pipeline
         if 'TextAnalytics' in self.models:
             ta_matcher = TextAnalyticsMatcher()
             self.nlp.add_pipe(ta_matcher)
 
-        # Load phrase matcher
+        # Add phrase matcher based on nerList
         if 'nerList' in self.models:
             self.matcher = PhraseMatcher(self.nlp.vocab, attr="LOWER")
             matcher_items = pd.read_csv(dt_ner.get_path('fn_ner_list', dir='asset_dir'), encoding='utf-8', sep = '\t')

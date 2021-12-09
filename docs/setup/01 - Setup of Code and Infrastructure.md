@@ -1,4 +1,4 @@
-# Environment Setup
+# Setup of Code and Infrastructure
 This documentation helps you to clone the repository to your local machine, install the environment and deploy all the necessary resources to your Azure subscription using an ARM-template. Therefore, the manual effort is minimized and the integrity is ensured.
 
 ## Repository Setup
@@ -111,3 +111,5 @@ Instead of working in an Azure subscription with help of the resources deployed 
   ```
   func start
   ```
+
+In the next step, we will explain how you can [Bring your Data](02%20-%20Bring%20your%20Data.md).

@@ -22,3 +22,5 @@ if self.language == 'de':
 - Stopword removal
 - Lemmatization
 - Regex removal
+
+In the next step, we will describe the [Training of Models](05%20-%20Training%20of%20Models.md).
