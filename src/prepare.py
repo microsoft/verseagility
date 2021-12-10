@@ -204,7 +204,7 @@ class Clean():
         if isinstance(texts, str):
             texts = [texts]
 
-        # Convert to series for improved efficiency
+        # Convert to series for improved performance processing the data
         df_texts = pd.Series(texts)
 
         # Avoid loading errors
@@ -376,17 +376,18 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     cl.dt.save(data_red, fn = 'fn_clean', dir = 'data_dir')
     cl.dt.save(df_cat_train[['text','label']], fn = 'fn_train', dir = 'data_dir')
     cl.dt.save(df_cat_test[['text','label']], fn = 'fn_test', dir = 'data_dir')
-    cl.dt.save(label_list, fn = 'fn_label', header=False, dir = 'data_dir')
+    cl.dt.save(label_list, fn = 'fn_label', header = False, dir = 'data_dir')
 
     # Upload data
     if register_data:
         cl.dt.upload('data_dir', destination='dataset')
 
 def prepare_ner(task, do_format, register_data):
+    '''Placeholder for NER-specific preparation'''
     pass
 
 def prepare_qa(task, do_format, min_char_length, register_data):
-
+    '''Data preparation function for question-answering'''
     # Get clean object
     cl = Clean(task=task, download_source=True)
     
@@ -450,7 +451,7 @@ def prepare_qa(task, do_format, min_char_length, register_data):
     if register_data:
         cl.dt.upload('data_dir', destination='dataset')
 
-def main(  task = 1, 
+def main(task = 1, 
             do_format = False, 
             split = 0.9, 
             min_cat_occurance = 300, 
@@ -477,10 +478,11 @@ def run():
                     default=1,
                     type=int,
                     help="Task where: \
-                            -task 1 : classification subcat \
-                            -task 2 : classification cat \
+                            -task 1 : classification cat \
+                            -task 2 : classification subcat \
                             -task 3 : ner \
-                            -task 4 : qa") 
+                            -task 4 : qa \
+                            -task 5 : om") 
     parser.add_argument('--do_format',
                     action='store_true',
                     help="Avoid reloading and normalizing data")
