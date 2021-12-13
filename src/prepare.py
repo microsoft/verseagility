@@ -245,21 +245,25 @@ class Clean():
             return df_texts.to_list()
 
     def transform_by_task(self, text):
-        # CUSTOM FUNCTION
+        '''Custom cleaning/transforming based on task, as every task requires different formats'''
+        # Classification
         if cu.tasks.get(str(self.task)).get('type') == 'classification':
             return self.transform(text,
                     rm_email_formatting = True, 
                     rm_email_header     = True,
                     rm_email_footer     = True,
                     rp_generic          = True)[0]
+        # Multi-Label Classification
         elif cu.tasks.get(str(self.task)).get('type') == 'multi_classification':
             return self.transform(text,
                     rm_email_formatting = True, 
                     rm_email_header     = True,
                     rm_email_footer     = True,
                     rp_generic          = True)[0]
+        # NER
         elif cu.tasks.get(str(self.task)).get('type') == 'ner':
             return text[0]
+        # QA
         elif cu.tasks.get(str(self.task)).get('type') == 'qa':
             return self.transform(text,
                     to_lower            = True,
@@ -279,18 +283,19 @@ class Clean():
         # OM
         elif cu.tasks.get(str(self.task)).get('type') == 'om':
             return text[0]
+        # Anything else
         else:
             logger.warning('[WARNING] No transform by task found.')
             return text[0]
 
 def prepare_classification(task, do_format, train_split, min_cat_occurance, 
-                            min_char_length, register_data, dataset_name=None):
-
+                            min_char_length, register_data, data_source, dataset_name=None):
+    '''Prepare data specifically for classification task'''
     # Get clean object
-    cl = Clean(task=task, download_source=True)
+    cl = Clean(task = task, download_source = True)
     # Load data
     if not os.path.isfile(cl.dt.get_path('fn_prep', dir = 'data_dir')) or do_format:
-        data = dt.get_dataset(cl, source="cdb", dataset_name=dataset_name)
+        data = dt.get_dataset(cl, data_source, dataset_name=dataset_name)
     else:
         data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
@@ -313,7 +318,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         # Create duplicate-free list of labels
         label_list_raw = list(set([label for labels in flat_labels for label in labels]))
     # If it is only single label classification, it is much easier
-    elif cu.tasks.get(str(task)).get('type') == 'classification': # in case of single label classification
+    elif cu.tasks.get(str(task)).get('type') == 'classification': 
         label_list_raw = data.label.drop_duplicates()
     
     # Clean text
@@ -324,11 +329,11 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
                     rp_generic          = True)
     
     # Filter by length
-    data = he.remove_short(data, 'text', min_char_length=min_char_length)
+    data = he.remove_short(data, 'text', min_char_length = min_char_length)
     logger.warning(f'Data Length : {len(data)}')
 
     # Remove duplicates
-    data_red = data.drop_duplicates(subset=['text'])
+    data_red = data.drop_duplicates(subset = ['text'])
     logger.warning(f'Data Length : {len(data_red)}')
     
     # Remove classes not having enough examples (minimum class occurence)
@@ -389,11 +394,11 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     if register_data:
         cl.dt.upload('data_dir', destination='dataset')
 
-def prepare_ner(task, do_format, register_data):
-    '''Placeholder for NER-specific preparation'''
+def prepare_ner(task, do_format, register_data, data_source, dataset_name=None):
+    '''Placeholder for NER-specific preparation, if needed'''
     pass
 
-def prepare_qa(task, do_format, min_char_length, register_data):
+def prepare_qa(task, do_format, min_char_length, register_data, data_source, dataset_name=None):
     '''Data preparation function for question-answering'''
     # Get clean object
     cl = Clean(task=task, download_source=True)
@@ -443,13 +448,12 @@ def prepare_qa(task, do_format, min_char_length, register_data):
             )
 
     # Filter by length
-    data = he.remove_short(data, 'question_clean', min_char_length=min_char_length)
+    data = he.remove_short(data, 'question_clean', min_char_length = min_char_length)
     logger.warning(f'Data Length : {len(data)}')
 
     # Remove duplicates
     data = data.drop_duplicates(subset=['question_clean'])
     logger.warning(f'Data Length : {len(data)}')
-
     data = data.reset_index(drop=True).copy()
 
     # Save data
@@ -468,17 +472,19 @@ def main(task = 1,
             min_cat_occurance = 300, 
             min_char_length = 20,
             register_data = False,
-            dataset_name=None):
+            dataset_name = None,
+            data_source = "cosmosdb"):
     logger.warning(f'Running <PREPARE> for task {task}')
     task_type = cu.tasks.get(str(task)).get('type')
+    # Go a specific preparation way, depending on the task performed
     if 'classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, dataset_name)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, data_source, dataset_name)
     elif 'multi_classification' == task_type:
-        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, dataset_name)
+        prepare_classification(task, do_format, split, min_cat_occurance, min_char_length, register_data, data_source, dataset_name)
     elif 'ner' == task_type:
-        prepare_ner(task, do_format, register_data)
+        prepare_ner(task, do_format, register_data, data_source, dataset_name)
     elif 'qa' == task_type:
-        prepare_qa(task, do_format, min_char_length, register_data)
+        prepare_qa(task, do_format, min_char_length, register_data, data_source, dataset_name)
     elif 'om' == task_type:
         prepare_om(task, do_format, register_data, data_source, dataset_name)
     else:
@@ -495,9 +501,8 @@ def run():
                             -task 2 : classification subcat \
                             -task 3 : ner \
                             -task 4 : qa \
-                            -task 4 : qa \
                             -task 5 : om") 
-    parser.add_argument('--do_format',
+    parser.add_argument("--do_format",
                     action='store_true',
                     help="Avoid reloading and normalizing data")
     parser.add_argument("--split", 
@@ -512,15 +517,18 @@ def run():
                     default=20,
                     type=int,
                     help="") 
-    parser.add_argument('--register_data',
-                    action='store_true',
+    parser.add_argument("--register_data",
+                    action="store_true",
                     help="")
     parser.add_argument("--dataset_name", # TODO pipe through scripts
                     type=str,
                     default="sample")
+    parser.add_argument("--data_source", # TODO pipe through scripts
+                    type=str,
+                    default="cosmosdb")
     args = parser.parse_args()
     main(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
-                    min_char_length=args.min_char_length, register_data=args.register_data, dataset_name=args.dataset_name)
+            min_char_length=args.min_char_length, register_data=args.register_data, dataset_name=args.dataset_name)
         
 if __name__ == '__main__':
     run()
