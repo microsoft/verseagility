@@ -349,19 +349,17 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     # TODO: .tail() temp is for debugging
     ## There is a memory issue for the EN dataset, due to its size. Needs further investigation.
 
-    # Label list
-    if cu.tasks.get(str(task)).get('type') == 'multi_classification': # 2 = task for multi-label classification
+    # Same procedure as above, now with reduced set of data
+    # If we do multi label classification, there are quite some steps to be done to bring it into the right format
+    if cu.tasks.get(str(task)).get('type') == 'multi_classification':
+        # Flatten to list of lists with labels
         flat_labels = [row['label'].split(',') for index, row in data_red.iterrows()]
-        labels_clean = []
-        for labels in flat_labels:
-            for label in labels:
-                labels_clean.append(label)
-        label_list = pd.DataFrame({'label':labels_clean})
-        label_list = label_list[label_list.label != '']
-        label_list = label_list.label.drop_duplicates()
-    elif cu.tasks.get(str(task)).get('type') == 'classification': # in case of single label classification
+        # Create duplicate-free list of labels
+        label_list = list(set([label for labels in flat_labels for label in labels]))
+    # If it is only single label classification, it is much easier
+    elif cu.tasks.get(str(task)).get('type') == 'classification': 
         label_list = data_red.label.drop_duplicates()
-    logger.warning(f'Excluded labels: {list(set(label_list_raw)-set(label_list))}')
+    logger.warning(f'Excluded labels: {list(set(label_list_raw) - set(label_list))}')
 
     # Split data
     strf_split = StratifiedShuffleSplit(n_splits = 1, test_size=(1-train_split), random_state=200)
