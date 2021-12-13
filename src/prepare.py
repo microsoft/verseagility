@@ -276,6 +276,9 @@ class Clean():
                     rm_stopwords        = True,
                     return_token        = True
                 )[0]
+        # OM
+        elif cu.tasks.get(str(self.task)).get('type') == 'om':
+            return text[0]
         else:
             logger.warning('[WARNING] No transform by task found.')
             return text[0]
@@ -451,6 +454,10 @@ def prepare_qa(task, do_format, min_char_length, register_data):
     if register_data:
         cl.dt.upload('data_dir', destination='dataset')
 
+def prepare_om(task, do_format, register_data, data_source, dataset_name=None):
+    '''Placeholder for OM-specific preparation, if needed'''
+    pass
+
 def main(task = 1, 
             do_format = False, 
             split = 0.9, 
@@ -468,6 +475,8 @@ def main(task = 1,
         prepare_ner(task, do_format, register_data)
     elif 'qa' == task_type:
         prepare_qa(task, do_format, min_char_length, register_data)
+    elif 'om' == task_type:
+        prepare_om(task, do_format, register_data, data_source, dataset_name)
     else:
         logger.warning('[ERROR] TASK TYPE UNKNOWN. Nothing was processed.')
 
@@ -481,6 +490,7 @@ def run():
                             -task 1 : classification cat \
                             -task 2 : classification subcat \
                             -task 3 : ner \
+                            -task 4 : qa \
                             -task 4 : qa \
                             -task 5 : om") 
     parser.add_argument('--do_format',
