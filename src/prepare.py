@@ -331,18 +331,25 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     data_red = data.drop_duplicates(subset=['text'])
     logger.warning(f'Data Length : {len(data_red)}')
     
-    # Min class occurance
+    # Remove classes not having enough examples (minimum class occurence)
     if cu.tasks.get(str(task)).get('type') == 'classification':
         data_red = data_red[data_red.groupby('label').label.transform('size') > min_cat_occurance]
     elif cu.tasks.get(str(task)).get('type') == 'multi_classification':
-        # Split rows
+        # This one is quite complicated, as we cannot simply filter by occurences
+        # First, we create a copy of the df
         data_transform = data_red[['id', 'label']].copy()
-        data_transform['label'] = [row['label'].split(",") for index, row in data_transform.iterrows()] # pipe it to list
-        data_transform = pd.DataFrame({'index':data_transform.index.repeat(data_transform.label.str.len()), 'label':np.concatenate(data_transform.label.values)}) # explode df
+        # Secondly, we need to split every combination of labels and transform it to a list
+        data_transform['label'] = [row['label'].split(",") for index, row in data_transform.iterrows()]
+        # Next, we need to explode the whole df to temporarily have every document assigned to each sub-label separately
+        data_transform = pd.DataFrame({'index': data_transform.index.repeat(data_transform.label.str.len()), 'label': np.concatenate(data_transform.label.values)})
+        # Now, we filter by minimum occurence for each label
         data_transform = data_transform[data_transform.groupby('label').label.transform('size') > min_cat_occurance] # count for min occurance and only keep relevant ones
+        # As the worst part is done, we re-merge the labels again and only the ones occuring often enough stay here
         data_transform = data_transform.groupby(['index'])['label'].apply(lambda x: ','.join(x.astype(str))).reset_index() # re-merge
+        # Wrapping up, we set a new index
         data_transform = data_transform.set_index('index')
         del data_red['label']
+        # Last but not least, we concatenate the reduced and transformed data by doing an inner join
         data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
     # data_red = data_red.tail(300000).reset_index(drop=True).copy() 
