@@ -105,15 +105,15 @@ class Clean():
             line = re.sub(r'^(.*\.eml)', ' ', line) # remove header for system generated emails
 
         if rm_email_header:
-            #DE/EN
+            # DE/EN
             if self.language == 'en' or self.language == 'de':
                 line = re.sub(r'\b(AW|RE|VON|WG|FWD|FW)(\:| )', '', line, flags=re.I)
-            #DE
+            # DE
             if self.language == 'de':
                 line = re.sub(r'(Sehr geehrte( Damen und Herren.)?.)|hallo.|guten( tag)?.', '', line, flags=re.I)
 
         if rm_email_footer:
-            #EN
+            # EN
             if self.language == 'en':
                 line = re.sub(r'\bkind regards.*', '', line, flags=re.I)
                 line = re.sub(r'\bbest regards.*', '', line, flags=re.I)
@@ -121,7 +121,7 @@ class Clean():
                 line = re.sub(r'\byours sincerely.*', '', line, flags=re.I)
                 line = re.sub(r'\bsent from my mobile.*', '', line, flags=re.I)
                 line = re.sub(r'\bsent via iphone.*', '', line, flags=re.I)
-            #DE
+            # DE
             if self.language == 'de':
                 line = re.sub(r'\b(mit )?(beste|viele|liebe|freundlich\w+)? (gr[u,ü][ß,ss].*)', '', line, flags=re.I)
                 line = re.sub(r'\b(besten|herzlichen|lieben) dank.*', '', line, flags=re.I)
@@ -134,7 +134,7 @@ class Clean():
                 line = re.sub(r'\b(Diese E-Mail wurde von Avast) .*','',line, flags=re.I)
 
         # Remove remaining characters
-        ##NOTE: may break other regex
+        ## NOTE: may break other regex
         if rm_punctuation:
             line = re.sub('['+string.punctuation+']',' ',line)
         
@@ -172,6 +172,7 @@ class Clean():
         """Tokenizer for non DL tasks"""
         if not isinstance(line, str):
             line = str(line)
+        
         
         if lemmatize and rm_stopwords:
             line = ' '.join([t.lemma_ for t in self.nlp(line) if not t.is_stop])
@@ -374,12 +375,12 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     strf_split = StratifiedShuffleSplit(n_splits = 1, test_size=(1-train_split), random_state=200)
     if cu.tasks.get(str(task)).get('type') == 'classification':
         for train_index, test_index in strf_split.split(data_red, data_red['label']):
-            df_cat_train = data_red.iloc[train_index]
-            df_cat_test = data_red.iloc[test_index]
+            df_cat_train    = data_red.iloc[train_index]
+            df_cat_test     = data_red.iloc[test_index]
     elif cu.tasks.get(str(task)).get('type') == 'multi_classification':
         for train_index, test_index in strf_split.split(data_red, pd.DataFrame({'label':[l.split(',')[0] for l in data_red['label']]})['label']):
-            df_cat_train = data_red.iloc[train_index]
-            df_cat_test = data_red.iloc[test_index]
+            df_cat_train    = data_red.iloc[train_index]
+            df_cat_test     = data_red.iloc[test_index]
     
     # Save data
     cl.dt.save(data_red, fn = 'fn_clean', dir = 'data_dir')
@@ -402,7 +403,7 @@ def prepare_qa(task, do_format, min_char_length, register_data, data_source, dat
     
     # Load data
     if not os.path.isfile(cl.dt.get_path('fn_prep', dir = 'data_dir')) or do_format:
-        data = dt.get_dataset(cl, source="cdb")
+        data = dt.get_dataset(cl, source='cdb')
     else:
         data = cl.dt.load('fn_prep', dir = 'data_dir')
     logger.warning(f'Data Length : {len(data)}')
@@ -459,7 +460,7 @@ def prepare_qa(task, do_format, min_char_length, register_data, data_source, dat
     if register_data:
         cl.dt.upload('data_dir', destination='dataset')
 
-def prepare_om(task, do_format, register_data, data_source, dataset_name=None):
+def prepare_om(task, do_format, register_data, data_source, dataset_name = None):
     '''Placeholder for OM-specific preparation, if needed'''
     pass
 
