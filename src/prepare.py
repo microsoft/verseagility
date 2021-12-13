@@ -357,9 +357,6 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         # Last but not least, we concatenate the reduced and transformed data by doing an inner join
         data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
-    # data_red = data_red.tail(300000).reset_index(drop=True).copy() 
-    # TODO: .tail() temp is for debugging
-    ## There is a memory issue for the EN dataset, due to its size. Needs further investigation.
 
     # Same procedure as above, now with reduced set of data
     # If we do multi label classification, there are quite some steps to be done to bring it into the right format
