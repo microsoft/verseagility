@@ -304,16 +304,15 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
     # Load text & label field
     text_raw = cu.load_text(data)
     data['label'] = cu.load_label(data, task)
+    # If we do multi label classification, there are quite some steps to be done to bring it into the right format
     if cu.tasks.get(str(task)).get('type') == 'multi_classification':
+        # Replacing ", " in case we have comma-separations within the labels
         data['label'] = data['label'].str.replace(', ', '_').str.replace(' ', '_')
+        # Flatten to list of lists with labels
         flat_labels = [row['label'].split(',') for index, row in data.iterrows()] 
-        labels_clean = []
-        for labels in flat_labels:
-            for label in labels:
-                labels_clean.append(label)
-        label_list_raw = pd.DataFrame({'label':labels_clean})
-        label_list_raw = label_list_raw[label_list_raw.label != '']
-        label_list_raw = label_list_raw.label.drop_duplicates()
+        # Create duplicate-free list of labels
+        label_list_raw = list(set([label for labels in flat_labels for label in labels]))
+    # If it is only single label classification, it is much easier
     elif cu.tasks.get(str(task)).get('type') == 'classification': # in case of single label classification
         label_list_raw = data.label.drop_duplicates()
     
