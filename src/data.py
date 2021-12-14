@@ -389,24 +389,25 @@ class Data():
 #####   Fetch from CosmosDB
 ############################################
 
-def get_data(src="cdb", dataset_name=None):
-    if src == "cdb":
+def get_data(src, dataset_name = None):
+    if src == "cosmosdb":
         # Query for CosmosDB
         CONFIG = {
-            "ENDPOINT": f"https://{he.get_secret('cosmos-db-name')}.documents.azure.com:443/",
-            "PRIMARYKEY": he.get_secret('cosmos-db-key'),
-            "DATABASE": "data", 
-            "CONTAINER": "documents"
+            "ENDPOINT":     f"https://{he.get_secret('cosmos-db-name')}.documents.azure.com:443/",
+            "PRIMARYKEY":   he.get_secret('cosmos-db-key'),
+            "DATABASE":     "data", 
+            "CONTAINER":    "documents"
         }
-        CONTAINER_LINK = f"dbs/{CONFIG['DATABASE']}/colls/{CONFIG['CONTAINER']}"
-        FEEDOPTIONS = {}
+        CONTAINER_LINK =    f"dbs/{CONFIG['DATABASE']}/colls/{CONFIG['CONTAINER']}"
+        FEEDOPTIONS =       {}
         FEEDOPTIONS["enableCrossPartitionQuery"] = True
+        # Concrete definition of the CosmosDB query is happening below. Feel free to adjust as needed!
         QUERY = {
             "query": f"SELECT * from c where c.status = 'train' and CONTAINS(c.language, '{cu.params.get('language')}')"
         }
         # Initialize the Cosmos client
         client = cosmos_client.CosmosClient(
-            url_connection=CONFIG["ENDPOINT"], auth={"masterKey": CONFIG["PRIMARYKEY"]}
+            url_connection = CONFIG["ENDPOINT"], auth = {"masterKey": CONFIG["PRIMARYKEY"]}
         )
         # Query for some data
         results = client.QueryItems(CONTAINER_LINK, QUERY, FEEDOPTIONS)
@@ -432,10 +433,10 @@ def get_label(obj, task):
                 out[_key] = _value
     return out
 
-def get_dataset(cl, source="cdb", dataset_name=None):
+def get_dataset(cl, source, dataset_name=None):
     # Transform request result
-    if source == "cdb":
-        results = get_data("cdb")
+    if source == "cosmosdb":
+        results = get_data("cosmosdb")
         data = cu.prepare_source(results)
         if 'label_classification' in data.columns:
             lbl_class = data.label_classification.apply(lambda x: get_label(x, 'label_classification')).to_list()
