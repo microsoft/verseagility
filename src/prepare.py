@@ -24,7 +24,7 @@ import helper as he
 import data as dt
 import custom as cu
 
-logger = he.get_logger(location=__name__)
+logger = he.get_logger(location = __name__)
 class Clean():
     """Text preprocessing and cleaning steps
 
@@ -50,9 +50,9 @@ class Clean():
     """
 
     def __init__(self, task,
-                        download_source=False,
-                        download_train=False,
-                        inference=False):
+                        download_source = False,
+                        download_train  = False,
+                        inference       = False):
         self.task = task
         self.language = cu.params.get('language')
         
@@ -88,10 +88,10 @@ class Clean():
             self.nlp.vocab[w.replace('\n','')].is_stop = True
    
     def remove(self, line, 
-                rm_email_formatting=False, 
-                rm_email_header=False, 
-                rm_email_footer=False,
-                rm_punctuation=False):
+                rm_email_formatting = False, 
+                rm_email_header     = False, 
+                rm_email_footer     = False,
+                rm_punctuation      = False):
         """Remove content from text"""
     
         if not isinstance(line, str):
@@ -141,9 +141,9 @@ class Clean():
         return line
 
     def get_placeholder(self, line,
-                        rp_generic=False,
-                        rp_custom=False,
-                        rp_num=False):
+                        rp_generic  = False,
+                        rp_custom   = False,
+                        rp_num      = False):
         """Replace text with type specfic placeholders"""
 
 
@@ -209,7 +209,7 @@ class Clean():
         df_texts = pd.Series(texts)
 
         # Avoid loading errors
-        df_texts = df_texts.replace('\t', ' ', regex=True)
+        df_texts = df_texts.replace('\t', ' ', regex = True)
         
         # Remove noise
         if any((rm_email_formatting, rm_email_header, 
@@ -229,7 +229,7 @@ class Clean():
         # Tokenize text
         if any((lemmatize, rm_stopwords, return_token)):
             df_texts = df_texts.apply(self.tokenize,
-                                    lemmatize = lemmatize,
+                                    lemmatize    = lemmatize,
                                     rm_stopwords = rm_stopwords)
         # To lower
         if to_lower:
@@ -303,19 +303,19 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
 
     # TODO : Temporary workaround, need to make it possible to handle missing column "subject"
     # Lowercase all cols and change name
-    data.columns = [x.lower() for x in data.columns]
+    data.columns    = [x.lower() for x in data.columns]
     data['subject'] = "x "
-    data.columns = ['body', 'label', 'subject']
+    data.columns    = ['body', 'label', 'subject']
 
     # Load text & label field
-    text_raw = cu.load_text(data)
+    text_raw      = cu.load_text(data)
     data['label'] = cu.load_label(data, task)
     # If we do multi label classification, there are quite some steps to be done to bring it into the right format
     if cu.tasks.get(str(task)).get('type') == 'multi_classification':
         # Replacing ", " in case we have comma-separations within the labels
-        data['label'] = data['label'].str.replace(', ', '_').str.replace(' ', '_')
+        data['label']  = data['label'].str.replace(', ', '_').str.replace(' ', '_')
         # Flatten to list of lists with labels
-        flat_labels = [row['label'].split(',') for index, row in data.iterrows()] 
+        flat_labels    = [row['label'].split(',') for index, row in data.iterrows()] 
         # Create duplicate-free list of labels
         label_list_raw = list(set([label for labels in flat_labels for label in labels]))
     # If it is only single label classification, it is much easier
@@ -356,7 +356,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         data_transform = data_transform.set_index('index')
         del data_red['label']
         # Last but not least, we concatenate the reduced and transformed data by doing an inner join
-        data_red = pd.concat([data_red, data_transform], join='inner', axis=1)
+        data_red = pd.concat([data_red, data_transform], join = 'inner', axis=1)
     logger.warning(f'Data Length : {len(data_red)}')
 
     # Same procedure as above, now with reduced set of data
@@ -365,10 +365,10 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
         # Flatten to list of lists with labels
         flat_labels = [row['label'].split(',') for index, row in data_red.iterrows()]
         # Create duplicate-free list of labels
-        label_list = list(set([label for labels in flat_labels for label in labels]))
+        label_list  = list(set([label for labels in flat_labels for label in labels]))
     # If it is only single label classification, it is much easier
     elif cu.tasks.get(str(task)).get('type') == 'classification': 
-        label_list = data_red.label.drop_duplicates()
+        label_list  = data_red.label.drop_duplicates()
     logger.warning(f'Excluded labels: {list(set(label_list_raw) - set(label_list))}')
 
     # Split data
@@ -390,7 +390,7 @@ def prepare_classification(task, do_format, train_split, min_cat_occurance,
 
     # Upload data
     if register_data:
-        cl.dt.upload('data_dir', destination='dataset')
+        cl.dt.upload('data_dir', destination = 'dataset')
 
 def prepare_ner(task, do_format, register_data, data_source, dataset_name=None):
     '''Placeholder for NER-specific preparation, if needed'''
@@ -450,7 +450,7 @@ def prepare_qa(task, do_format, min_char_length, register_data, data_source, dat
     logger.warning(f'Data Length : {len(data)}')
 
     # Remove duplicates
-    data = data.drop_duplicates(subset=['question_clean'])
+    data = data.drop_duplicates(subset = ['question_clean'])
     logger.warning(f'Data Length : {len(data)}')
     data = data.reset_index(drop=True).copy()
 
@@ -458,20 +458,20 @@ def prepare_qa(task, do_format, min_char_length, register_data, data_source, dat
     cl.dt.save(data, fn = 'fn_clean', dir = 'data_dir')
     # Upload data
     if register_data:
-        cl.dt.upload('data_dir', destination='dataset')
+        cl.dt.upload('data_dir', destination = 'dataset')
 
 def prepare_om(task, do_format, register_data, data_source, dataset_name = None):
     '''Placeholder for OM-specific preparation, if needed'''
     pass
 
-def main(task = 1, 
-            do_format = False, 
-            split = 0.9, 
-            min_cat_occurance = 300, 
-            min_char_length = 20,
-            register_data = False,
-            dataset_name = None,
-            data_source = "cosmosdb"):
+def main(task             = 1, 
+        do_format         = False, 
+        split             = 0.9, 
+        min_cat_occurance = 300, 
+        min_char_length   = 20,
+        register_data     = False,
+        dataset_name      = None,
+        data_source       = "cosmosdb"):
     logger.warning(f'Running <PREPARE> for task {task}')
     task_type = cu.tasks.get(str(task)).get('type')
     # Go a specific preparation way, depending on the task performed
@@ -492,41 +492,41 @@ def run():
     """Run from the command line"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--task", 
-                    default=1,
-                    type=int,
-                    help="Task where: \
+                    default = 1,
+                    type    = int,
+                    help    = "Task where: \
                             -task 1 : classification cat \
                             -task 2 : classification subcat \
                             -task 3 : ner \
                             -task 4 : qa \
                             -task 5 : om") 
     parser.add_argument("--do_format",
-                    action='store_true',
-                    help="Avoid reloading and normalizing data")
+                    action  = "store_true",
+                    help    = "Avoid reloading and normalizing data")
     parser.add_argument("--split", 
-                    default=0.9,
-                    type=float,
+                    default = 0.9,
+                    type    = float,
                     help="Train test split. Dev split is taken from train set.")    
     parser.add_argument("--min_cat_occurance", 
-                    default=300,
-                    type=int,
-                    help="Min occurance required by category.")      
+                    default = 300,
+                    type    = int,
+                    help    = "Min occurance required by category.")      
     parser.add_argument("--min_char_length", 
-                    default=20,
-                    type=int,
-                    help="") 
+                    default = 20,
+                    type    = int,
+                    help    = "") 
     parser.add_argument("--register_data",
-                    action="store_true",
-                    help="")
+                    action  = "store_true",
+                    help    = "")
     parser.add_argument("--dataset_name", # TODO pipe through scripts
-                    type=str,
-                    default="sample")
+                    type    = str,
+                    default = "sample")
     parser.add_argument("--data_source", # TODO pipe through scripts
-                    type=str,
-                    default="cosmosdb")
+                    type    = str,
+                    default = "cosmosdb")
     args = parser.parse_args()
-    main(args.task, args.do_format, args.split, min_cat_occurance=args.min_cat_occurance, 
-            min_char_length=args.min_char_length, register_data=args.register_data, dataset_name=args.dataset_name)
+    main(args.task, args.do_format, args.split, min_cat_occurance = args.min_cat_occurance, 
+            min_char_length = args.min_char_length, register_data = args.register_data, dataset_name = args.dataset_name)
         
 if __name__ == '__main__':
     run()
