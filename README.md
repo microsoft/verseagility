@@ -128,3 +128,11 @@ For more information see the [Code of Conduct FAQ](https://opensource.microsoft.
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
 **Feel free to contribute!**
+|NPL can also use in the field of education-|
+|it is the most generstive language
+  for app development - software development-|
+  |my enterprise - World human Issue cause Association ->
+  is on the way planning such|
+  |stromlight crated app name lieeducation beta->,
+  with AI-stromlight|
+  |an app with AI|
